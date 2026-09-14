@@ -1,0 +1,765 @@
+{
+  "title": "Ürün Pasaportu — 10 İş Günlük Stajyer Planı",
+  "assumptions": [
+    "Plan omurga tesliminden sonra başlar; Gün 1–10 kullanılır.",
+    "Günlük 4–5 saat uygulama; kalan süre öğrenme ve inceleme.",
+    "Auth/API/kategori omurgası hazırdır; ortak arayüz değişiklikleri ekipçe değerlendirilir.",
+    "Her kişi kendi modülünün ekran, API, test ve belgesinden sorumludur.",
+    "Backend hazırdır; test verisi için başka frontend ekranının bitmesi beklenmez."
+  ],
+  "ready": [
+    "Giriş/çıkış ve koordineli oturum yenileme",
+    "Türkçe mobil yerleşim ve yönlendirme",
+    "Kategori CRUD; ortak tablo/form/hata örnekleri",
+    "Pasaport liste ve detay",
+    "Birim ve tarayıcı test altyapısı"
+  ],
+  "tasks": [
+    {
+      "id": "ESA-01",
+      "owner": "Esat",
+      "module": "Pasaport",
+      "description": "Kurulum ve hazır pasaport akışını incele",
+      "day": 1,
+      "hours": 4,
+      "priority": "Yüksek",
+      "dependencies": [],
+      "output": "Kurulum notu ve alan eşlemesi",
+      "acceptance": "Liste/detay çalışır; publicId, productModelId ve categoryId ayrımı açıklanır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ESA-02",
+      "owner": "Esat",
+      "module": "Pasaport",
+      "description": "Form tiplerini ve API fonksiyonlarını yaz",
+      "day": 2,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "ESA-01"
+      ],
+      "output": "Oluşturma/güncelleme servisleri",
+      "acceptance": "POST/PUT sözleşmesi eşleşir; sayısal ID kullanılmaz.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ESA-03",
+      "owner": "Esat",
+      "module": "Pasaport",
+      "description": "Oluşturma formu ve kategori seçimi",
+      "day": 3,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "ESA-02"
+      ],
+      "output": "Seri no, kategori, tarih, fatura alanları",
+      "acceptance": "Kategori seçimi sayfalıdır; ilk 20 kayıt tüm liste sanılmaz.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ESA-04",
+      "owner": "Esat",
+      "module": "Pasaport",
+      "description": "Model seçimini forma bağla",
+      "day": 4,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "ESA-03",
+        "ECR-04"
+      ],
+      "output": "Çalışan pasaport oluşturma",
+      "acceptance": "ECR-04 bileşeni kullanılır; model UUID'si gönderilir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ESA-05",
+      "owner": "Esat",
+      "module": "Pasaport",
+      "description": "Düzenleme formunu tamamla",
+      "day": 5,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "ESA-04"
+      ],
+      "output": "Detaydan dolan güncelleme",
+      "acceptance": "Mevcut model/kategori, tarih ve fatura korunur; gerekli alanlar gönderilir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ESA-06",
+      "owner": "Esat",
+      "module": "Pasaport",
+      "description": "Silme ve detay bölüm arayüzünü hazırla",
+      "day": 6,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "ESA-05"
+      ],
+      "output": "ADMIN silme; alt bölüm bağlantı noktası",
+      "acceptance": "USER yazamaz; MANUFACTURER silemez; 409 görünür. Alt bölümlere passportId verilir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ESA-07",
+      "owner": "Esat",
+      "module": "Pasaport",
+      "description": "Form, tarih ve rol testlerini yaz",
+      "day": 7,
+      "hours": 4.5,
+      "priority": "Normal",
+      "dependencies": [
+        "ESA-06"
+      ],
+      "output": "RTL testleri",
+      "acceptance": "400/403/409, gelecek tarih ve çift submit testleri geçer.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ESA-08",
+      "owner": "Esat",
+      "module": "Pasaport",
+      "description": "Garanti ve servis bölümlerini entegre et",
+      "day": 8,
+      "hours": 4.5,
+      "priority": "Normal",
+      "dependencies": [
+        "ESA-07",
+        "ZEY-07",
+        "HAZ-07"
+      ],
+      "output": "Birleşik pasaport detayı",
+      "acceptance": "ZEY-07 ve HAZ-07 çalışır; bir bölüm hatası diğerini kapatmaz.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ESA-09",
+      "owner": "Esat",
+      "module": "Pasaport",
+      "description": "Hazal ile mobil ve çapraz inceleme",
+      "day": 9,
+      "hours": 4.5,
+      "priority": "Normal",
+      "dependencies": [
+        "ESA-08"
+      ],
+      "output": "Düzeltmeler ve inceleme notu",
+      "acceptance": "390px form çalışır; geçersiz UUID ve 404 anlaşılır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ESA-10",
+      "owner": "Esat",
+      "module": "Pasaport",
+      "description": "Uçtan uca gösterim ve devir",
+      "day": 10,
+      "hours": 4,
+      "priority": "Normal",
+      "dependencies": [
+        "ESA-09"
+      ],
+      "output": "Kullanım notu ve test raporu",
+      "acceptance": "Model→pasaport→garanti/servis gösterilir; eksikler açıkça belirtilir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ZEY-01",
+      "owner": "Zeynep",
+      "module": "Garanti",
+      "description": "Kurulum ve garanti sözleşmesini incele",
+      "day": 1,
+      "hours": 4,
+      "priority": "Yüksek",
+      "dependencies": [],
+      "output": "Endpoint/alan notu",
+      "acceptance": "Genel liste olmadığı ve productPassportPublicId gerekliliği açıklanır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ZEY-02",
+      "owner": "Zeynep",
+      "module": "Garanti",
+      "description": "Ürüne göre garanti listesini yaz",
+      "day": 2,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "ZEY-01"
+      ],
+      "output": "Sayfalı garanti bölümü",
+      "acceptance": "passportId prop alır; tarih sıralaması çalışır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ZEY-03",
+      "owner": "Zeynep",
+      "module": "Garanti",
+      "description": "Garanti oluşturma formunu yaz",
+      "day": 3,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "ZEY-02"
+      ],
+      "output": "Başlangıç/bitiş alanları",
+      "acceptance": "Eşit tarih kabul; bitiş başlangıçtan önce olamaz.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ZEY-04",
+      "owner": "Zeynep",
+      "module": "Garanti",
+      "description": "Oluşturmayı API'ye bağla",
+      "day": 4,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "ZEY-03"
+      ],
+      "output": "Pasaporta garanti ekleme",
+      "acceptance": "Doğru UUID alanı; başarıda garanti listesi yenilenir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ZEY-05",
+      "owner": "Zeynep",
+      "module": "Garanti",
+      "description": "Düzenlemeyi tamamla",
+      "day": 5,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "ZEY-04"
+      ],
+      "output": "Dolu düzenleme formu",
+      "acceptance": "PUT /warranties/edit/{id}; pasaport bağlantısı değişmez.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ZEY-06",
+      "owner": "Zeynep",
+      "module": "Garanti",
+      "description": "Silme, rol ve sahiplik hataları",
+      "day": 6,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "ZEY-05"
+      ],
+      "output": "Onaylı silme",
+      "acceptance": "DELETE /warranties/remove/{id}; 204 ayrıştırılmaz; başka üreticide 403 gösterilir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ZEY-07",
+      "owner": "Zeynep",
+      "module": "Garanti",
+      "description": "Esat'a garanti bölümünü teslim et",
+      "day": 7,
+      "hours": 4.5,
+      "priority": "Normal",
+      "dependencies": [
+        "ZEY-06",
+        "ESA-06"
+      ],
+      "output": "Detaya takılabilir bölüm",
+      "acceptance": "ESA-06 arayüzüne uyar; silinmiş üst kayıtta 404 gösterilir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ZEY-08",
+      "owner": "Zeynep",
+      "module": "Garanti",
+      "description": "Tarih ve API testlerini yaz",
+      "day": 8,
+      "hours": 4.5,
+      "priority": "Normal",
+      "dependencies": [
+        "ZEY-07"
+      ],
+      "output": "Test paketi",
+      "acceptance": "Eşit/ters tarih, boş alan, 403/404 testleri geçer.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ZEY-09",
+      "owner": "Zeynep",
+      "module": "Garanti",
+      "description": "Umut ile çapraz ve mobil inceleme",
+      "day": 9,
+      "hours": 4.5,
+      "priority": "Normal",
+      "dependencies": [
+        "ZEY-08"
+      ],
+      "output": "İnceleme notları",
+      "acceptance": "Tarih alanları ve liste küçük ekranda çalışır; bekleme görünür.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ZEY-10",
+      "owner": "Zeynep",
+      "module": "Garanti",
+      "description": "Gösterim ve belge teslimi",
+      "day": 10,
+      "hours": 4,
+      "priority": "Normal",
+      "dependencies": [
+        "ZEY-09"
+      ],
+      "output": "Garanti kullanım rehberi",
+      "acceptance": "Oluştur/düzenle/sil gösterilir; kabul sonuçları kaydedilir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "UMU-01",
+      "owner": "Umut",
+      "module": "Marka ve tedarikçi",
+      "description": "Kurulum ve iki modülü karşılaştır",
+      "day": 1,
+      "hours": 4,
+      "priority": "Yüksek",
+      "dependencies": [],
+      "output": "Alan/rol farkları notu",
+      "acceptance": "Marka sahipliği ve tedarikçi ADMIN sınırı açıklanır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "UMU-02",
+      "owner": "Umut",
+      "module": "Marka ve tedarikçi",
+      "description": "Marka listesi ve filtrelerini yaz",
+      "day": 2,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "UMU-01"
+      ],
+      "output": "Arama/aktiflik/sayfalama",
+      "acceptance": "search ve active URL'dedir; filtre değişince page sıfırlanır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "UMU-03",
+      "owner": "Umut",
+      "module": "Marka ve tedarikçi",
+      "description": "Marka oluşturma/düzenleme",
+      "day": 3,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "UMU-02"
+      ],
+      "output": "Marka formu ve API",
+      "acceptance": "Ad kırpılır; 409 görünür; üretici kendi kaydını yönetir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "UMU-04",
+      "owner": "Umut",
+      "module": "Marka ve tedarikçi",
+      "description": "Marka silme ve tedarikçi listesi",
+      "day": 4,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "UMU-03"
+      ],
+      "output": "ADMIN silme; sayfalı tedarikçi",
+      "acceptance": "Bağlı modelde 409; name/active filtreleri doğru.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "UMU-05",
+      "owner": "Umut",
+      "module": "Marka ve tedarikçi",
+      "description": "Tedarikçi oluşturma formu",
+      "day": 5,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "UMU-04"
+      ],
+      "output": "Kod/ad/iletişim alanları",
+      "acceptance": "ADMIN yazabilir; e-posta ve uzunluk sınırları uygulanır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "UMU-06",
+      "owner": "Umut",
+      "module": "Marka ve tedarikçi",
+      "description": "Tedarikçi düzenleme ve silme",
+      "day": 6,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "UMU-05"
+      ],
+      "output": "Tam tedarikçi CRUD",
+      "acceptance": "Kod değişmez; active zorunlu; 204 sonrası liste yenilenir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "UMU-07",
+      "owner": "Umut",
+      "module": "Marka ve tedarikçi",
+      "description": "İki modülün hata durumları",
+      "day": 7,
+      "hours": 4.5,
+      "priority": "Normal",
+      "dependencies": [
+        "UMU-06"
+      ],
+      "output": "Ortak Feedback kullanan ekranlar",
+      "acceptance": "400/403/409, boş liste ve ağ hatası için tekrar deneme çalışır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "UMU-08",
+      "owner": "Umut",
+      "module": "Marka ve tedarikçi",
+      "description": "Katalog testlerini tamamla",
+      "day": 8,
+      "hours": 4.5,
+      "priority": "Normal",
+      "dependencies": [
+        "UMU-07"
+      ],
+      "output": "İki modülün testleri",
+      "acceptance": "Filtre sıfırlama, değişmez kod, rol ve benzersizlik testleri geçer.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "UMU-09",
+      "owner": "Umut",
+      "module": "Marka ve tedarikçi",
+      "description": "Zeynep ile çapraz inceleme",
+      "day": 9,
+      "hours": 4.5,
+      "priority": "Normal",
+      "dependencies": [
+        "UMU-08"
+      ],
+      "output": "Mobil ve erişilebilirlik düzeltmeleri",
+      "acceptance": "Tablo/aksiyonlar klavyeyle kullanılır; silme onayı anlaşılır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "UMU-10",
+      "owner": "Umut",
+      "module": "Marka ve tedarikçi",
+      "description": "İki modülü göster ve devret",
+      "day": 10,
+      "hours": 4,
+      "priority": "Normal",
+      "dependencies": [
+        "UMU-09"
+      ],
+      "output": "Kullanım/test notları",
+      "acceptance": "Marka→model ilişkisi ve tedarikçi CRUD gerçek API ile gösterilir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ECR-01",
+      "owner": "Ecren",
+      "module": "Model",
+      "description": "Kurulum ve marka-model ilişkisi",
+      "day": 1,
+      "hours": 4,
+      "priority": "Yüksek",
+      "dependencies": [],
+      "output": "Alan/rol eşleme notu",
+      "acceptance": "brandPublicId/model publicId ayrımı açıklanır; test markası seçilir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ECR-02",
+      "owner": "Ecren",
+      "module": "Model",
+      "description": "Model listesi ve marka filtresi",
+      "day": 2,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "ECR-01"
+      ],
+      "output": "Sayfalı aramalı liste",
+      "acceptance": "search/brandPublicId URL'dedir; filtre değişince page sıfırlanır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ECR-03",
+      "owner": "Ecren",
+      "module": "Model",
+      "description": "Model oluşturma ve marka seçimi",
+      "day": 3,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "ECR-02"
+      ],
+      "output": "Markaya bağlı model formu",
+      "acceptance": "Marka seçimi sayfalıdır; başka üretici markasında 403 görünür.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ECR-04",
+      "owner": "Ecren",
+      "module": "Model",
+      "description": "Model seçimini Esat'a teslim et",
+      "day": 4,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "ECR-03"
+      ],
+      "output": "ModelSelect ve kullanım örneği",
+      "acceptance": "value UUID, onChange(UUID); sayfa dışındaki mevcut seçim etiketi korunur; boş/hata durumları var.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ECR-05",
+      "owner": "Ecren",
+      "module": "Model",
+      "description": "Model düzenlemeyi tamamla",
+      "day": 5,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "ECR-04"
+      ],
+      "output": "Mevcut marka ile dolu form",
+      "acceptance": "code/name/brandPublicId/active alanları doğru gönderilir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ECR-06",
+      "owner": "Ecren",
+      "module": "Model",
+      "description": "ADMIN silme ve ilişki hataları",
+      "day": 6,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "ECR-05"
+      ],
+      "output": "Silme onayı",
+      "acceptance": "Pasaport bağlıysa 409; MANUFACTURER silemez.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ECR-07",
+      "owner": "Ecren",
+      "module": "Model",
+      "description": "Liste/form/seçim testleri",
+      "day": 7,
+      "hours": 4.5,
+      "priority": "Normal",
+      "dependencies": [
+        "ECR-06"
+      ],
+      "output": "Model test paketi",
+      "acceptance": "Sayfa dışı seçim, 403 ve 409 testleri geçer.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ECR-08",
+      "owner": "Ecren",
+      "module": "Model",
+      "description": "Esat ile model-pasaport entegrasyonu",
+      "day": 8,
+      "hours": 4.5,
+      "priority": "Normal",
+      "dependencies": [
+        "ECR-07",
+        "ESA-05"
+      ],
+      "output": "Birlikte çalışan form",
+      "acceptance": "Model değişimi doğru UUID gönderir; eski seçim etiketi kaybolmaz.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ECR-09",
+      "owner": "Ecren",
+      "module": "Model",
+      "description": "Hazal ile uçtan uca inceleme",
+      "day": 9,
+      "hours": 4.5,
+      "priority": "Normal",
+      "dependencies": [
+        "ECR-08"
+      ],
+      "output": "İnceleme notları",
+      "acceptance": "Marka/model/pasaport sırası ve filtre URL'leri doğrulanır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "ECR-10",
+      "owner": "Ecren",
+      "module": "Model",
+      "description": "Model modülünü devret",
+      "day": 10,
+      "hours": 4,
+      "priority": "Normal",
+      "dependencies": [
+        "ECR-09"
+      ],
+      "output": "Bileşen kullanım rehberi",
+      "acceptance": "Yeni geliştirici ModelSelect'i örneği izleyerek kullanabilir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "HAZ-01",
+      "owner": "Hazal",
+      "module": "Servis",
+      "description": "Kurulum ve servis sözleşmesi",
+      "day": 1,
+      "hours": 4,
+      "priority": "Yüksek",
+      "dependencies": [],
+      "output": "Endpoint/alan notu",
+      "acceptance": "Oluşturmada productId; güncellemede sabit bağlantı açıklanır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "HAZ-02",
+      "owner": "Hazal",
+      "module": "Servis",
+      "description": "Servis geçmişi listesini yaz",
+      "day": 2,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "HAZ-01"
+      ],
+      "output": "passportId alan bölüm",
+      "acceptance": "serviceDate desc varsayılanı ve sayfalama çalışır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "HAZ-03",
+      "owner": "Hazal",
+      "module": "Servis",
+      "description": "Servis oluşturma formunu yaz",
+      "day": 3,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "HAZ-02"
+      ],
+      "output": "Tarih ve açıklama alanları",
+      "acceptance": "Gelecek tarih reddedilir; açıklama zorunlu ve en fazla 1000 karakter.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "HAZ-04",
+      "owner": "Hazal",
+      "module": "Servis",
+      "description": "Formu gerçek API'ye bağla",
+      "day": 4,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "HAZ-03"
+      ],
+      "output": "Pasaporta servis ekleme",
+      "acceptance": "productId doğru gönderilir; başarıda liste yenilenir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "HAZ-05",
+      "owner": "Hazal",
+      "module": "Servis",
+      "description": "Servis düzenlemeyi tamamla",
+      "day": 5,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "HAZ-04"
+      ],
+      "output": "Dolu düzenleme formu",
+      "acceptance": "PUT gövdesinde productId yok; tarih/açıklama korunur.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "HAZ-06",
+      "owner": "Hazal",
+      "module": "Servis",
+      "description": "Silme ve sahiplik hataları",
+      "day": 6,
+      "hours": 4.5,
+      "priority": "Yüksek",
+      "dependencies": [
+        "HAZ-05"
+      ],
+      "output": "Onaylı silme",
+      "acceptance": "Üretici kendi kaydını siler; başka üreticide 403, silinmiş üstte 404 gösterilir.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "HAZ-07",
+      "owner": "Hazal",
+      "module": "Servis",
+      "description": "Servis bölümünü Esat'a teslim et",
+      "day": 7,
+      "hours": 4.5,
+      "priority": "Normal",
+      "dependencies": [
+        "HAZ-06",
+        "ESA-06"
+      ],
+      "output": "Detaya takılabilir servis bölümü",
+      "acceptance": "ESA-06 arayüzüne uyar; tüm CRUD bölüm içinde çalışır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "HAZ-08",
+      "owner": "Hazal",
+      "module": "Servis",
+      "description": "Servis testleri ve ortak E2E",
+      "day": 8,
+      "hours": 4.5,
+      "priority": "Normal",
+      "dependencies": [
+        "HAZ-07"
+      ],
+      "output": "Testler ve akış kontrol listesi",
+      "acceptance": "Gelecek tarih, 1000 sınırı, 403/404 ve alt kayıt akışı kapsanır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "HAZ-09",
+      "owner": "Hazal",
+      "module": "Servis",
+      "description": "Esat ve Ecren ile E2E inceleme",
+      "day": 9,
+      "hours": 4.5,
+      "priority": "Normal",
+      "dependencies": [
+        "HAZ-08"
+      ],
+      "output": "Mobil/entegrasyon hata listesi",
+      "acceptance": "Kategori→marka→model→pasaport→garanti/servis sırası çalışır.",
+      "status": "Başlamadı"
+    },
+    {
+      "id": "HAZ-10",
+      "owner": "Hazal",
+      "module": "Servis",
+      "description": "Ortak gösterim ve kabul raporu",
+      "day": 10,
+      "hours": 4,
+      "priority": "Normal",
+      "dependencies": [
+        "HAZ-09"
+      ],
+      "output": "Ekip kabul kaydı ve servis rehberi",
+      "acceptance": "Başarılı, başarısız ve çalıştırılamayan kontroller ayrı kaydedilir.",
+      "status": "Başlamadı"
+    }
+  ]
+}

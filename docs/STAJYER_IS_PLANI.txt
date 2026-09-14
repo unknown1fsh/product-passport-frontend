@@ -1,0 +1,627 @@
+Ürün Pasaportu — 10 İş Günlük Stajyer Planı
+============================================================
+
+Plan omurga tesliminden sonra başlar; Gün 1–10 kullanılır.
+Günlük 4–5 saat uygulama; kalan süre öğrenme ve inceleme.
+Auth/API/kategori omurgası hazırdır; ortak arayüz değişiklikleri ekipçe değerlendirilir.
+Her kişi kendi modülünün ekran, API, test ve belgesinden sorumludur.
+Backend hazırdır; test verisi için başka frontend ekranının bitmesi beklenmez.
+
+HAZIR VERİLEN OMURGA
+Giriş/çıkış ve koordineli oturum yenileme
+Türkçe mobil yerleşim ve yönlendirme
+Kategori CRUD; ortak tablo/form/hata örnekleri
+Pasaport liste ve detay
+Birim ve tarayıcı test altyapısı
+
+ESAT
+----------------------------------------
+Görev ID: ESA-01
+Sorumlu: Esat
+Modül: Pasaport
+Açıklama: Kurulum ve hazır pasaport akışını incele
+Gün: 1
+Tahmini saat: 4
+Öncelik: Yüksek
+Bağımlılık: Yok
+Teslim çıktısı: Kurulum notu ve alan eşlemesi
+Kabul ölçütü: Liste/detay çalışır; publicId, productModelId ve categoryId ayrımı açıklanır.
+Durum: Başlamadı
+
+Görev ID: ESA-02
+Sorumlu: Esat
+Modül: Pasaport
+Açıklama: Form tiplerini ve API fonksiyonlarını yaz
+Gün: 2
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: ESA-01
+Teslim çıktısı: Oluşturma/güncelleme servisleri
+Kabul ölçütü: POST/PUT sözleşmesi eşleşir; sayısal ID kullanılmaz.
+Durum: Başlamadı
+
+Görev ID: ESA-03
+Sorumlu: Esat
+Modül: Pasaport
+Açıklama: Oluşturma formu ve kategori seçimi
+Gün: 3
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: ESA-02
+Teslim çıktısı: Seri no, kategori, tarih, fatura alanları
+Kabul ölçütü: Kategori seçimi sayfalıdır; ilk 20 kayıt tüm liste sanılmaz.
+Durum: Başlamadı
+
+Görev ID: ESA-04
+Sorumlu: Esat
+Modül: Pasaport
+Açıklama: Model seçimini forma bağla
+Gün: 4
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: ESA-03, ECR-04
+Teslim çıktısı: Çalışan pasaport oluşturma
+Kabul ölçütü: ECR-04 bileşeni kullanılır; model UUID'si gönderilir.
+Durum: Başlamadı
+
+Görev ID: ESA-05
+Sorumlu: Esat
+Modül: Pasaport
+Açıklama: Düzenleme formunu tamamla
+Gün: 5
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: ESA-04
+Teslim çıktısı: Detaydan dolan güncelleme
+Kabul ölçütü: Mevcut model/kategori, tarih ve fatura korunur; gerekli alanlar gönderilir.
+Durum: Başlamadı
+
+Görev ID: ESA-06
+Sorumlu: Esat
+Modül: Pasaport
+Açıklama: Silme ve detay bölüm arayüzünü hazırla
+Gün: 6
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: ESA-05
+Teslim çıktısı: ADMIN silme; alt bölüm bağlantı noktası
+Kabul ölçütü: USER yazamaz; MANUFACTURER silemez; 409 görünür. Alt bölümlere passportId verilir.
+Durum: Başlamadı
+
+Görev ID: ESA-07
+Sorumlu: Esat
+Modül: Pasaport
+Açıklama: Form, tarih ve rol testlerini yaz
+Gün: 7
+Tahmini saat: 4.5
+Öncelik: Normal
+Bağımlılık: ESA-06
+Teslim çıktısı: RTL testleri
+Kabul ölçütü: 400/403/409, gelecek tarih ve çift submit testleri geçer.
+Durum: Başlamadı
+
+Görev ID: ESA-08
+Sorumlu: Esat
+Modül: Pasaport
+Açıklama: Garanti ve servis bölümlerini entegre et
+Gün: 8
+Tahmini saat: 4.5
+Öncelik: Normal
+Bağımlılık: ESA-07, ZEY-07, HAZ-07
+Teslim çıktısı: Birleşik pasaport detayı
+Kabul ölçütü: ZEY-07 ve HAZ-07 çalışır; bir bölüm hatası diğerini kapatmaz.
+Durum: Başlamadı
+
+Görev ID: ESA-09
+Sorumlu: Esat
+Modül: Pasaport
+Açıklama: Hazal ile mobil ve çapraz inceleme
+Gün: 9
+Tahmini saat: 4.5
+Öncelik: Normal
+Bağımlılık: ESA-08
+Teslim çıktısı: Düzeltmeler ve inceleme notu
+Kabul ölçütü: 390px form çalışır; geçersiz UUID ve 404 anlaşılır.
+Durum: Başlamadı
+
+Görev ID: ESA-10
+Sorumlu: Esat
+Modül: Pasaport
+Açıklama: Uçtan uca gösterim ve devir
+Gün: 10
+Tahmini saat: 4
+Öncelik: Normal
+Bağımlılık: ESA-09
+Teslim çıktısı: Kullanım notu ve test raporu
+Kabul ölçütü: Model→pasaport→garanti/servis gösterilir; eksikler açıkça belirtilir.
+Durum: Başlamadı
+
+ZEYNEP
+----------------------------------------
+Görev ID: ZEY-01
+Sorumlu: Zeynep
+Modül: Garanti
+Açıklama: Kurulum ve garanti sözleşmesini incele
+Gün: 1
+Tahmini saat: 4
+Öncelik: Yüksek
+Bağımlılık: Yok
+Teslim çıktısı: Endpoint/alan notu
+Kabul ölçütü: Genel liste olmadığı ve productPassportPublicId gerekliliği açıklanır.
+Durum: Başlamadı
+
+Görev ID: ZEY-02
+Sorumlu: Zeynep
+Modül: Garanti
+Açıklama: Ürüne göre garanti listesini yaz
+Gün: 2
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: ZEY-01
+Teslim çıktısı: Sayfalı garanti bölümü
+Kabul ölçütü: passportId prop alır; tarih sıralaması çalışır.
+Durum: Başlamadı
+
+Görev ID: ZEY-03
+Sorumlu: Zeynep
+Modül: Garanti
+Açıklama: Garanti oluşturma formunu yaz
+Gün: 3
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: ZEY-02
+Teslim çıktısı: Başlangıç/bitiş alanları
+Kabul ölçütü: Eşit tarih kabul; bitiş başlangıçtan önce olamaz.
+Durum: Başlamadı
+
+Görev ID: ZEY-04
+Sorumlu: Zeynep
+Modül: Garanti
+Açıklama: Oluşturmayı API'ye bağla
+Gün: 4
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: ZEY-03
+Teslim çıktısı: Pasaporta garanti ekleme
+Kabul ölçütü: Doğru UUID alanı; başarıda garanti listesi yenilenir.
+Durum: Başlamadı
+
+Görev ID: ZEY-05
+Sorumlu: Zeynep
+Modül: Garanti
+Açıklama: Düzenlemeyi tamamla
+Gün: 5
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: ZEY-04
+Teslim çıktısı: Dolu düzenleme formu
+Kabul ölçütü: PUT /warranties/edit/{id}; pasaport bağlantısı değişmez.
+Durum: Başlamadı
+
+Görev ID: ZEY-06
+Sorumlu: Zeynep
+Modül: Garanti
+Açıklama: Silme, rol ve sahiplik hataları
+Gün: 6
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: ZEY-05
+Teslim çıktısı: Onaylı silme
+Kabul ölçütü: DELETE /warranties/remove/{id}; 204 ayrıştırılmaz; başka üreticide 403 gösterilir.
+Durum: Başlamadı
+
+Görev ID: ZEY-07
+Sorumlu: Zeynep
+Modül: Garanti
+Açıklama: Esat'a garanti bölümünü teslim et
+Gün: 7
+Tahmini saat: 4.5
+Öncelik: Normal
+Bağımlılık: ZEY-06, ESA-06
+Teslim çıktısı: Detaya takılabilir bölüm
+Kabul ölçütü: ESA-06 arayüzüne uyar; silinmiş üst kayıtta 404 gösterilir.
+Durum: Başlamadı
+
+Görev ID: ZEY-08
+Sorumlu: Zeynep
+Modül: Garanti
+Açıklama: Tarih ve API testlerini yaz
+Gün: 8
+Tahmini saat: 4.5
+Öncelik: Normal
+Bağımlılık: ZEY-07
+Teslim çıktısı: Test paketi
+Kabul ölçütü: Eşit/ters tarih, boş alan, 403/404 testleri geçer.
+Durum: Başlamadı
+
+Görev ID: ZEY-09
+Sorumlu: Zeynep
+Modül: Garanti
+Açıklama: Umut ile çapraz ve mobil inceleme
+Gün: 9
+Tahmini saat: 4.5
+Öncelik: Normal
+Bağımlılık: ZEY-08
+Teslim çıktısı: İnceleme notları
+Kabul ölçütü: Tarih alanları ve liste küçük ekranda çalışır; bekleme görünür.
+Durum: Başlamadı
+
+Görev ID: ZEY-10
+Sorumlu: Zeynep
+Modül: Garanti
+Açıklama: Gösterim ve belge teslimi
+Gün: 10
+Tahmini saat: 4
+Öncelik: Normal
+Bağımlılık: ZEY-09
+Teslim çıktısı: Garanti kullanım rehberi
+Kabul ölçütü: Oluştur/düzenle/sil gösterilir; kabul sonuçları kaydedilir.
+Durum: Başlamadı
+
+UMUT
+----------------------------------------
+Görev ID: UMU-01
+Sorumlu: Umut
+Modül: Marka ve tedarikçi
+Açıklama: Kurulum ve iki modülü karşılaştır
+Gün: 1
+Tahmini saat: 4
+Öncelik: Yüksek
+Bağımlılık: Yok
+Teslim çıktısı: Alan/rol farkları notu
+Kabul ölçütü: Marka sahipliği ve tedarikçi ADMIN sınırı açıklanır.
+Durum: Başlamadı
+
+Görev ID: UMU-02
+Sorumlu: Umut
+Modül: Marka ve tedarikçi
+Açıklama: Marka listesi ve filtrelerini yaz
+Gün: 2
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: UMU-01
+Teslim çıktısı: Arama/aktiflik/sayfalama
+Kabul ölçütü: search ve active URL'dedir; filtre değişince page sıfırlanır.
+Durum: Başlamadı
+
+Görev ID: UMU-03
+Sorumlu: Umut
+Modül: Marka ve tedarikçi
+Açıklama: Marka oluşturma/düzenleme
+Gün: 3
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: UMU-02
+Teslim çıktısı: Marka formu ve API
+Kabul ölçütü: Ad kırpılır; 409 görünür; üretici kendi kaydını yönetir.
+Durum: Başlamadı
+
+Görev ID: UMU-04
+Sorumlu: Umut
+Modül: Marka ve tedarikçi
+Açıklama: Marka silme ve tedarikçi listesi
+Gün: 4
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: UMU-03
+Teslim çıktısı: ADMIN silme; sayfalı tedarikçi
+Kabul ölçütü: Bağlı modelde 409; name/active filtreleri doğru.
+Durum: Başlamadı
+
+Görev ID: UMU-05
+Sorumlu: Umut
+Modül: Marka ve tedarikçi
+Açıklama: Tedarikçi oluşturma formu
+Gün: 5
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: UMU-04
+Teslim çıktısı: Kod/ad/iletişim alanları
+Kabul ölçütü: ADMIN yazabilir; e-posta ve uzunluk sınırları uygulanır.
+Durum: Başlamadı
+
+Görev ID: UMU-06
+Sorumlu: Umut
+Modül: Marka ve tedarikçi
+Açıklama: Tedarikçi düzenleme ve silme
+Gün: 6
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: UMU-05
+Teslim çıktısı: Tam tedarikçi CRUD
+Kabul ölçütü: Kod değişmez; active zorunlu; 204 sonrası liste yenilenir.
+Durum: Başlamadı
+
+Görev ID: UMU-07
+Sorumlu: Umut
+Modül: Marka ve tedarikçi
+Açıklama: İki modülün hata durumları
+Gün: 7
+Tahmini saat: 4.5
+Öncelik: Normal
+Bağımlılık: UMU-06
+Teslim çıktısı: Ortak Feedback kullanan ekranlar
+Kabul ölçütü: 400/403/409, boş liste ve ağ hatası için tekrar deneme çalışır.
+Durum: Başlamadı
+
+Görev ID: UMU-08
+Sorumlu: Umut
+Modül: Marka ve tedarikçi
+Açıklama: Katalog testlerini tamamla
+Gün: 8
+Tahmini saat: 4.5
+Öncelik: Normal
+Bağımlılık: UMU-07
+Teslim çıktısı: İki modülün testleri
+Kabul ölçütü: Filtre sıfırlama, değişmez kod, rol ve benzersizlik testleri geçer.
+Durum: Başlamadı
+
+Görev ID: UMU-09
+Sorumlu: Umut
+Modül: Marka ve tedarikçi
+Açıklama: Zeynep ile çapraz inceleme
+Gün: 9
+Tahmini saat: 4.5
+Öncelik: Normal
+Bağımlılık: UMU-08
+Teslim çıktısı: Mobil ve erişilebilirlik düzeltmeleri
+Kabul ölçütü: Tablo/aksiyonlar klavyeyle kullanılır; silme onayı anlaşılır.
+Durum: Başlamadı
+
+Görev ID: UMU-10
+Sorumlu: Umut
+Modül: Marka ve tedarikçi
+Açıklama: İki modülü göster ve devret
+Gün: 10
+Tahmini saat: 4
+Öncelik: Normal
+Bağımlılık: UMU-09
+Teslim çıktısı: Kullanım/test notları
+Kabul ölçütü: Marka→model ilişkisi ve tedarikçi CRUD gerçek API ile gösterilir.
+Durum: Başlamadı
+
+ECREN
+----------------------------------------
+Görev ID: ECR-01
+Sorumlu: Ecren
+Modül: Model
+Açıklama: Kurulum ve marka-model ilişkisi
+Gün: 1
+Tahmini saat: 4
+Öncelik: Yüksek
+Bağımlılık: Yok
+Teslim çıktısı: Alan/rol eşleme notu
+Kabul ölçütü: brandPublicId/model publicId ayrımı açıklanır; test markası seçilir.
+Durum: Başlamadı
+
+Görev ID: ECR-02
+Sorumlu: Ecren
+Modül: Model
+Açıklama: Model listesi ve marka filtresi
+Gün: 2
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: ECR-01
+Teslim çıktısı: Sayfalı aramalı liste
+Kabul ölçütü: search/brandPublicId URL'dedir; filtre değişince page sıfırlanır.
+Durum: Başlamadı
+
+Görev ID: ECR-03
+Sorumlu: Ecren
+Modül: Model
+Açıklama: Model oluşturma ve marka seçimi
+Gün: 3
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: ECR-02
+Teslim çıktısı: Markaya bağlı model formu
+Kabul ölçütü: Marka seçimi sayfalıdır; başka üretici markasında 403 görünür.
+Durum: Başlamadı
+
+Görev ID: ECR-04
+Sorumlu: Ecren
+Modül: Model
+Açıklama: Model seçimini Esat'a teslim et
+Gün: 4
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: ECR-03
+Teslim çıktısı: ModelSelect ve kullanım örneği
+Kabul ölçütü: value UUID, onChange(UUID); sayfa dışındaki mevcut seçim etiketi korunur; boş/hata durumları var.
+Durum: Başlamadı
+
+Görev ID: ECR-05
+Sorumlu: Ecren
+Modül: Model
+Açıklama: Model düzenlemeyi tamamla
+Gün: 5
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: ECR-04
+Teslim çıktısı: Mevcut marka ile dolu form
+Kabul ölçütü: code/name/brandPublicId/active alanları doğru gönderilir.
+Durum: Başlamadı
+
+Görev ID: ECR-06
+Sorumlu: Ecren
+Modül: Model
+Açıklama: ADMIN silme ve ilişki hataları
+Gün: 6
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: ECR-05
+Teslim çıktısı: Silme onayı
+Kabul ölçütü: Pasaport bağlıysa 409; MANUFACTURER silemez.
+Durum: Başlamadı
+
+Görev ID: ECR-07
+Sorumlu: Ecren
+Modül: Model
+Açıklama: Liste/form/seçim testleri
+Gün: 7
+Tahmini saat: 4.5
+Öncelik: Normal
+Bağımlılık: ECR-06
+Teslim çıktısı: Model test paketi
+Kabul ölçütü: Sayfa dışı seçim, 403 ve 409 testleri geçer.
+Durum: Başlamadı
+
+Görev ID: ECR-08
+Sorumlu: Ecren
+Modül: Model
+Açıklama: Esat ile model-pasaport entegrasyonu
+Gün: 8
+Tahmini saat: 4.5
+Öncelik: Normal
+Bağımlılık: ECR-07, ESA-05
+Teslim çıktısı: Birlikte çalışan form
+Kabul ölçütü: Model değişimi doğru UUID gönderir; eski seçim etiketi kaybolmaz.
+Durum: Başlamadı
+
+Görev ID: ECR-09
+Sorumlu: Ecren
+Modül: Model
+Açıklama: Hazal ile uçtan uca inceleme
+Gün: 9
+Tahmini saat: 4.5
+Öncelik: Normal
+Bağımlılık: ECR-08
+Teslim çıktısı: İnceleme notları
+Kabul ölçütü: Marka/model/pasaport sırası ve filtre URL'leri doğrulanır.
+Durum: Başlamadı
+
+Görev ID: ECR-10
+Sorumlu: Ecren
+Modül: Model
+Açıklama: Model modülünü devret
+Gün: 10
+Tahmini saat: 4
+Öncelik: Normal
+Bağımlılık: ECR-09
+Teslim çıktısı: Bileşen kullanım rehberi
+Kabul ölçütü: Yeni geliştirici ModelSelect'i örneği izleyerek kullanabilir.
+Durum: Başlamadı
+
+HAZAL
+----------------------------------------
+Görev ID: HAZ-01
+Sorumlu: Hazal
+Modül: Servis
+Açıklama: Kurulum ve servis sözleşmesi
+Gün: 1
+Tahmini saat: 4
+Öncelik: Yüksek
+Bağımlılık: Yok
+Teslim çıktısı: Endpoint/alan notu
+Kabul ölçütü: Oluşturmada productId; güncellemede sabit bağlantı açıklanır.
+Durum: Başlamadı
+
+Görev ID: HAZ-02
+Sorumlu: Hazal
+Modül: Servis
+Açıklama: Servis geçmişi listesini yaz
+Gün: 2
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: HAZ-01
+Teslim çıktısı: passportId alan bölüm
+Kabul ölçütü: serviceDate desc varsayılanı ve sayfalama çalışır.
+Durum: Başlamadı
+
+Görev ID: HAZ-03
+Sorumlu: Hazal
+Modül: Servis
+Açıklama: Servis oluşturma formunu yaz
+Gün: 3
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: HAZ-02
+Teslim çıktısı: Tarih ve açıklama alanları
+Kabul ölçütü: Gelecek tarih reddedilir; açıklama zorunlu ve en fazla 1000 karakter.
+Durum: Başlamadı
+
+Görev ID: HAZ-04
+Sorumlu: Hazal
+Modül: Servis
+Açıklama: Formu gerçek API'ye bağla
+Gün: 4
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: HAZ-03
+Teslim çıktısı: Pasaporta servis ekleme
+Kabul ölçütü: productId doğru gönderilir; başarıda liste yenilenir.
+Durum: Başlamadı
+
+Görev ID: HAZ-05
+Sorumlu: Hazal
+Modül: Servis
+Açıklama: Servis düzenlemeyi tamamla
+Gün: 5
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: HAZ-04
+Teslim çıktısı: Dolu düzenleme formu
+Kabul ölçütü: PUT gövdesinde productId yok; tarih/açıklama korunur.
+Durum: Başlamadı
+
+Görev ID: HAZ-06
+Sorumlu: Hazal
+Modül: Servis
+Açıklama: Silme ve sahiplik hataları
+Gün: 6
+Tahmini saat: 4.5
+Öncelik: Yüksek
+Bağımlılık: HAZ-05
+Teslim çıktısı: Onaylı silme
+Kabul ölçütü: Üretici kendi kaydını siler; başka üreticide 403, silinmiş üstte 404 gösterilir.
+Durum: Başlamadı
+
+Görev ID: HAZ-07
+Sorumlu: Hazal
+Modül: Servis
+Açıklama: Servis bölümünü Esat'a teslim et
+Gün: 7
+Tahmini saat: 4.5
+Öncelik: Normal
+Bağımlılık: HAZ-06, ESA-06
+Teslim çıktısı: Detaya takılabilir servis bölümü
+Kabul ölçütü: ESA-06 arayüzüne uyar; tüm CRUD bölüm içinde çalışır.
+Durum: Başlamadı
+
+Görev ID: HAZ-08
+Sorumlu: Hazal
+Modül: Servis
+Açıklama: Servis testleri ve ortak E2E
+Gün: 8
+Tahmini saat: 4.5
+Öncelik: Normal
+Bağımlılık: HAZ-07
+Teslim çıktısı: Testler ve akış kontrol listesi
+Kabul ölçütü: Gelecek tarih, 1000 sınırı, 403/404 ve alt kayıt akışı kapsanır.
+Durum: Başlamadı
+
+Görev ID: HAZ-09
+Sorumlu: Hazal
+Modül: Servis
+Açıklama: Esat ve Ecren ile E2E inceleme
+Gün: 9
+Tahmini saat: 4.5
+Öncelik: Normal
+Bağımlılık: HAZ-08
+Teslim çıktısı: Mobil/entegrasyon hata listesi
+Kabul ölçütü: Kategori→marka→model→pasaport→garanti/servis sırası çalışır.
+Durum: Başlamadı
+
+Görev ID: HAZ-10
+Sorumlu: Hazal
+Modül: Servis
+Açıklama: Ortak gösterim ve kabul raporu
+Gün: 10
+Tahmini saat: 4
+Öncelik: Normal
+Bağımlılık: HAZ-09
+Teslim çıktısı: Ekip kabul kaydı ve servis rehberi
+Kabul ölçütü: Başarılı, başarısız ve çalıştırılamayan kontroller ayrı kaydedilir.
+Durum: Başlamadı
+
+Kaynak: plan-source.json. Durumları kaynakta güncelleyin; npm run docs:generate ve npm run docs:check çalıştırın. Excel elle değişiklikleri yeniden üretimde korunmaz.

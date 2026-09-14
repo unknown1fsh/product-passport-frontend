@@ -1,0 +1,52 @@
+# Ayrı test projesi. Geliştirme veritabanına bağlanmaz.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: frontend_e2e
+      POSTGRES_USER: frontend_test
+      POSTGRES_PASSWORD: frontend-local-test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U frontend_test -d frontend_e2e"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  bootstrap:
+    image: passport-backend-check-app:latest
+    environment: &backend
+      SPRING_PROFILES_ACTIVE: postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: frontend_e2e
+      DB_USERNAME: frontend_test
+      DB_PASSWORD: frontend-local-test
+      AUTH_ALLOWED_ORIGINS: http://localhost:5173
+      BOOTSTRAP_ADMIN_FIRST_NAME: Test
+      BOOTSTRAP_ADMIN_LAST_NAME: Admin
+      BOOTSTRAP_ADMIN_EMAIL: admin@frontend.test
+      BOOTSTRAP_ADMIN_PASSWORD: Frontend123!
+    command: ["--app.bootstrap-admin=true"]
+    depends_on:
+      db:
+        condition: service_healthy
+  app:
+    image: passport-backend-check-app:latest
+    environment: *backend
+    ports:
+      - "127.0.0.1:18081:8080"
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "--fail",
+          "--silent",
+          "http://localhost:8080/actuator/health",
+        ]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+      start_period: 30s
