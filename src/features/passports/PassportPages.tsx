@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Chip,
@@ -13,35 +14,66 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowBack from "@mui/icons-material/ArrowBack";
+import AddIcon from "@mui/icons-material/Add";
+import { useAuth } from "../auth/AuthProvider";
+import { PassportForm } from "./PassportForm";
 import { Link, useParams } from "react-router-dom";
-import type { PageResponse, Passport } from "../../shared/types";
+import type { Passport } from "../../shared/types";
 import { usePageQuery } from "../../shared/hooks/usePageQuery";
 import { useResource } from "../../shared/hooks/useResource";
 import { PageControls } from "../../shared/ui/PageControls";
 import { ErrorNotice, Loading } from "../../shared/ui/Feedback";
 import { MessagePage } from "../../app/Layout";
+import { useState } from "react";
 export function PassportList() {
   const paging = usePageQuery("serialNumber", [
     "serialNumber",
     "purchaseDate",
     "createdAt",
   ]);
-  const { data, error, loading, reload } = useResource<PageResponse<Passport>>(
+  const { data, error, loading, reload } = useResource<Passport[]>(
     "/product-passports?" + paging.query,
   );
+  const canCreate = ["ADMIN", "MANUFACTURER"].includes(useAuth().user?.role ?? "");
+  const [editor, setEditor] = useState<Passport | null | undefined>();
+  const [notice, setNotice] = useState("");
   return (
     <Stack spacing={3}>
-      <Box>
-        <Typography variant="overline" color="primary">
-          ÜRÜN KAYITLARI
-        </Typography>
-        <Typography component="h1" variant="h4">
-          Ürün pasaportları
-        </Typography>
-        <Typography color="text.secondary" sx={{ mt: 1 }}>
-          Ürün bilgilerini ve satın alma kayıtlarını inceleyin.
-        </Typography>
+      <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
+            flexWrap: "wrap",
+          }}
+      >
+        <Box>
+          <Typography variant="overline" color="primary">
+            ÜRÜN KAYITLARI
+          </Typography>
+          <Typography component="h1" variant="h4">
+            Ürün pasaportları
+          </Typography>
+          <Typography color="text.secondary" sx={{ mt: 1 }}>
+            Ürün bilgilerini ve satın alma kayıtlarını inceleyin.
+          </Typography>
+        </Box>
+        {canCreate && (
+            <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => setEditor(null)}
+            >
+              Yeni pasaport
+            </Button>
+        )}
       </Box>
+      {notice && (
+          <Alert onClose={() => setNotice("")} severity="success">
+            {notice}
+          </Alert>
+      )}
       {loading ? (
         <Loading />
       ) : error ? (
@@ -61,7 +93,7 @@ export function PassportList() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data?.content.map((p) => (
+                {data?.map((p) => (
                   <TableRow key={p.publicId} hover>
                     <TableCell
                       sx={{ fontFamily: "monospace", fontWeight: 600 }}
@@ -92,7 +124,7 @@ export function PassportList() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {!data?.content.length && (
+                {!data?.length && (
                   <TableRow>
                     <TableCell colSpan={6} sx={{ textAlign: "center", py: 6 }}>
                       Bu sayfada pasaport bulunamadı.
@@ -110,7 +142,7 @@ export function PassportList() {
           <Box sx={{ px: 2 }}>
             <PageControls
               paging={paging}
-              total={data?.totalElements || 0}
+              total={data?.length || 0}
               sorts={[
                 { value: "serialNumber", label: "Seri numarası" },
                 { value: "purchaseDate", label: "Satın alma" },
@@ -119,6 +151,17 @@ export function PassportList() {
             />
           </Box>
         </Paper>
+      )}
+      {editor !== undefined && (
+          <PassportForm
+              passport={editor || undefined}
+              onClose={() => setEditor(undefined)}
+              onSaved={() => {
+                setEditor(undefined);
+                setNotice("Pasaport kaydedildi.");
+                reload();
+              }}
+          />
       )}
     </Stack>
   );

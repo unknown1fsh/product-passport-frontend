@@ -42,3 +42,5 @@ export type Passport = {
   description: string | null;
   active: boolean;
 };
+export type PassportInput = { serialNumber: string; productModelId: string; productModelName: string; categoryId: string ; purchaseDate: string; invoiceNumber: string; description: string };
+export type PassportUpdate = PassportInput;

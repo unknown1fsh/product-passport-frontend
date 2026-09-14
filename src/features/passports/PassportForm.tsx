@@ -1,0 +1,133 @@
+import {useState} from "react";
+import type {FormEvent} from "react";
+import {passportApi} from "./api";
+import type {Passport} from "../../shared/types";
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Stack,
+    TextField,
+} from "@mui/material";
+import { ErrorNotice } from "../../shared/ui/Feedback";
+
+export function PassportForm({
+                                 passport,
+                                 onClose,
+                                 onSaved,
+                             }:{
+    passport?: Passport;
+    onClose: () => void;
+    onSaved: () => void;
+}) {
+
+    const [serialNumber, setSerialNumber] = useState(passport?.serialNumber || "");
+    const [categoryId, setCategoryId] = useState(passport?.categoryId || "");
+    const [purchaseDate, setPurchaseDate] = useState(passport?.purchaseDate || "");
+    const [invoiceNumber, setInvoiceNumber] = useState(passport?.invoiceNumber || "");
+    const [description, setDescription] = useState(passport?.description || "");
+    const [busy, setBusy] = useState(false);
+    const [error, setError] = useState<unknown>();
+
+    async function submit(e: FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        if (!serialNumber.trim() || !categoryId.trim() || !purchaseDate.trim()) {
+            setError(new Error("Seri numarası, kategori ve satın alma tarihi boş bırakılamaz."));
+            return;
+        }
+        setBusy(true);
+        setError(undefined);
+        try {
+            if (passport)
+                await passportApi.update(passport.publicId, {
+                    serialNumber: serialNumber.trim(),
+                    categoryId,
+                    purchaseDate,
+                    invoiceNumber: invoiceNumber.trim(),
+                    description: description.trim(),
+                });
+            else
+                await passportApi.create({
+                    serialNumber: serialNumber.trim(),
+                    categoryId,
+                    purchaseDate,
+                    invoiceNumber: invoiceNumber.trim(),
+                    description: description.trim(),
+                });
+            onSaved();
+        } catch (e) {
+            setError(e);
+        } finally {
+            setBusy(false);
+        }
+    }
+    return (
+        <Dialog
+            open
+            onClose={() => {
+                if (!busy) onClose();
+            }}
+            fullWidth
+            maxWidth="sm"
+            aria-labelledby="passport-form-title"
+        >
+            <form onSubmit={submit}>
+                <DialogTitle id="passport-form-title">
+                    {passport ? "Pasaportu düzenle" : "Yeni pasaport"}
+                </DialogTitle>
+                <DialogContent>
+                    <Stack spacing={2.5} sx={{ pt: 1 }}>
+                        {error !== undefined && <ErrorNotice error={error} />}
+                        <TextField
+                            label="Seri numarası"
+                            required
+                            value={serialNumber}
+                            onChange={(e) => setSerialNumber(e.target.value)}
+                            slotProps={{ htmlInput: { maxLength: 100 } }}
+                        />
+                        <TextField
+                            label="Kategori ID"
+                            required
+                            value={categoryId}
+                            onChange={(e) => setCategoryId(e.target.value)}
+                            helperText="Şimdilik geçici metin kutusu — yerini sayfalı kategori seçimi alacak."
+                        />
+                        <TextField
+                            label="Satın alma tarihi"
+                            type="date"
+                            required
+                            value={purchaseDate}
+                            onChange={(e) => setPurchaseDate(e.target.value)}
+                            slotProps={{ inputLabel: { shrink: true } }}
+                        />
+                        <TextField
+                            label="Fatura numarası"
+                            value={invoiceNumber}
+                            onChange={(e) => setInvoiceNumber(e.target.value)}
+                            slotProps={{ htmlInput: { maxLength: 100 } }}
+                        />
+                        <TextField
+                            label="Açıklama"
+                            multiline
+                            minRows={3}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            slotProps={{ htmlInput: { maxLength: 500 } }}
+                            helperText={description.length + "/500"}
+                        />
+                    </Stack>
+                </DialogContent>
+                <DialogActions sx={{ p: 3 }}>
+                    <Button onClick={onClose} disabled={busy}>
+                        Vazgeç
+                    </Button>
+                    <Button variant="contained" type="submit" disabled={busy}>
+                        {busy ? "Kaydediliyor…" : "Kaydet"}
+                    </Button>
+                </DialogActions>
+            </form>
+        </Dialog>
+    );
+}
