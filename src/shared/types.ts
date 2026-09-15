@@ -33,7 +33,6 @@ export type CategoryUpdate = Omit<CategoryInput, "code"> & { active: boolean };
 export type Passport = {
   publicId: string;
   serialNumber: string;
-  productModelId: string;
   categoryId: string;
   categoryName: string;
   purchaseDate: string;

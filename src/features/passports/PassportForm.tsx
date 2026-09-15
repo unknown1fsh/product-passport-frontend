@@ -13,6 +13,7 @@ import {
     TextField,
 } from "@mui/material";
 import { ErrorNotice } from "../../shared/ui/Feedback";
+import {ModelSelect} from "../models/ModelSelect";
 export function PassportForm({
                                  passport,
                                  onClose,
@@ -24,16 +25,17 @@ export function PassportForm({
 }) {
 
     const [serialNumber, setSerialNumber] = useState(passport?.serialNumber || "");
+    const [productModelId, setProductModelId] = useState(passport?.productModelId || "");
     const [categoryId, setCategoryId] = useState(passport?.categoryId || "");
     const [purchaseDate, setPurchaseDate] = useState(passport?.purchaseDate || "");
     const [invoiceNumber, setInvoiceNumber] = useState(passport?.invoiceNumber || "");
     const [description, setDescription] = useState(passport?.description || "");
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<unknown>();
-
+    const today = new Date().toLocaleDateString("sv-SE");
     async function submit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        if (!serialNumber.trim() || !categoryId.trim() || !purchaseDate.trim()) {
+        if (!serialNumber.trim() || !categoryId.trim() || !purchaseDate.trim() || !productModelId.trim()) {
             setError(new Error("Seri numarası, kategori ve satın alma tarihi boş bırakılamaz."));
             return;
         }
@@ -43,6 +45,7 @@ export function PassportForm({
             if (passport)
                 await passportApi.update(passport.publicId, {
                     serialNumber: serialNumber.trim(),
+                    productModelId,
                     categoryId,
                     purchaseDate,
                     invoiceNumber: invoiceNumber.trim(),
@@ -51,6 +54,7 @@ export function PassportForm({
             else
                 await passportApi.create({
                     serialNumber: serialNumber.trim(),
+                    productModelId,
                     categoryId,
                     purchaseDate,
                     invoiceNumber: invoiceNumber.trim(),
@@ -92,14 +96,17 @@ export function PassportForm({
                             onChange={(id)=> setCategoryId(id ?? "")}
                             initialName={passport?.categoryName}
                         />
+                        <ModelSelect value={productModelId} onChange={setProductModelId}/>
                         <TextField
                             label="Satın alma tarihi"
                             type="date"
                             required
                             value={purchaseDate}
                             onChange={(e) => setPurchaseDate(e.target.value)}
-                            slotProps={{ inputLabel: { shrink: true } }}
-                        />
+                            slotProps={{
+                                inputLabel: { shrink: true },
+                                htmlInput: { min: "2000-01-01", max: today },
+                            }}                        />
                         <TextField
                             label="Fatura numarası"
                             value={invoiceNumber}
