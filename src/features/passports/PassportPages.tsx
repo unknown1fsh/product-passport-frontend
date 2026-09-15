@@ -20,6 +20,7 @@ import { useResource } from "../../shared/hooks/useResource";
 import { PageControls } from "../../shared/ui/PageControls";
 import { ErrorNotice, Loading } from "../../shared/ui/Feedback";
 import { MessagePage } from "../../app/Layout";
+import WarrantyList from "../warranties/WarrantyList";
 export function PassportList() {
   const paging = usePageQuery("serialNumber", [
     "serialNumber",
@@ -214,6 +215,7 @@ function Detail({ id }: { id: string }) {
                 ))}
               </Box>
             </Paper>
+            <WarrantyList passportId={id}/>
           </>
         )
       )}
