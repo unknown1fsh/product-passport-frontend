@@ -77,7 +77,7 @@ export function PassportForm({
             maxWidth="sm"
             aria-labelledby="passport-form-title"
         >
-            <form onSubmit={submit}>
+            <form onSubmit={submit} noValidate>
                 <DialogTitle id="passport-form-title">
                     {passport ? "Pasaportu düzenle" : "Yeni pasaport"}
                 </DialogTitle>
