@@ -88,8 +88,9 @@ export function PassportForm({
                             label="Seri numarası"
                             required
                             value={serialNumber}
-                            onChange={(e) => setSerialNumber(e.target.value)}
+                            onChange={(e) => setSerialNumber(e.target.value.replace(/[^A-Za-z0-9-]/g, ""))}
                             slotProps={{ htmlInput: { maxLength: 100 } }}
+                            helperText="Yalnızca harf, rakam ve tire. En fazla 100 karakter."
                         />
                         <CategorySelect
                             value={categoryId || null}

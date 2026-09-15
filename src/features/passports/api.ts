@@ -12,4 +12,5 @@ export const passportApi = {
         method: "PUT",
         body: JSON.stringify(input),
     }),
+    remove: (id: string) => api<void>("/product-passports/" + id, {method: "DELETE"})
 }
