@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Box,
   Paper,
@@ -8,34 +9,78 @@ import {
   TableHead,
   TableRow,
   Typography,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import { useResource } from "../../shared/hooks/useResource";
-import type { PageResponse } from "../../shared/types"; // Projenizdeki tiplerin yolunun doğru olduğundan emin ol
+import type { PageResponse } from "../../shared/types";
+import { api } from "../../shared/api/client"; 
 
 interface WarrantyListProps {
   passportId: string;
 }
 
 interface Warranty {
-  publicId: string; // Backend genelde publicId döner, sendeki DTO'ya göre id ise id yapabilirsin
+  publicId: string; 
   startDate: string;
   endDate: string;
 }
 
 export default function WarrantyList({ passportId }: WarrantyListProps) {
-  // Backend'in PageResponse döndüğünü belirttik
-  const { data, loading, error } = useResource<PageResponse<Warranty>>(
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const { data, loading, error, reload } = useResource<PageResponse<Warranty>>(
     "/warranties/product/" + passportId
   );
+
+  const handleSave = async () => {
+    try {
+      const payload = {
+        productPassportPublicId: passportId,
+        startDate,
+        endDate
+      };
+
+      await api("/warranties", {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+
+      setIsDialogOpen(false);
+      setStartDate("");
+      setEndDate("");
+      reload();
+
+    } catch (err) {
+      console.error("Garanti kaydedilirken hata oluştu:", err);
+      alert("Kayıt sırasında bir hata oluştu, lütfen tekrar deneyin.");
+    }
+  };
 
   if (loading) return <Typography sx={{ mt: 3 }}>Garanti bilgileri yükleniyor...</Typography>;
   if (error) return <Typography sx={{ mt: 3 }} color="error">Garanti verisi çekilirken hata oluştu.</Typography>;
 
   return (
     <Box sx={{ mt: 4 }}>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        Garanti Kayıtları
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h6">
+          Garanti Kayıtları
+        </Typography>
+        <Button 
+          variant="contained" 
+          startIcon={<AddIcon />} 
+          onClick={() => setIsDialogOpen(true)}
+          sx={{ textTransform: 'none' }}
+        >
+          Yeni Ekle
+        </Button>
+      </Box>
       
       <Paper variant="outlined">
         <TableContainer>
@@ -58,7 +103,6 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
                 </TableRow>
               ))}
               
-              {/* Eğer pasaportun hiç garantisi yoksa boş durum mesajı gösteriyoruz */}
               {!data?.content.length && (
                 <TableRow>
                   <TableCell colSpan={3} sx={{ textAlign: "center", py: 4 }}>
@@ -70,6 +114,38 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
           </Table>
         </TableContainer>
       </Paper>
+
+      <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Yeni Garanti Ekle</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>
+            <TextField
+              label="Başlangıç Tarihi"
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              slotProps={{ inputLabel: { shrink: true } }}
+              fullWidth
+            />
+            <TextField
+              label="Bitiş Tarihi"
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              slotProps={{ inputLabel: { shrink: true } }}
+              fullWidth
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ p: 2, pt: 0 }}>
+          <Button onClick={() => setIsDialogOpen(false)} color="inherit">
+            İptal
+          </Button>
+          <Button onClick={handleSave} variant="contained" disabled={!startDate || !endDate}>
+            Kaydet
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
