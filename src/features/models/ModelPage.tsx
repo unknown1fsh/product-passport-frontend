@@ -7,6 +7,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  DialogContentText,
   DialogTitle,
   FormControlLabel,
   Paper,
@@ -34,7 +35,9 @@ import { ModelSelect } from "./ModelSelect";
 
 export function ModelPage() {
   const { user } = useAuth();
+  
   const canWrite = user?.role === "ADMIN" || user?.role === "MANUFACTURER";
+  const canDelete = user?.role === "ADMIN";
 
   const paging = usePageQuery("name", ["name", "code", "createdAt"]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -42,7 +45,6 @@ export function ModelPage() {
   const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
   const [brandInput, setBrandInput] = useState(searchParams.get("brandPublicId") || "");
 
-  // Modal ve Form State'leri
   const [openModal, setOpenModal] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editModelId, setEditModelId] = useState<string | null>(null);
@@ -51,10 +53,17 @@ export function ModelPage() {
   const [formName, setFormName] = useState("");
   const [formDesc, setFormDesc] = useState("");
   const [formBrandId, setFormBrandId] = useState("");
-  const [formActive, setFormActive] = useState(true); // ECR-05: Aktiflik durumu
+  const [formActive, setFormActive] = useState(true);
   const [formError, setFormError] = useState("");
 
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [modelToDelete, setModelToDelete] = useState<Model | null>(null);
+  const [deleteError, setDeleteError] = useState("");
+
   const [testModelId, setTestModelId] = useState("");
+  
+  // ÇÖZÜM: ModelSelect bileşenini yenilemek için bir tetikleyici (key) state'i ekledik
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const { data, error, loading, reload } = useResource<PageResponse<Model>>(
     "/product-models?" + paging.query
@@ -74,7 +83,6 @@ export function ModelPage() {
     setSearchParams(nextParams);
   }
 
-  // Yeni Ekleme Modunu Aç
   function handleOpenCreate() {
     setIsEditMode(false);
     setEditModelId(null);
@@ -87,7 +95,6 @@ export function ModelPage() {
     setOpenModal(true);
   }
 
-  // Düzenleme Modunu Aç (ECR-05)
   function handleOpenEdit(model: Model) {
     setIsEditMode(true);
     setEditModelId(model.publicId);
@@ -95,18 +102,22 @@ export function ModelPage() {
     setFormName(model.name);
     setFormDesc(model.description || "");
     setFormBrandId(model.brandPublicId || "");
-    setFormActive(model.active !== false); // Varsayılan olarak aktif kabul et
+    setFormActive(model.active !== false);
     setFormError("");
     setOpenModal(true);
   }
 
-  // Form Gönderimi (Hem POST hem PUT işlemlerini yönetir)
+  function handleOpenDelete(model: Model) {
+    setModelToDelete(model);
+    setDeleteError("");
+    setDeleteModalOpen(true);
+  }
+
   async function handleSubmitModel(e: React.FormEvent) {
     e.preventDefault();
     setFormError("");
     try {
       if (isEditMode && editModelId) {
-        // ECR-05: Düzenleme işlemi (PUT)
         await api(`/product-models/${editModelId}`, {
           method: "PUT",
           body: JSON.stringify({
@@ -114,11 +125,10 @@ export function ModelPage() {
             name: formName,
             description: formDesc,
             brandPublicId: formBrandId,
-            active: formActive, // Görevde istenen 'active' alanı gönderimi
+            active: formActive,
           }),
         });
       } else {
-        // ECR-03: Yeni ekleme işlemi (POST)
         await api("/product-models", {
           method: "POST",
           body: JSON.stringify({
@@ -129,11 +139,38 @@ export function ModelPage() {
           }),
         });
       }
-
       setOpenModal(false);
-      reload();
+      reload(); // Tabloyu yeniler
+      setRefreshKey(prev => prev + 1); // ÇÖZÜM: Ekleme/Düzenleme sonrası ModelSelect'i yeniler
     } catch (err: any) {
-      setFormError(err.message || "İşlem başarısız oldu (Yetki hatası veya geçersiz veri olabilir).");
+      setFormError(err.message || "İşlem başarısız oldu.");
+    }
+  }
+
+  async function handleConfirmDelete() {
+    if (!modelToDelete) return;
+    setDeleteError("");
+    
+    try {
+      await api(`/product-models/${modelToDelete.publicId}`, {
+        method: "DELETE",
+      });
+      setDeleteModalOpen(false);
+      
+      // Eğer sildiğimiz model ModelSelect'te seçiliyse, seçimi sıfırla
+      if (testModelId === modelToDelete.publicId) {
+        setTestModelId("");
+      }
+      
+      setModelToDelete(null);
+      reload(); // Tabloyu yeniler
+      setRefreshKey(prev => prev + 1); // ÇÖZÜM: Silme sonrası ModelSelect'i yeniler
+    } catch (err: any) {
+      if (err.status === 409 || (err.message && err.message.includes("409"))) {
+        setDeleteError("Bu modele bağlı pasaport bulunduğu için silinemez (409 Conflict). Önce ilgili pasaportları silmelisiniz.");
+      } else {
+        setDeleteError(err.message || "Silme işlemi sırasında bir hata oluştu.");
+      }
     }
   }
 
@@ -152,7 +189,6 @@ export function ModelPage() {
         )}
       </Box>
 
-      {/* FİLTRELEME ÇUBUĞU */}
       <Paper component="form" onSubmit={handleFilterSubmit} variant="outlined" sx={{ p: 2, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
         <TextField
           size="small"
@@ -172,13 +208,13 @@ export function ModelPage() {
         <Button type="submit" variant="outlined" sx={{ height: 40 }}>Filtrele</Button>
       </Paper>
 
-      {/* ECR-04 TEST ALANI */}
       <Paper variant="outlined" sx={{ p: 3, border: '2px dashed #1976d2', bgcolor: '#f8faff' }}>
         <Typography variant="subtitle2" color="primary" sx={{ mb: 2 }}>
           ECR-04: ModelSelect Kullanım Örneği
         </Typography>
         <Box sx={{ maxWidth: 400 }}>
           <ModelSelect
+            key={refreshKey} // ÇÖZÜM: State değiştiğinde bu bileşen yeniden oluşturulur ve güncel API isteği atar
             value={testModelId}
             onChange={(uuid: string) => setTestModelId(uuid)}
           />
@@ -188,7 +224,6 @@ export function ModelPage() {
         </Typography>
       </Paper>
 
-      {/* LİSTE */}
       {loading ? <Loading /> : error ? <ErrorNotice error={error} retry={reload} /> : (
         <Paper variant="outlined" sx={{ overflow: "hidden" }}>
           <TableContainer>
@@ -199,7 +234,7 @@ export function ModelPage() {
                   <TableCell>Model Adı</TableCell>
                   <TableCell>Marka</TableCell>
                   <TableCell>Durum</TableCell>
-                  {canWrite && <TableCell align="right">İşlemler</TableCell>}
+                  {(canWrite || canDelete) && <TableCell align="right">İşlemler</TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -216,10 +251,16 @@ export function ModelPage() {
                         variant="outlined"
                       />
                     </TableCell>
-                    {canWrite && (
+                    {(canWrite || canDelete) && (
                       <TableCell align="right">
-                         {/* ECR-05: Düzenle butonuna tıklama olayı eklendi */}
-                         <Button size="small" onClick={() => handleOpenEdit(model)}>Düzenle</Button>
+                        <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
+                          {canWrite && (
+                            <Button size="small" onClick={() => handleOpenEdit(model)}>Düzenle</Button>
+                          )}
+                          {canDelete && (
+                            <Button size="small" color="error" onClick={() => handleOpenDelete(model)}>Sil</Button>
+                          )}
+                        </Stack>
                       </TableCell>
                     )}
                   </TableRow>
@@ -248,7 +289,6 @@ export function ModelPage() {
         </Paper>
       )}
 
-      {/* MODEL FORMU MODALI (Ekleme ve Düzenleme için Ortak) */}
       <Dialog open={openModal} onClose={() => setOpenModal(false)} maxWidth="sm" fullWidth>
         <form onSubmit={handleSubmitModel}>
           <DialogTitle>{isEditMode ? "Modeli Düzenle" : "Yeni Model Ekle"}</DialogTitle>
@@ -289,17 +329,9 @@ export function ModelPage() {
                 value={formBrandId}
                 onChange={(e) => setFormBrandId(e.target.value)}
               />
-
-              {/* Sadece düzenleme modunda aktiflik durumunu göster */}
               {isEditMode && (
                 <FormControlLabel
-                  control={
-                    <Switch
-                      checked={formActive}
-                      onChange={(e) => setFormActive(e.target.checked)}
-                      color="primary"
-                    />
-                  }
+                  control={<Switch checked={formActive} onChange={(e) => setFormActive(e.target.checked)} color="primary" />}
                   label="Aktif"
                 />
               )}
@@ -312,6 +344,30 @@ export function ModelPage() {
             </Button>
           </DialogActions>
         </form>
+      </Dialog>
+
+      <Dialog open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ color: 'error.main' }}>Modeli Sil</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2}>
+            {deleteError && (
+              <Box sx={{ p: 2, bgcolor: 'error.lighter', border: '1px solid', borderColor: 'error.light', borderRadius: 1 }}>
+                <Typography color="error" variant="body2" sx={{ fontWeight: 500 }}>
+                  {deleteError}
+                </Typography>
+              </Box>
+            )}
+            <DialogContentText>
+              <strong>{modelToDelete?.name}</strong> kodlu modeli silmek istediğinize emin misiniz? Bu işlem geri alınamaz.
+            </DialogContentText>
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={() => setDeleteModalOpen(false)}>İptal</Button>
+          <Button onClick={handleConfirmDelete} variant="contained" color="error">
+            Evet, Sil
+          </Button>
+        </DialogActions>
       </Dialog>
     </Stack>
   );
