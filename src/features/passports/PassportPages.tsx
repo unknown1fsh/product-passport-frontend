@@ -379,6 +379,24 @@ function Detail({id}: { id: string }) {
                                 ))}
                             </Box>
                         </Paper>
+                        <Paper variant="outlined" sx={{ p: { xs: 3, md: 4 } }}>
+                            <Typography variant="h6" sx={{ mb: 2 }}>
+                                Garanti
+                            </Typography>
+                            {/* ESA-08: GET /warranties/product/{id} — ZEY 07  */}
+                            <Typography color="text.secondary">
+                                Bu ürüne ait garanti kaydı bulunmuyor.
+                            </Typography>
+                        </Paper>
+                        <Paper variant="outlined" sx={{ p: { xs: 3, md: 4 } }}>
+                            <Typography variant="h6" sx={{ mb: 2 }}>
+                                Servis kayıtları
+                            </Typography>
+                            {/* ESA-08: GET /service-records/product/{id} — HAZ 07 */}
+                            <Typography color="text.secondary">
+                                Bu ürüne ait servis kaydı bulunmuyor.
+                            </Typography>
+                        </Paper>
                         <Dialog
                             open={confirming}
                             onClose={() => {
