@@ -117,7 +117,7 @@ export function PassportList() {
                                     <TableCell>Kategori</TableCell>
                                     <TableCell>Satın alma</TableCell>
                                     <TableCell>Durum</TableCell>
-                                    <TableCell>İşlemler</TableCell>
+                                    <TableCell></TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
