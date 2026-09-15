@@ -10,20 +10,19 @@ import {
   Typography,
 } from "@mui/material";
 import { useResource } from "../../shared/hooks/useResource";
-import type { PageResponse } from "../../shared/types"; // Projenizdeki tiplerin yolunun doğru olduğundan emin ol
+import type { PageResponse } from "../../shared/types";
 
 interface WarrantyListProps {
   passportId: string;
 }
 
 interface Warranty {
-  publicId: string; // Backend genelde publicId döner, sendeki DTO'ya göre id ise id yapabilirsin
+  publicId: string;
   startDate: string;
   endDate: string;
 }
 
 export default function WarrantyList({ passportId }: WarrantyListProps) {
-  // Backend'in PageResponse döndüğünü belirttik
   const { data, loading, error } = useResource<PageResponse<Warranty>>(
     "/warranties/product/" + passportId
   );
@@ -58,7 +57,6 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
                 </TableRow>
               ))}
               
-              {/* Eğer pasaportun hiç garantisi yoksa boş durum mesajı gösteriyoruz */}
               {!data?.content.length && (
                 <TableRow>
                   <TableCell colSpan={3} sx={{ textAlign: "center", py: 4 }}>
