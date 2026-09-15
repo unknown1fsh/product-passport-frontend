@@ -141,8 +141,11 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
           <Button onClick={() => setIsDialogOpen(false)} color="inherit">
             İptal
           </Button>
-          <Button onClick={handleSave} variant="contained" disabled={!startDate || !endDate}>
-            Kaydet
+          <Button 
+            onClick={handleSave} 
+            variant="contained" 
+            disabled={!startDate || !endDate || endDate < startDate}>
+              Kaydet
           </Button>
         </DialogActions>
       </Dialog>
