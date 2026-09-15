@@ -29,6 +29,9 @@ import { Loading, ErrorNotice } from "../../shared/ui/Feedback";
 import { api } from "../../shared/api/client";
 import type { Model } from "./api";
 
+// ECR-04: Test için ModelSelect bileşenini import ediyoruz
+import { ModelSelect } from "./ModelSelect";
+
 export function ModelPage() {
   const { user } = useAuth();
   const canWrite = user?.role === "ADMIN" || user?.role === "MANUFACTURER";
@@ -39,13 +42,15 @@ export function ModelPage() {
   const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
   const [brandInput, setBrandInput] = useState(searchParams.get("brandPublicId") || "");
 
-  // Modal ve Form State'leri (ECR-03)
   const [openModal, setOpenModal] = useState(false);
   const [formCode, setFormCode] = useState("");
   const [formName, setFormName] = useState("");
   const [formDesc, setFormDesc] = useState("");
   const [formBrandId, setFormBrandId] = useState("");
   const [formError, setFormError] = useState("");
+
+  // ECR-04 Test State'i (Esat'ın kullanımını simüle ediyoruz)
+  const [testModelId, setTestModelId] = useState("");
 
   const { data, error, loading, reload } = useResource<PageResponse<Model>>(
     "/product-models?" + paging.query
@@ -65,7 +70,6 @@ export function ModelPage() {
     setSearchParams(nextParams);
   }
 
-  // Model Oluşturma Fonksiyonu (Projenin kendi api istemcisiyle token otomatik eklenir)
   async function handleCreateModel(e: React.FormEvent) {
     e.preventDefault();
     setFormError("");
@@ -106,7 +110,6 @@ export function ModelPage() {
         )}
       </Box>
 
-      {/* FİLTRELEME ÇUBUĞU */}
       <Paper component="form" onSubmit={handleFilterSubmit} variant="outlined" sx={{ p: 2, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
         <TextField
           size="small"
@@ -126,7 +129,22 @@ export function ModelPage() {
         <Button type="submit" variant="outlined" sx={{ height: 40 }}>Filtrele</Button>
       </Paper>
 
-      {/* LİSTE */}
+      {/* ECR-04 KULLANIM ÖRNEĞİ (TEST ALANI) */}
+      <Paper variant="outlined" sx={{ p: 3, border: '2px dashed #1976d2', bgcolor: '#f8faff' }}>
+        <Typography variant="subtitle2" color="primary" sx={{ mb: 2 }}>
+          ECR-04: ModelSelect Kullanım Örneği (Diğer formlar için test)
+        </Typography>
+        <Box sx={{ maxWidth: 400 }}>
+          <ModelSelect
+            value={testModelId}
+            onChange={(uuid: string) => setTestModelId(uuid)}
+          />
+        </Box>
+        <Typography variant="body2" sx={{ mt: 2, fontFamily: "monospace", color: "text.secondary" }}>
+          Seçilen Model UUID'si: <strong>{testModelId || "Henüz seçim yapılmadı"}</strong>
+        </Typography>
+      </Paper>
+
       {loading ? <Loading /> : error ? <ErrorNotice error={error} retry={reload} /> : (
         <Paper variant="outlined" sx={{ overflow: "hidden" }}>
           <TableContainer>
@@ -185,7 +203,6 @@ export function ModelPage() {
         </Paper>
       )}
 
-      {/* YENİ MODEL EKLEME MODALI (ECR-03) */}
       <Dialog open={openModal} onClose={() => setOpenModal(false)} maxWidth="sm" fullWidth>
         <form onSubmit={handleCreateModel}>
           <DialogTitle>Yeni Model Ekle</DialogTitle>
@@ -224,7 +241,7 @@ export function ModelPage() {
                 size="small"
                 value={formBrandId}
                 onChange={(e) => setFormBrandId(e.target.value)}
-                helperText="Geçerli bir marka UUID'si girin (örn: veritabanındaki marka publicId)"
+                helperText="Geçerli bir marka UUID'si girin"
               />
             </Stack>
           </DialogContent>
