@@ -18,7 +18,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { useAuth } from "../auth/AuthProvider";
 import { PassportForm } from "./PassportForm";
 import { Link, useParams } from "react-router-dom";
-import type { Passport } from "../../shared/types";
+import type { Passport,PageResponse } from "../../shared/types";
 import { usePageQuery } from "../../shared/hooks/usePageQuery";
 import { useResource } from "../../shared/hooks/useResource";
 import { PageControls } from "../../shared/ui/PageControls";
@@ -31,7 +31,7 @@ export function PassportList() {
     "purchaseDate",
     "createdAt",
   ]);
-  const { data, error, loading, reload } = useResource<Passport[]>(
+  const { data, error, loading, reload } = useResource<PageResponse<Passport>>(
     "/product-passports?" + paging.query,
   );
   const canCreate = ["ADMIN", "MANUFACTURER"].includes(useAuth().user?.role ?? "");
@@ -93,7 +93,7 @@ export function PassportList() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data?.map((p) => (
+                {data?.content.map((p) => (
                   <TableRow key={p.publicId} hover>
                     <TableCell
                       sx={{ fontFamily: "monospace", fontWeight: 600 }}
@@ -124,7 +124,7 @@ export function PassportList() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {!data?.length && (
+                {!data?.content.length && (
                   <TableRow>
                     <TableCell colSpan={6} sx={{ textAlign: "center", py: 6 }}>
                       Bu sayfada pasaport bulunamadı.
@@ -142,7 +142,7 @@ export function PassportList() {
           <Box sx={{ px: 2 }}>
             <PageControls
               paging={paging}
-              total={data?.length || 0}
+              total={data?.totalElements || 0}
               sorts={[
                 { value: "serialNumber", label: "Seri numarası" },
                 { value: "purchaseDate", label: "Satın alma" },

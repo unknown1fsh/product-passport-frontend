@@ -34,7 +34,6 @@ export type Passport = {
   publicId: string;
   serialNumber: string;
   productModelId: string;
-  productModelName: string;
   categoryId: string;
   categoryName: string;
   purchaseDate: string;

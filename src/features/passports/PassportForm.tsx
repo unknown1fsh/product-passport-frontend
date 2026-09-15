@@ -2,6 +2,7 @@ import {useState} from "react";
 import type {FormEvent} from "react";
 import {passportApi} from "./api";
 import type {Passport} from "../../shared/types";
+import { CategorySelect } from "../categories/CategorySelect";
 import {
     Button,
     Dialog,
@@ -12,7 +13,6 @@ import {
     TextField,
 } from "@mui/material";
 import { ErrorNotice } from "../../shared/ui/Feedback";
-
 export function PassportForm({
                                  passport,
                                  onClose,
@@ -87,12 +87,10 @@ export function PassportForm({
                             onChange={(e) => setSerialNumber(e.target.value)}
                             slotProps={{ htmlInput: { maxLength: 100 } }}
                         />
-                        <TextField
-                            label="Kategori ID"
-                            required
-                            value={categoryId}
-                            onChange={(e) => setCategoryId(e.target.value)}
-                            helperText="Şimdilik geçici metin kutusu — yerini sayfalı kategori seçimi alacak."
+                        <CategorySelect
+                            value={categoryId || null}
+                            onChange={(id)=> setCategoryId(id ?? "")}
+                            initialName={passport?.categoryName}
                         />
                         <TextField
                             label="Satın alma tarihi"
