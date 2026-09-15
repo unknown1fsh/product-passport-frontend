@@ -8,8 +8,10 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   Paper,
   Stack,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -28,8 +30,6 @@ import { PageControls } from "../../shared/ui/PageControls";
 import { Loading, ErrorNotice } from "../../shared/ui/Feedback";
 import { api } from "../../shared/api/client";
 import type { Model } from "./api";
-
-// ECR-04: Test için ModelSelect bileşenini import ediyoruz
 import { ModelSelect } from "./ModelSelect";
 
 export function ModelPage() {
@@ -42,14 +42,18 @@ export function ModelPage() {
   const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
   const [brandInput, setBrandInput] = useState(searchParams.get("brandPublicId") || "");
 
+  // Modal ve Form State'leri
   const [openModal, setOpenModal] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editModelId, setEditModelId] = useState<string | null>(null);
+
   const [formCode, setFormCode] = useState("");
   const [formName, setFormName] = useState("");
   const [formDesc, setFormDesc] = useState("");
   const [formBrandId, setFormBrandId] = useState("");
+  const [formActive, setFormActive] = useState(true); // ECR-05: Aktiflik durumu
   const [formError, setFormError] = useState("");
 
-  // ECR-04 Test State'i (Esat'ın kullanımını simüle ediyoruz)
   const [testModelId, setTestModelId] = useState("");
 
   const { data, error, loading, reload } = useResource<PageResponse<Model>>(
@@ -70,28 +74,66 @@ export function ModelPage() {
     setSearchParams(nextParams);
   }
 
-  async function handleCreateModel(e: React.FormEvent) {
+  // Yeni Ekleme Modunu Aç
+  function handleOpenCreate() {
+    setIsEditMode(false);
+    setEditModelId(null);
+    setFormCode("");
+    setFormName("");
+    setFormDesc("");
+    setFormBrandId("");
+    setFormActive(true);
+    setFormError("");
+    setOpenModal(true);
+  }
+
+  // Düzenleme Modunu Aç (ECR-05)
+  function handleOpenEdit(model: Model) {
+    setIsEditMode(true);
+    setEditModelId(model.publicId);
+    setFormCode(model.code);
+    setFormName(model.name);
+    setFormDesc(model.description || "");
+    setFormBrandId(model.brandPublicId || "");
+    setFormActive(model.active !== false); // Varsayılan olarak aktif kabul et
+    setFormError("");
+    setOpenModal(true);
+  }
+
+  // Form Gönderimi (Hem POST hem PUT işlemlerini yönetir)
+  async function handleSubmitModel(e: React.FormEvent) {
     e.preventDefault();
     setFormError("");
     try {
-      await api("/product-models", {
-        method: "POST",
-        body: JSON.stringify({
-          code: formCode,
-          name: formName,
-          description: formDesc,
-          brandPublicId: formBrandId,
-        }),
-      });
+      if (isEditMode && editModelId) {
+        // ECR-05: Düzenleme işlemi (PUT)
+        await api(`/product-models/${editModelId}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            code: formCode,
+            name: formName,
+            description: formDesc,
+            brandPublicId: formBrandId,
+            active: formActive, // Görevde istenen 'active' alanı gönderimi
+          }),
+        });
+      } else {
+        // ECR-03: Yeni ekleme işlemi (POST)
+        await api("/product-models", {
+          method: "POST",
+          body: JSON.stringify({
+            code: formCode,
+            name: formName,
+            description: formDesc,
+            brandPublicId: formBrandId,
+          }),
+        });
+      }
 
       setOpenModal(false);
-      setFormCode("");
-      setFormName("");
-      setFormDesc("");
-      setFormBrandId("");
       reload();
     } catch (err: any) {
-      setFormError(err.message || "Model oluşturulamadı (403 veya yetki hatası olabilir).");
+      setFormError(err.message || "İşlem başarısız oldu (Yetki hatası veya geçersiz veri olabilir).");
     }
   }
 
@@ -104,12 +146,13 @@ export function ModelPage() {
           <Typography color="text.secondary" sx={{ mt: 1 }}>Ürün modellerinizi listeleyin ve markalara göre filtreleyin.</Typography>
         </Box>
         {canWrite && (
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => setOpenModal(true)}>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={handleOpenCreate}>
             Yeni Model
           </Button>
         )}
       </Box>
 
+      {/* FİLTRELEME ÇUBUĞU */}
       <Paper component="form" onSubmit={handleFilterSubmit} variant="outlined" sx={{ p: 2, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
         <TextField
           size="small"
@@ -129,10 +172,10 @@ export function ModelPage() {
         <Button type="submit" variant="outlined" sx={{ height: 40 }}>Filtrele</Button>
       </Paper>
 
-      {/* ECR-04 KULLANIM ÖRNEĞİ (TEST ALANI) */}
+      {/* ECR-04 TEST ALANI */}
       <Paper variant="outlined" sx={{ p: 3, border: '2px dashed #1976d2', bgcolor: '#f8faff' }}>
         <Typography variant="subtitle2" color="primary" sx={{ mb: 2 }}>
-          ECR-04: ModelSelect Kullanım Örneği (Diğer formlar için test)
+          ECR-04: ModelSelect Kullanım Örneği
         </Typography>
         <Box sx={{ maxWidth: 400 }}>
           <ModelSelect
@@ -145,6 +188,7 @@ export function ModelPage() {
         </Typography>
       </Paper>
 
+      {/* LİSTE */}
       {loading ? <Loading /> : error ? <ErrorNotice error={error} retry={reload} /> : (
         <Paper variant="outlined" sx={{ overflow: "hidden" }}>
           <TableContainer>
@@ -174,7 +218,8 @@ export function ModelPage() {
                     </TableCell>
                     {canWrite && (
                       <TableCell align="right">
-                         <Button size="small">Düzenle</Button>
+                         {/* ECR-05: Düzenle butonuna tıklama olayı eklendi */}
+                         <Button size="small" onClick={() => handleOpenEdit(model)}>Düzenle</Button>
                       </TableCell>
                     )}
                   </TableRow>
@@ -203,12 +248,14 @@ export function ModelPage() {
         </Paper>
       )}
 
+      {/* MODEL FORMU MODALI (Ekleme ve Düzenleme için Ortak) */}
       <Dialog open={openModal} onClose={() => setOpenModal(false)} maxWidth="sm" fullWidth>
-        <form onSubmit={handleCreateModel}>
-          <DialogTitle>Yeni Model Ekle</DialogTitle>
+        <form onSubmit={handleSubmitModel}>
+          <DialogTitle>{isEditMode ? "Modeli Düzenle" : "Yeni Model Ekle"}</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
               {formError && <Typography color="error" variant="body2">{formError}</Typography>}
+              
               <TextField
                 label="Model Kodu"
                 required
@@ -241,13 +288,28 @@ export function ModelPage() {
                 size="small"
                 value={formBrandId}
                 onChange={(e) => setFormBrandId(e.target.value)}
-                helperText="Geçerli bir marka UUID'si girin"
               />
+
+              {/* Sadece düzenleme modunda aktiflik durumunu göster */}
+              {isEditMode && (
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={formActive}
+                      onChange={(e) => setFormActive(e.target.checked)}
+                      color="primary"
+                    />
+                  }
+                  label="Aktif"
+                />
+              )}
             </Stack>
           </DialogContent>
           <DialogActions sx={{ p: 2 }}>
             <Button onClick={() => setOpenModal(false)}>İptal</Button>
-            <Button type="submit" variant="contained">Kaydet</Button>
+            <Button type="submit" variant="contained">
+              {isEditMode ? "Güncelle" : "Kaydet"}
+            </Button>
           </DialogActions>
         </form>
       </Dialog>
