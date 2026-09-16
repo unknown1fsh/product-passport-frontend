@@ -113,10 +113,12 @@ export function PassportList() {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Seri numarası</TableCell>
-                                    <TableCell>Model</TableCell>
-                                    <TableCell>Kategori</TableCell>
-                                    <TableCell>Satın alma</TableCell>
-                                    <TableCell>Durum</TableCell>
+                                    <TableCell
+                                        sx={{ display: { xs: "none", sm: "table-cell" } }}
+                                    >Model</TableCell>
+                                    <TableCell sx={{ display: { xs: "none", lg: "table-cell" } }} >Kategori</TableCell>
+                                    <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }} >Satın alma</TableCell>
+                                    <TableCell sx={{ display: { xs: "none", lg: "table-cell" } }} >Durum</TableCell>
                                     <TableCell></TableCell>
                                 </TableRow>
                             </TableHead>
@@ -124,16 +126,16 @@ export function PassportList() {
                                 {data?.content.map((p) => (
                                     <TableRow key={p.publicId} hover>
                                         <TableCell
-                                            sx={{fontFamily: "monospace", fontWeight: 600}}
+                                            sx={{fontFamily: "monospace", fontWeight: 600 }}
                                         >
                                             {p.serialNumber}
                                         </TableCell>
-                                        <TableCell>{p.productModelName}</TableCell>
-                                        <TableCell>{p.categoryName}</TableCell>
-                                        <TableCell sx={{whiteSpace: "nowrap"}}>
+                                        <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{p.productModelName}</TableCell>
+                                        <TableCell sx={{ display: { xs: "none", lg: "table-cell" } }}>{p.categoryName}</TableCell>
+                                        <TableCell sx={{whiteSpace: "nowrap" ,display: { xs: "none", sm: "table-cell" }}}>
                                             {p.purchaseDate}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{ display: { xs: "none", lg: "table-cell" } }}>
                                             <Chip
                                                 size="small"
                                                 variant="outlined"
@@ -310,7 +312,7 @@ function Detail({id}: { id: string }) {
                                 <Typography variant="overline" color="primary">
                                     ÜRÜN PASAPORTU
                                 </Typography>
-                                <Typography component="h1" variant="h4">
+                                <Typography component="h1" variant="h4" sx={ { overflowWrap :"anywhere"}}>
                                     {data.serialNumber}
                                 </Typography>
                                 <Typography color="text.secondary" sx={{ mt: 1 }}>
