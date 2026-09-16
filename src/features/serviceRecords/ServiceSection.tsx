@@ -18,12 +18,14 @@ import {
 import { useResource } from "../../shared/hooks/useResource";
 import type { PageResponse } from "../../shared/types";
 import { ErrorNotice, Loading } from "../../shared/ui/Feedback";
+import { ServiceForm } from "./ServiceForm";
 
 import type { ServiceRecord } from "./types";
 
 export function ServiceSection({ passportId }: { passportId: string }) {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(20);
+  const [formOpen, setFormOpen] = useState(false);
 
   const query = new URLSearchParams({
     page: String(page),
@@ -50,6 +52,13 @@ export function ServiceSection({ passportId }: { passportId: string }) {
         <Typography color="text.secondary" sx={{ mt: 1 }}>
           Ürüne ait bakım ve servis kayıtlarını inceleyin.
         </Typography>
+        <Button
+          variant="contained"
+          onClick={() => setFormOpen(true)}
+          sx={{ mt: 2 }}
+        >
+          Servis kaydı ekle
+        </Button>
       </Box>
 
       {loading ? (
@@ -111,6 +120,16 @@ export function ServiceSection({ passportId }: { passportId: string }) {
             }
           />
         </Paper>
+      )}
+      {formOpen && (
+        <ServiceForm
+          productId={passportId}
+          onClose={() => setFormOpen(false)}
+          onSaved={() => {
+            setFormOpen(false);
+            reload();
+          }}
+        />
       )}
     </Stack>
   );

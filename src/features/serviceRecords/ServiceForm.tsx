@@ -11,10 +11,8 @@ import {
   TextField,
 } from "@mui/material";
 
-type ServiceFormValues = {
-  serviceDate: string;
-  description: string;
-};
+import { ErrorNotice } from "../../shared/ui/Feedback";
+import { serviceRecordApi } from "./api";
 
 function getToday() {
   const today = new Date();
@@ -27,20 +25,24 @@ function getToday() {
 }
 
 export function ServiceForm({
+  productId,
   onClose,
-  onSubmit,
+  onSaved,
 }: {
+  productId: string;
   onClose: () => void;
-  onSubmit: (values: ServiceFormValues) => void;
+  onSaved: () => void;
 }) {
   const [serviceDate, setServiceDate] = useState("");
   const [description, setDescription] = useState("");
   const [dateError, setDateError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<unknown>();
 
   const today = getToday();
 
-  function submit(e: FormEvent<HTMLFormElement>) {
+  async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const trimmedDescription = description.trim();
@@ -68,16 +70,30 @@ export function ServiceForm({
 
     if (!valid) return;
 
-    onSubmit({
-      serviceDate,
-      description: trimmedDescription,
-    });
+    setBusy(true);
+    setError(undefined);
+
+    try {
+      await serviceRecordApi.create({
+        serviceDate,
+        description: trimmedDescription,
+        productId,
+      });
+
+      onSaved();
+    } catch (e) {
+      setError(e);
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
     <Dialog
       open
-      onClose={onClose}
+      onClose={() => {
+        if (!busy) onClose();
+      }}
       fullWidth
       maxWidth="sm"
       aria-labelledby="service-form-title"
@@ -86,6 +102,7 @@ export function ServiceForm({
         <DialogTitle id="service-form-title">Yeni servis kaydı</DialogTitle>
 
         <DialogContent>
+          {error !== undefined && <ErrorNotice error={error} />}
           <Stack spacing={2.5} sx={{ pt: 1 }}>
             <TextField
               label="Servis tarihi"
@@ -124,10 +141,12 @@ export function ServiceForm({
         </DialogContent>
 
         <DialogActions sx={{ p: 3 }}>
-          <Button onClick={onClose}>Vazgeç</Button>
+          <Button onClick={onClose} disabled={busy}>
+            Vazgeç
+          </Button>
 
-          <Button variant="contained" type="submit">
-            Kaydet
+          <Button variant="contained" type="submit" disabled={busy}>
+            {busy ? "Kaydediliyor…" : "Kaydet"}
           </Button>
         </DialogActions>
       </form>
