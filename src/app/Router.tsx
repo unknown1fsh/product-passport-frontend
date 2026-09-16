@@ -15,6 +15,7 @@ import {
   PassportList,
   PassportDetail,
 } from "../features/passports/PassportPages";
+import { WarrantyPage } from "../features/warranties/WarrantyPage";
 export function ProtectedRoute() {
   const auth = useAuth();
   const location = useLocation();
@@ -40,6 +41,7 @@ export function AppRouter() {
             <Route path="/kategoriler" element={<CategoryPage />} />
             <Route path="/pasaportlar" element={<PassportList />} />
             <Route path="/pasaportlar/:id" element={<PassportDetail />} />
+            <Route path="/garantiler" element={<WarrantyPage />} />
             <Route
               path="/yetkisiz"
               element={

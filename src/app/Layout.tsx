@@ -27,6 +27,7 @@ import Logout from "@mui/icons-material/Logout";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import { useAuth } from "../features/auth/AuthProvider";
 import { sessionStore } from "../features/auth/session";
+import VerifiedOutlined from "@mui/icons-material/VerifiedOutlined";
 const links = [
   { to: "/", label: "Genel bakış", icon: <HomeOutlined /> },
   { to: "/kategoriler", label: "Kategoriler", icon: <CategoryOutlined /> },
@@ -34,6 +35,11 @@ const links = [
     to: "/pasaportlar",
     label: "Ürün pasaportları",
     icon: <Inventory2Outlined />,
+  },
+  { 
+    to: "/garantiler", 
+    label: "Garanti kayıtları", 
+    icon: <VerifiedOutlined /> 
   },
 ];
 const roles = { ADMIN: "Yönetici", MANUFACTURER: "Üretici", USER: "Kullanıcı" };

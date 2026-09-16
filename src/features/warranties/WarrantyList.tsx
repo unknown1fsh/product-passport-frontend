@@ -14,7 +14,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField
+  TextField,
+  Stack
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useResource } from "../../shared/hooks/useResource";
@@ -36,14 +37,16 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   
-  // Hangi garantiyi düzenlediğimizi tutacak state (Eğer null ise "Yeni Ekle" modundayız demektir)
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const { data, loading, error, reload } = useResource<PageResponse<Warranty>>(
     "/warranties/product/" + passportId
   );
 
-  // YENİ EKLE butonuna basılınca çalışacak
   const handleOpenNew = () => {
     setEditingId(null);
     setStartDate("");
@@ -51,7 +54,6 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
     setIsDialogOpen(true);
   };
 
-  // DÜZENLE butonuna basılınca çalışacak (Ecren'in taktiği)
   const handleOpenEdit = (warranty: Warranty) => {
     setEditingId(warranty.publicId);
     setStartDate(warranty.startDate);
@@ -67,7 +69,6 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
         endDate
       };
 
-      // editingId varsa PUT (Güncelle), yoksa POST (Yeni Ekle) yap
       if (editingId) {
         await api("/warranties/edit/" + editingId, {
           method: "PUT",
@@ -85,6 +86,31 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
 
     } catch (err) {
       console.error("Garanti kaydedilirken hata oluştu:", err);
+    }
+  };
+
+  const handleOpenDelete = (id: string) => {
+    setDeletingId(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try{
+      await api("/warranties/remove/" + deletingId, {
+        method: "DELETE"
+      });
+
+      setIsDeleteDialogOpen(false);
+      reload();
+
+    } catch (err: any){
+      console.error("Silme hatası:", err);
+      if(err?.status === 403 || err?.message?.includes("403")){
+        setErrorMessage("Bu kaydı silmek için yetkiniz yok.");
+      }else {
+        setErrorMessage("Silme işlemi sırasında bir hata oluştu.");
+      }
+      setIsDeleteDialogOpen(false);
     }
   };
 
@@ -115,8 +141,7 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
                 <TableCell>Garanti ID</TableCell>
                 <TableCell>Başlangıç Tarihi</TableCell>
                 <TableCell>Bitiş Tarihi</TableCell>
-                <TableCell align="right">İşlemler</TableCell>
-              </TableRow>
+                <TableCell align="center" sx={{ fontWeight: 600 }}>İşlemler</TableCell>              </TableRow>
             </TableHead>
             <TableBody>
               {data?.content.map((warranty) => (
@@ -126,10 +151,15 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
                   </TableCell>
                   <TableCell>{warranty.startDate}</TableCell>
                   <TableCell>{warranty.endDate}</TableCell>
-                  <TableCell align="right">
-                    <Button size="small" onClick={() => handleOpenEdit(warranty)}>
-                      Düzenle
-                    </Button>
+                  <TableCell align="center">
+                    <Stack direction="row" spacing={1} sx={{ justifyContent: "center" }}>
+                      <Button size="small" onClick={() => handleOpenEdit(warranty)}>
+                        Düzenle
+                      </Button>
+                      <Button size="small" color="error" onClick={() => handleOpenDelete(warranty.publicId)}>
+                        Sil
+                      </Button>
+                    </Stack>
                   </TableCell>
                 </TableRow>
               ))}
@@ -147,7 +177,6 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
       </Paper>
 
       <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} maxWidth="sm" fullWidth>
-        {/* Başlık dinamik oldu */}
         <DialogTitle>{editingId ? "Garantiyi Düzenle" : "Yeni Garanti Ekle"}</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>
@@ -180,6 +209,33 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
           >
             Kaydet
           </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={isDeleteDialogOpen} onClose={() => setIsDeleteDialogOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ color: 'error.main', fontWeight: 600 }}>
+          Garantiyi Sil
+          </DialogTitle>
+        <DialogContent>
+          <Typography>Seçili garanti kaydını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button 
+            onClick={() => setIsDeleteDialogOpen(false)} 
+            color="primary" 
+            sx={{ fontWeight: 'bold' }}
+          >
+            İptal
+          </Button>
+          <Button onClick={handleConfirmDelete} color="error" variant="contained" sx={{ fontWeight: 'bold' }}>Sil</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={!!errorMessage} onClose={()=> setErrorMessage(null)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{color: 'error.main'}}>İşlem Başarısız</DialogTitle>
+        <DialogContent>
+          <Typography>{errorMessage}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setErrorMessage(null)} color="primary">Tamam</Button>
         </DialogActions>
       </Dialog>
     </Box>
