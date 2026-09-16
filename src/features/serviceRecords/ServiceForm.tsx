@@ -13,6 +13,7 @@ import {
 
 import { ErrorNotice } from "../../shared/ui/Feedback";
 import { serviceRecordApi } from "./api";
+import type { ServiceRecord } from "./types";
 
 function getToday() {
   const today = new Date();
@@ -26,15 +27,17 @@ function getToday() {
 
 export function ServiceForm({
   productId,
+  record,
   onClose,
   onSaved,
 }: {
   productId: string;
+  record?: ServiceRecord;
   onClose: () => void;
   onSaved: () => void;
 }) {
-  const [serviceDate, setServiceDate] = useState("");
-  const [description, setDescription] = useState("");
+  const [serviceDate, setServiceDate] = useState(record?.serviceDate || "");
+  const [description, setDescription] = useState(record?.description || "");
   const [dateError, setDateError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -74,11 +77,18 @@ export function ServiceForm({
     setError(undefined);
 
     try {
-      await serviceRecordApi.create({
-        serviceDate,
-        description: trimmedDescription,
-        productId,
-      });
+      if (record) {
+        await serviceRecordApi.update(record.publicId, {
+          serviceDate,
+          description: trimmedDescription,
+        });
+      } else {
+        await serviceRecordApi.create({
+          serviceDate,
+          description: trimmedDescription,
+          productId,
+        });
+      }
 
       onSaved();
     } catch (e) {
@@ -99,10 +109,13 @@ export function ServiceForm({
       aria-labelledby="service-form-title"
     >
       <form onSubmit={submit}>
-        <DialogTitle id="service-form-title">Yeni servis kaydı</DialogTitle>
+        <DialogTitle id="service-form-title">
+          {record ? "Servis kaydını düzenle" : "Yeni servis kaydı"}
+        </DialogTitle>
 
         <DialogContent>
           {error !== undefined && <ErrorNotice error={error} />}
+
           <Stack spacing={2.5} sx={{ pt: 1 }}>
             <TextField
               label="Servis tarihi"
@@ -146,7 +159,7 @@ export function ServiceForm({
           </Button>
 
           <Button variant="contained" type="submit" disabled={busy}>
-            {busy ? "Kaydediliyor…" : "Kaydet"}
+            {busy ? "Kaydediliyor…" : record ? "Güncelle" : "Kaydet"}
           </Button>
         </DialogActions>
       </form>

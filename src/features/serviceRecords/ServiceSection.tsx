@@ -18,14 +18,15 @@ import {
 import { useResource } from "../../shared/hooks/useResource";
 import type { PageResponse } from "../../shared/types";
 import { ErrorNotice, Loading } from "../../shared/ui/Feedback";
-import { ServiceForm } from "./ServiceForm";
 
+import { ServiceForm } from "./ServiceForm";
 import type { ServiceRecord } from "./types";
 
 export function ServiceSection({ passportId }: { passportId: string }) {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(20);
   const [formOpen, setFormOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<ServiceRecord>();
 
   const query = new URLSearchParams({
     page: String(page),
@@ -52,9 +53,13 @@ export function ServiceSection({ passportId }: { passportId: string }) {
         <Typography color="text.secondary" sx={{ mt: 1 }}>
           Ürüne ait bakım ve servis kayıtlarını inceleyin.
         </Typography>
+
         <Button
           variant="contained"
-          onClick={() => setFormOpen(true)}
+          onClick={() => {
+            setEditingRecord(undefined);
+            setFormOpen(true);
+          }}
           sx={{ mt: 2 }}
         >
           Servis kaydı ekle
@@ -73,6 +78,7 @@ export function ServiceSection({ passportId }: { passportId: string }) {
                 <TableRow>
                   <TableCell>Servis tarihi</TableCell>
                   <TableCell>Açıklama</TableCell>
+                  <TableCell>İşlem</TableCell>
                 </TableRow>
               </TableHead>
 
@@ -84,12 +90,24 @@ export function ServiceSection({ passportId }: { passportId: string }) {
                     </TableCell>
 
                     <TableCell>{record.description}</TableCell>
+
+                    <TableCell>
+                      <Button
+                        size="small"
+                        onClick={() => {
+                          setEditingRecord(record);
+                          setFormOpen(true);
+                        }}
+                      >
+                        Düzenle
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
 
                 {!data?.content.length && (
                   <TableRow>
-                    <TableCell colSpan={2} sx={{ py: 6, textAlign: "center" }}>
+                    <TableCell colSpan={3} sx={{ py: 6, textAlign: "center" }}>
                       Bu ürüne ait servis kaydı bulunamadı.
                       {page > 0 && (
                         <Button onClick={() => setPage(0)}>
@@ -121,12 +139,18 @@ export function ServiceSection({ passportId }: { passportId: string }) {
           />
         </Paper>
       )}
+
       {formOpen && (
         <ServiceForm
           productId={passportId}
-          onClose={() => setFormOpen(false)}
+          record={editingRecord}
+          onClose={() => {
+            setFormOpen(false);
+            setEditingRecord(undefined);
+          }}
           onSaved={() => {
             setFormOpen(false);
+            setEditingRecord(undefined);
             reload();
           }}
         />

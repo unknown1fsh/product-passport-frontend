@@ -9,3 +9,7 @@ export type ServiceRecordInput = {
   description: string;
   productId: string;
 };
+export type ServiceRecordUpdate = {
+  serviceDate: string;
+  description: string;
+};
