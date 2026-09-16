@@ -11,7 +11,28 @@ export type Model = {
   active: boolean;
 };
 
+// Yeni model oluşturma ve güncelleme için gerekli tipler
+export type ModelInput = {
+  code: string;
+  name: string;
+  brandPublicId: string;
+  description?: string;
+  active: boolean;
+};
+
 export const modelApi = {
-  // Listeleme işlemi doğrudan useResource kancası ile yapılacak, 
-  // ama ileride CRUD işlemleri buraya eklenecek.
+    create: (input: ModelInput) =>
+        api<Model>("/product-models", {
+            method: "POST",
+            body: JSON.stringify(input),
+        }),
+    update: (id: string, input: ModelInput) => 
+        api<Model>("/product-models/" + id, {
+            method: "PUT",
+            body: JSON.stringify(input),
+        }),
+    remove: (id: string) => 
+        api<void>("/product-models/" + id, { 
+            method: "DELETE" 
+        })
 };
