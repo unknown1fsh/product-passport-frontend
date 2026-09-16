@@ -3,6 +3,11 @@ import { useState } from "react";
 import {
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Paper,
   Stack,
   Table,
@@ -19,14 +24,20 @@ import { useResource } from "../../shared/hooks/useResource";
 import type { PageResponse } from "../../shared/types";
 import { ErrorNotice, Loading } from "../../shared/ui/Feedback";
 
+import { serviceRecordApi } from "./api";
 import { ServiceForm } from "./ServiceForm";
 import type { ServiceRecord } from "./types";
 
 export function ServiceSection({ passportId }: { passportId: string }) {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(20);
+
   const [formOpen, setFormOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<ServiceRecord>();
+
+  const [removingRecord, setRemovingRecord] = useState<ServiceRecord>();
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState<unknown>();
 
   const query = new URLSearchParams({
     page: String(page),
@@ -38,6 +49,24 @@ export function ServiceSection({ passportId }: { passportId: string }) {
   const { data, error, loading, reload } = useResource<
     PageResponse<ServiceRecord>
   >("/service-records/product/" + passportId + "?" + query);
+
+  async function remove() {
+    if (!removingRecord) return;
+
+    setDeleteBusy(true);
+    setDeleteError(undefined);
+
+    try {
+      await serviceRecordApi.remove(removingRecord.publicId);
+
+      setRemovingRecord(undefined);
+      reload();
+    } catch (e) {
+      setDeleteError(e);
+    } finally {
+      setDeleteBusy(false);
+    }
+  }
 
   return (
     <Stack spacing={2}>
@@ -91,7 +120,7 @@ export function ServiceSection({ passportId }: { passportId: string }) {
 
                     <TableCell>{record.description}</TableCell>
 
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: "nowrap" }}>
                       <Button
                         size="small"
                         onClick={() => {
@@ -100,6 +129,17 @@ export function ServiceSection({ passportId }: { passportId: string }) {
                         }}
                       >
                         Düzenle
+                      </Button>
+
+                      <Button
+                        size="small"
+                        color="error"
+                        onClick={() => {
+                          setRemovingRecord(record);
+                          setDeleteError(undefined);
+                        }}
+                      >
+                        Sil
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -154,6 +194,55 @@ export function ServiceSection({ passportId }: { passportId: string }) {
             reload();
           }}
         />
+      )}
+
+      {removingRecord && (
+        <Dialog
+          open
+          onClose={() => {
+            if (!deleteBusy) {
+              setRemovingRecord(undefined);
+              setDeleteError(undefined);
+            }
+          }}
+          aria-labelledby="service-delete-title"
+        >
+          <DialogTitle id="service-delete-title">
+            Servis kaydı silinsin mi?
+          </DialogTitle>
+
+          <DialogContent>
+            <Stack spacing={2}>
+              <DialogContentText>
+                {removingRecord.serviceDate} tarihli servis kaydını silmek
+                üzeresiniz. Bu işlem geri alınamaz.
+              </DialogContentText>
+
+              {deleteError !== undefined && <ErrorNotice error={deleteError} />}
+            </Stack>
+          </DialogContent>
+
+          <DialogActions>
+            <Button
+              disabled={deleteBusy}
+              onClick={() => {
+                setRemovingRecord(undefined);
+                setDeleteError(undefined);
+              }}
+            >
+              Vazgeç
+            </Button>
+
+            <Button
+              variant="contained"
+              color="error"
+              disabled={deleteBusy}
+              onClick={() => void remove()}
+            >
+              {deleteBusy ? "Siliniyor…" : "Silmeyi onayla"}
+            </Button>
+          </DialogActions>
+        </Dialog>
       )}
     </Stack>
   );

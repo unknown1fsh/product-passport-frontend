@@ -17,4 +17,9 @@ export const serviceRecordApi = {
       method: "PUT",
       body: JSON.stringify(input),
     }),
+
+  remove: (id: string) =>
+    api<void>("/service-records/" + id, {
+      method: "DELETE",
+    }),
 };
