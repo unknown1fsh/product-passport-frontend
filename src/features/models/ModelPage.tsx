@@ -62,11 +62,11 @@ export function ModelPage() {
 
   const [testModelId, setTestModelId] = useState("");
   
-  // ÇÖZÜM: ModelSelect bileşenini yenilemek için bir tetikleyici (key) state'i ekledik
   const [refreshKey, setRefreshKey] = useState(0);
 
+  // ÇÖZÜM BURADA: Artık URL'deki tüm arama/filtreleme parametrelerini backend'e gönderiyoruz
   const { data, error, loading, reload } = useResource<PageResponse<Model>>(
-    "/product-models?" + paging.query
+    "/product-models?" + searchParams.toString()
   );
 
   function handleFilterSubmit(e: React.FormEvent) {
@@ -140,8 +140,8 @@ export function ModelPage() {
         });
       }
       setOpenModal(false);
-      reload(); // Tabloyu yeniler
-      setRefreshKey(prev => prev + 1); // ÇÖZÜM: Ekleme/Düzenleme sonrası ModelSelect'i yeniler
+      reload(); 
+      setRefreshKey(prev => prev + 1); 
     } catch (err: any) {
       setFormError(err.message || "İşlem başarısız oldu.");
     }
@@ -157,14 +157,13 @@ export function ModelPage() {
       });
       setDeleteModalOpen(false);
       
-      // Eğer sildiğimiz model ModelSelect'te seçiliyse, seçimi sıfırla
       if (testModelId === modelToDelete.publicId) {
         setTestModelId("");
       }
       
       setModelToDelete(null);
-      reload(); // Tabloyu yeniler
-      setRefreshKey(prev => prev + 1); // ÇÖZÜM: Silme sonrası ModelSelect'i yeniler
+      reload(); 
+      setRefreshKey(prev => prev + 1); 
     } catch (err: any) {
       if (err.status === 409 || (err.message && err.message.includes("409"))) {
         setDeleteError("Bu modele bağlı pasaport bulunduğu için silinemez (409 Conflict). Önce ilgili pasaportları silmelisiniz.");
@@ -214,7 +213,7 @@ export function ModelPage() {
         </Typography>
         <Box sx={{ maxWidth: 400 }}>
           <ModelSelect
-            key={refreshKey} // ÇÖZÜM: State değiştiğinde bu bileşen yeniden oluşturulur ve güncel API isteği atar
+            key={refreshKey} 
             value={testModelId}
             onChange={(uuid: string) => setTestModelId(uuid)}
           />
