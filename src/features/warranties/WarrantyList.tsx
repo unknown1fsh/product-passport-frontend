@@ -19,7 +19,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import { useResource } from "../../shared/hooks/useResource";
 import type { PageResponse } from "../../shared/types";
-import { api } from "../../shared/api/client"; 
+import { api } from "../../shared/api/client";
 
 interface WarrantyListProps {
   passportId: string;
@@ -35,9 +35,29 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  
+  // Hangi garantiyi düzenlediğimizi tutacak state (Eğer null ise "Yeni Ekle" modundayız demektir)
+  const [editingId, setEditingId] = useState<string | null>(null);
+
   const { data, loading, error, reload } = useResource<PageResponse<Warranty>>(
     "/warranties/product/" + passportId
   );
+
+  // YENİ EKLE butonuna basılınca çalışacak
+  const handleOpenNew = () => {
+    setEditingId(null);
+    setStartDate("");
+    setEndDate("");
+    setIsDialogOpen(true);
+  };
+
+  // DÜZENLE butonuna basılınca çalışacak (Ecren'in taktiği)
+  const handleOpenEdit = (warranty: Warranty) => {
+    setEditingId(warranty.publicId);
+    setStartDate(warranty.startDate);
+    setEndDate(warranty.endDate);
+    setIsDialogOpen(true);
+  };
 
   const handleSave = async () => {
     try {
@@ -47,19 +67,24 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
         endDate
       };
 
-      await api("/warranties", {
-        method: "POST",
-        body: JSON.stringify(payload)
-      });
+      // editingId varsa PUT (Güncelle), yoksa POST (Yeni Ekle) yap
+      if (editingId) {
+        await api("/warranties/edit/" + editingId, {
+          method: "PUT",
+          body: JSON.stringify(payload)
+        });
+      } else {
+        await api("/warranties", {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+      }
 
       setIsDialogOpen(false);
-      setStartDate("");
-      setEndDate("");
       reload();
 
     } catch (err) {
       console.error("Garanti kaydedilirken hata oluştu:", err);
-      alert("Kayıt sırasında bir hata oluştu, lütfen tekrar deneyin.");
     }
   };
 
@@ -75,7 +100,7 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
         <Button 
           variant="contained" 
           startIcon={<AddIcon />} 
-          onClick={() => setIsDialogOpen(true)}
+          onClick={handleOpenNew}
           sx={{ textTransform: 'none' }}
         >
           Yeni Ekle
@@ -90,6 +115,7 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
                 <TableCell>Garanti ID</TableCell>
                 <TableCell>Başlangıç Tarihi</TableCell>
                 <TableCell>Bitiş Tarihi</TableCell>
+                <TableCell align="right">İşlemler</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -100,12 +126,17 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
                   </TableCell>
                   <TableCell>{warranty.startDate}</TableCell>
                   <TableCell>{warranty.endDate}</TableCell>
+                  <TableCell align="right">
+                    <Button size="small" onClick={() => handleOpenEdit(warranty)}>
+                      Düzenle
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
               
               {!data?.content.length && (
                 <TableRow>
-                  <TableCell colSpan={3} sx={{ textAlign: "center", py: 4 }}>
+                  <TableCell colSpan={4} sx={{ textAlign: "center", py: 4 }}>
                     Bu ürüne ait garanti kaydı bulunmamaktadır.
                   </TableCell>
                 </TableRow>
@@ -116,7 +147,8 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
       </Paper>
 
       <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Yeni Garanti Ekle</DialogTitle>
+        {/* Başlık dinamik oldu */}
+        <DialogTitle>{editingId ? "Garantiyi Düzenle" : "Yeni Garanti Ekle"}</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>
             <TextField
@@ -144,8 +176,9 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
           <Button 
             onClick={handleSave} 
             variant="contained" 
-            disabled={!startDate || !endDate || endDate < startDate}>
-              Kaydet
+            disabled={!startDate || !endDate || endDate < startDate}
+          >
+            Kaydet
           </Button>
         </DialogActions>
       </Dialog>
