@@ -31,6 +31,7 @@ import {ErrorNotice, Loading} from "../../shared/ui/Feedback";
 import {MessagePage} from "../../app/Layout";
 import {useState} from "react";
 import {Link, useNavigate, useParams} from "react-router-dom";
+import WarrantyList from "../warranties/WarrantyList";
 
 export function PassportList() {
     const paging = usePageQuery("serialNumber", [
@@ -113,12 +114,10 @@ export function PassportList() {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Seri numarası</TableCell>
-                                    <TableCell
-                                        sx={{ display: { xs: "none", sm: "table-cell" } }}
-                                    >Model</TableCell>
-                                    <TableCell sx={{ display: { xs: "none", lg: "table-cell" } }} >Kategori</TableCell>
-                                    <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }} >Satın alma</TableCell>
-                                    <TableCell sx={{ display: { xs: "none", lg: "table-cell" } }} >Durum</TableCell>
+                                    <TableCell>Model</TableCell>
+                                    <TableCell>Kategori</TableCell>
+                                    <TableCell>Satın alma</TableCell>
+                                    <TableCell>Durum</TableCell>
                                     <TableCell></TableCell>
                                 </TableRow>
                             </TableHead>
@@ -126,16 +125,16 @@ export function PassportList() {
                                 {data?.content.map((p) => (
                                     <TableRow key={p.publicId} hover>
                                         <TableCell
-                                            sx={{fontFamily: "monospace", fontWeight: 600 }}
+                                            sx={{fontFamily: "monospace", fontWeight: 600}}
                                         >
                                             {p.serialNumber}
                                         </TableCell>
-                                        <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{p.productModelName}</TableCell>
-                                        <TableCell sx={{ display: { xs: "none", lg: "table-cell" } }}>{p.categoryName}</TableCell>
-                                        <TableCell sx={{whiteSpace: "nowrap" ,display: { xs: "none", sm: "table-cell" }}}>
+                                        <TableCell>{p.productModelName}</TableCell>
+                                        <TableCell>{p.categoryName}</TableCell>
+                                        <TableCell sx={{whiteSpace: "nowrap"}}>
                                             {p.purchaseDate}
                                         </TableCell>
-                                        <TableCell sx={{ display: { xs: "none", lg: "table-cell" } }}>
+                                        <TableCell>
                                             <Chip
                                                 size="small"
                                                 variant="outlined"
@@ -312,7 +311,7 @@ function Detail({id}: { id: string }) {
                                 <Typography variant="overline" color="primary">
                                     ÜRÜN PASAPORTU
                                 </Typography>
-                                <Typography component="h1" variant="h4" sx={ { overflowWrap :"anywhere"}}>
+                                <Typography component="h1" variant="h4">
                                     {data.serialNumber}
                                 </Typography>
                                 <Typography color="text.secondary" sx={{ mt: 1 }}>
@@ -381,15 +380,7 @@ function Detail({id}: { id: string }) {
                                 ))}
                             </Box>
                         </Paper>
-                        <Paper variant="outlined" sx={{ p: { xs: 3, md: 4 } }}>
-                            <Typography variant="h6" sx={{ mb: 2 }}>
-                                Garanti
-                            </Typography>
-                            {/* ESA-08: GET /warranties/product/{id} — ZEY 07  */}
-                            <Typography color="text.secondary">
-                                Bu ürüne ait garanti kaydı bulunmuyor.
-                            </Typography>
-                        </Paper>
+                        <WarrantyList passportId={id} />
                         <Paper variant="outlined" sx={{ p: { xs: 3, md: 4 } }}>
                             <Typography variant="h6" sx={{ mb: 2 }}>
                                 Servis kayıtları

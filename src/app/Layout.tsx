@@ -26,6 +26,7 @@ import Inventory2Outlined from "@mui/icons-material/Inventory2Outlined";
 import ViewListOutlined from "@mui/icons-material/ViewListOutlined";
 import Logout from "@mui/icons-material/Logout";
 import ArrowForward from "@mui/icons-material/ArrowForward";
+import VerifiedOutlined from "@mui/icons-material/VerifiedOutlined";
 import { useAuth } from "../features/auth/AuthProvider";
 import { sessionStore } from "../features/auth/session";
 
@@ -37,6 +38,11 @@ const links = [
     to: "/pasaportlar",
     label: "Ürün pasaportları",
     icon: <Inventory2Outlined />,
+  },
+  {
+    to: "/garantiler",
+    label: "Garanti kayıtları",
+    icon: <VerifiedOutlined />,
   },
 ];
 

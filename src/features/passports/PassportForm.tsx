@@ -1,7 +1,7 @@
-import {useState} from "react";
-import type {FormEvent} from "react";
-import {passportApi} from "./api";
-import type {Passport} from "../../shared/types";
+import { useState } from "react";
+import type { FormEvent } from "react";
+import { passportApi } from "./api";
+import type { Passport } from "../../shared/types";
 import { CategorySelect } from "../categories/CategorySelect";
 import {
     Button,
@@ -13,34 +13,40 @@ import {
     TextField,
 } from "@mui/material";
 import { ErrorNotice } from "../../shared/ui/Feedback";
-import {ModelSelect} from "../models/ModelSelect";
+import { ModelSelect } from "../models/ModelSelect";
+
 export function PassportForm({
-                                 passport,
-                                 onClose,
-                                 onSaved,
-                             }:{
+    passport,
+    onClose,
+    onSaved,
+}: {
     passport?: Passport;
     onClose: () => void;
     onSaved: () => void;
 }) {
-
     const [serialNumber, setSerialNumber] = useState(passport?.serialNumber || "");
     const [productModelId, setProductModelId] = useState(passport?.productModelId || "");
     const [categoryId, setCategoryId] = useState(passport?.categoryId || "");
     const [purchaseDate, setPurchaseDate] = useState(passport?.purchaseDate || "");
     const [invoiceNumber, setInvoiceNumber] = useState(passport?.invoiceNumber || "");
     const [description, setDescription] = useState(passport?.description || "");
+    
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<unknown>();
+    
     const today = new Date().toLocaleDateString("sv-SE");
+
     async function submit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
+        
         if (!serialNumber.trim() || !categoryId.trim() || !purchaseDate.trim() || !productModelId.trim()) {
-            setError(new Error("Seri numarası, kategori ve satın alma tarihi boş bırakılamaz."));
+            setError(new Error("Seri numarası, kategori, model ve satın alma tarihi boş bırakılamaz."));
             return;
         }
+        
         setBusy(true);
         setError(undefined);
+        
         try {
             if (passport)
                 await passportApi.update(passport.publicId, {
@@ -67,6 +73,7 @@ export function PassportForm({
             setBusy(false);
         }
     }
+
     return (
         <Dialog
             open
@@ -84,6 +91,7 @@ export function PassportForm({
                 <DialogContent>
                     <Stack spacing={2.5} sx={{ pt: 1 }}>
                         {error !== undefined && <ErrorNotice error={error} />}
+                        
                         <TextField
                             label="Seri numarası"
                             required
@@ -92,12 +100,20 @@ export function PassportForm({
                             slotProps={{ htmlInput: { maxLength: 100 } }}
                             helperText="Yalnızca harf, rakam ve tire. En fazla 100 karakter."
                         />
+                        
                         <CategorySelect
                             value={categoryId || null}
-                            onChange={(id)=> setCategoryId(id ?? "")}
+                            onChange={(id) => setCategoryId(id ?? "")}
                             initialName={passport?.categoryName}
                         />
-                        <ModelSelect value={productModelId} onChange={setProductModelId}/>
+                        
+                        {/* ECR-08 ÇÖZÜMÜ: Düzenleme modunda eski model adının görünmesi için initialName eklendi */}
+                        <ModelSelect 
+                            value={productModelId} 
+                            onChange={setProductModelId}
+                            initialName={passport?.productModelName}
+                        />
+                        
                         <TextField
                             label="Satın alma tarihi"
                             type="date"
@@ -107,13 +123,16 @@ export function PassportForm({
                             slotProps={{
                                 inputLabel: { shrink: true },
                                 htmlInput: { min: "2000-01-01", max: today },
-                            }}                        />
+                            }} 
+                        />
+                        
                         <TextField
                             label="Fatura numarası"
                             value={invoiceNumber}
                             onChange={(e) => setInvoiceNumber(e.target.value)}
                             slotProps={{ htmlInput: { maxLength: 100 } }}
                         />
+                        
                         <TextField
                             label="Açıklama"
                             multiline

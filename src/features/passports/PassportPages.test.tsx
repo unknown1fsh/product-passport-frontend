@@ -47,7 +47,8 @@ function ekraniCiz(role: Role) {
     error: undefined,
     loading: false,
     reload: vi.fn(),
-    path: "/product-passports?page=0&size=20&sortBy=serialNumber&sortDir=asc",  });
+    path: "/product-passports?page=0&size=20&sortBy=serialNumber&sortDir=asc",
+  });
   render(
     <MemoryRouter>
       <PassportList />
