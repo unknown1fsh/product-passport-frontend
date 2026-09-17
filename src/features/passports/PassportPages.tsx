@@ -31,6 +31,7 @@ import {ErrorNotice, Loading} from "../../shared/ui/Feedback";
 import {MessagePage} from "../../app/Layout";
 import {useState} from "react";
 import {Link, useNavigate, useParams} from "react-router-dom";
+import WarrantyList from "../warranties/WarrantyList";
 
 export function PassportList() {
     const paging = usePageQuery("serialNumber", [
@@ -379,15 +380,7 @@ function Detail({id}: { id: string }) {
                                 ))}
                             </Box>
                         </Paper>
-                        <Paper variant="outlined" sx={{ p: { xs: 3, md: 4 } }}>
-                            <Typography variant="h6" sx={{ mb: 2 }}>
-                                Garanti
-                            </Typography>
-                            {/* ESA-08: GET /warranties/product/{id} — ZEY 07  */}
-                            <Typography color="text.secondary">
-                                Bu ürüne ait garanti kaydı bulunmuyor.
-                            </Typography>
-                        </Paper>
+                        <WarrantyList passportId={id} />
                         <Paper variant="outlined" sx={{ p: { xs: 3, md: 4 } }}>
                             <Typography variant="h6" sx={{ mb: 2 }}>
                                 Servis kayıtları

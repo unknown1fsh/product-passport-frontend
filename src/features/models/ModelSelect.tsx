@@ -2,6 +2,7 @@ import { TextField, MenuItem, CircularProgress } from "@mui/material";
 import { useResource } from "../../shared/hooks/useResource";
 import type { PageResponse } from "../../shared/types";
 import type { Model } from "./api";
+import { ApiError } from "../../shared/api/http";
 
 interface ModelSelectProps {
   value: string;
@@ -29,7 +30,7 @@ export function ModelSelect({
   const models = data?.content || [];
   
   const hasError = error || !!apiError;
-  const errorMessage = (apiError as any)?.message || "";
+  const errorMessage = apiError instanceof ApiError ? apiError.message : "";
   const displayHelperText = errorMessage || helperText || (loading ? "Modeller yükleniyor..." : "");
 
   // 3. ÇÖZÜM: Seçili UUID var, initialName var ama model listede yoksa geçici olarak menüye ekle

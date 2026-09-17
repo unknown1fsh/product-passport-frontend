@@ -1,5 +1,4 @@
 import { api } from "../../shared/api/client";
-import type { PageResponse } from "../../shared/types";
 
 export type Model = {
   publicId: string;

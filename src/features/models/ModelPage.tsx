@@ -30,8 +30,33 @@ import type { PageResponse } from "../../shared/types";
 import { PageControls } from "../../shared/ui/PageControls";
 import { Loading, ErrorNotice } from "../../shared/ui/Feedback";
 import { api } from "../../shared/api/client";
+import { ApiError } from "../../shared/api/http";
 import type { Model } from "./api";
 import { ModelSelect } from "./ModelSelect";
+
+function getErrorMessage(error: unknown): string {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof error.message === "string"
+  ) {
+    return error.message;
+  }
+  return "";
+}
+
+function getErrorStatus(error: unknown): number | undefined {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "status" in error &&
+    typeof error.status === "number"
+  ) {
+    return error.status;
+  }
+  return undefined;
+}
 
 export function ModelPage() {
   const { user } = useAuth();
@@ -142,8 +167,8 @@ export function ModelPage() {
       setOpenModal(false);
       reload(); 
       setRefreshKey(prev => prev + 1); 
-    } catch (err: any) {
-      setFormError(err.message || "İşlem başarısız oldu.");
+    } catch (err: unknown) {
+      setFormError(getErrorMessage(err) || "İşlem başarısız oldu.");
     }
   }
 
@@ -164,11 +189,12 @@ export function ModelPage() {
       setModelToDelete(null);
       reload(); 
       setRefreshKey(prev => prev + 1); 
-    } catch (err: any) {
-      if (err.status === 409 || (err.message && err.message.includes("409"))) {
+    } catch (err: unknown) {
+      const message = getErrorMessage(err);
+      if ((err instanceof ApiError && err.status === 409) || getErrorStatus(err) === 409 || message.includes("409")) {
         setDeleteError("Bu modele bağlı pasaport bulunduğu için silinemez (409 Conflict). Önce ilgili pasaportları silmelisiniz.");
       } else {
-        setDeleteError(err.message || "Silme işlemi sırasında bir hata oluştu.");
+        setDeleteError(message || "Silme işlemi sırasında bir hata oluştu.");
       }
     }
   }

@@ -31,8 +31,8 @@ describe("ECR-07: Model Modülü Testleri", () => {
     vi.clearAllMocks();
     
     // Varsayılan olarak listeyi dolu ve yetkiyi ADMIN olarak ayarlıyoruz
-    (useAuth as any).mockReturnValue({ user: { role: "ADMIN" } });
-    (useResource as any).mockReturnValue({
+    vi.mocked(useAuth).mockReturnValue({ user: { role: "ADMIN" } } as ReturnType<typeof useAuth>);
+    vi.mocked(useResource).mockReturnValue({
       data: {
         content: [
           { publicId: "uuid-1", code: "M-01", name: "Test Model", active: true, brandName: "Test Marka" },
@@ -42,7 +42,8 @@ describe("ECR-07: Model Modülü Testleri", () => {
       loading: false,
       error: null,
       reload: vi.fn(),
-    });
+      path: "/product-models?page=0&size=20",
+    } as ReturnType<typeof useResource>);
   });
 
   it("ModelSelect bileşeni doğru UUID değerini onChange ile iletir (Sayfa dışı seçim testi)", async () => {
@@ -61,7 +62,7 @@ describe("ECR-07: Model Modülü Testleri", () => {
   });
 
   it("Model silinirken pasaport bağlıysa 409 Conflict hatasını yakalar ve gösterir", async () => {
-    (api as any).mockRejectedValueOnce({ status: 409, message: "409 Conflict" });
+    vi.mocked(api).mockRejectedValueOnce({ status: 409, message: "409 Conflict" });
     const user = userEvent.setup();
 
     renderWithRouter(<ModelPage />);
@@ -80,7 +81,7 @@ describe("ECR-07: Model Modülü Testleri", () => {
   });
 
   it("Model oluşturulurken 403 Yetkisiz Erişim (Forbidden) hatasını yakalar ve gösterir", async () => {
-    (api as any).mockRejectedValueOnce({ status: 403, message: "Başka üretici markasında 403 görünür" });
+    vi.mocked(api).mockRejectedValueOnce({ status: 403, message: "Başka üretici markasında 403 görünür" });
     const user = userEvent.setup();
 
     renderWithRouter(<ModelPage />);
