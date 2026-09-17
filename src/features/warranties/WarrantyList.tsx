@@ -123,21 +123,22 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
 
   return (
     <Box sx={{ mt: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h6">
-          Garanti Kayıtları
-        </Typography>
-        <Button 
-          variant="contained" 
-          startIcon={<AddIcon />} 
-          onClick={handleOpenNew}
-          sx={{ textTransform: 'none' }}
-        >
-          Yeni Ekle
-        </Button>
-      </Box>
+      <Paper variant="outlined" sx={{ p: { xs: 3, md: 4 } }}>
+        
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h6">
+            Garanti Kayıtları
+          </Typography>
+          <Button 
+            variant="contained" 
+            startIcon={<AddIcon />} 
+            onClick={handleOpenNew}
+            sx={{ textTransform: 'none' }}
+          >
+            Yeni Ekle
+          </Button>
+        </Box>
       
-      <Paper variant="outlined">
         <TableContainer>
           <Table>
             <TableHead>
@@ -181,7 +182,9 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
       </Paper>
 
       <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>{editingId ? "Garantiyi Düzenle" : "Yeni Garanti Ekle"}</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 600 }}>
+          {editingId ? "Garantiyi düzenle" : "Yeni garanti ekle"}
+        </DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>
             <TextField
@@ -203,8 +206,12 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
           </Box>
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 0 }}>
-          <Button onClick={() => setIsDialogOpen(false)} color="inherit">
-            İptal
+          <Button 
+            onClick={() => setIsDialogOpen(false)} 
+            color="primary" 
+            sx={{ fontWeight: 'bold' }}
+          >
+            Vazgeç
           </Button>
           <Button 
             onClick={handleSave} 
@@ -215,22 +222,32 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
           </Button>
         </DialogActions>
       </Dialog>
+
       <Dialog open={isDeleteDialogOpen} onClose={() => setIsDeleteDialogOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ color: 'error.main', fontWeight: 600 }}>
-          Garantiyi Sil
-          </DialogTitle>
+        <DialogTitle sx={{ fontWeight: 600 }}>
+          Garanti silinsin mi?
+        </DialogTitle>
         <DialogContent>
-          <Typography>Seçili garanti kaydını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.</Typography>
+          <Typography>
+            Seçili garanti kaydını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.
+          </Typography>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ p: 2, pt: 0 }}>
           <Button 
             onClick={() => setIsDeleteDialogOpen(false)} 
             color="primary" 
             sx={{ fontWeight: 'bold' }}
           >
-            İptal
+            Vazgeç
           </Button>
-          <Button onClick={handleConfirmDelete} color="error" variant="contained" sx={{ fontWeight: 'bold' }}>Sil</Button>
+          <Button 
+            onClick={handleConfirmDelete} 
+            color="error" 
+            variant="contained" 
+            sx={{ fontWeight: 'bold' }}
+          >
+            Silmeyi onayla
+          </Button>
         </DialogActions>
       </Dialog>
       <Dialog open={!!errorMessage} onClose={()=> setErrorMessage(null)} maxWidth="xs" fullWidth>
