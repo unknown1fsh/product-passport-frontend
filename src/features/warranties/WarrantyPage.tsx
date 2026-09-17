@@ -36,7 +36,7 @@ export function WarrantyPage() {
             options={data?.content || []}
             getOptionLabel={(option) => `${option.serialNumber} - ${option.productModelName}`}
             value={selectedPassport}
-            onChange={(event, newValue) => setSelectedPassport(newValue)}
+            onChange={(_, newValue) => setSelectedPassport(newValue)}
             noOptionsText="Ürün bulunamadı"
             renderInput={(params) => (
               <TextField

@@ -11,11 +11,13 @@ import { Loading } from "../shared/ui/Feedback";
 import { LoginPage } from "../features/auth/LoginPage";
 import { Layout, HomePage, MessagePage } from "./Layout";
 import { CategoryPage } from "../features/categories/CategoryPage";
+import { ModelPage } from "../features/models/ModelPage";
 import {
   PassportList,
   PassportDetail,
 } from "../features/passports/PassportPages";
 import { WarrantyPage } from "../features/warranties/WarrantyPage";
+
 export function ProtectedRoute() {
   const auth = useAuth();
   const location = useLocation();
@@ -30,6 +32,7 @@ export function ProtectedRoute() {
     );
   return <Outlet key={auth.user?.publicId} />;
 }
+
 export function AppRouter() {
   return (
     <BrowserRouter>
@@ -39,6 +42,7 @@ export function AppRouter() {
           <Route element={<Layout />}>
             <Route index element={<HomePage />} />
             <Route path="/kategoriler" element={<CategoryPage />} />
+            <Route path="/modeller" element={<ModelPage />} />
             <Route path="/pasaportlar" element={<PassportList />} />
             <Route path="/pasaportlar/:id" element={<PassportDetail />} />
             <Route path="/garantiler" element={<WarrantyPage />} />

@@ -103,9 +103,13 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
       setIsDeleteDialogOpen(false);
       reload();
 
-    } catch (err: any){
+    } catch (err: unknown){
       console.error("Silme hatası:", err);
-      if(err?.status === 403 || err?.message?.includes("403")){
+      const status = typeof err === "object" && err !== null && "status" in err
+        ? (err as { status?: number }).status
+        : undefined;
+      const message = err instanceof Error ? err.message : "";
+      if(status === 403 || message.includes("403")){
         setErrorMessage("Bu kaydı silmek için yetkiniz yok.");
       }else {
         setErrorMessage("Silme işlemi sırasında bir hata oluştu.");
