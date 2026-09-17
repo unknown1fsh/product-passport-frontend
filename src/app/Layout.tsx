@@ -23,31 +23,44 @@ import MenuIcon from "@mui/icons-material/Menu";
 import HomeOutlined from "@mui/icons-material/HomeOutlined";
 import CategoryOutlined from "@mui/icons-material/CategoryOutlined";
 import Inventory2Outlined from "@mui/icons-material/Inventory2Outlined";
+import ViewListOutlined from "@mui/icons-material/ViewListOutlined";
 import Logout from "@mui/icons-material/Logout";
 import ArrowForward from "@mui/icons-material/ArrowForward";
+import VerifiedOutlined from "@mui/icons-material/VerifiedOutlined";
 import { useAuth } from "../features/auth/AuthProvider";
 import { sessionStore } from "../features/auth/session";
+
 const links = [
   { to: "/", label: "Genel bakış", icon: <HomeOutlined /> },
   { to: "/kategoriler", label: "Kategoriler", icon: <CategoryOutlined /> },
+  { to: "/modeller", label: "Modeller", icon: <ViewListOutlined /> },
   {
     to: "/pasaportlar",
     label: "Ürün pasaportları",
     icon: <Inventory2Outlined />,
   },
+  {
+    to: "/garantiler",
+    label: "Garanti kayıtları",
+    icon: <VerifiedOutlined />,
+  },
 ];
+
 const roles = { ADMIN: "Yönetici", MANUFACTURER: "Üretici", USER: "Kullanıcı" };
+
 export function Layout() {
   const { user } = useAuth();
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+
   const title =
     links.find((link) =>
       link.to === "/"
         ? location.pathname === "/"
         : location.pathname.startsWith(link.to),
     )?.label || "Çalışma alanı";
+
   const navigation = (
     <Box
       sx={{
@@ -110,6 +123,7 @@ export function Layout() {
       </Box>
     </Box>
   );
+
   return (
     <Box sx={{ display: "flex", minHeight: "100dvh" }}>
       <Box
@@ -217,6 +231,7 @@ export function Layout() {
     </Box>
   );
 }
+
 export function HomePage() {
   const { user } = useAuth();
   return (
@@ -280,6 +295,8 @@ export function HomePage() {
               <Typography color="text.secondary" sx={{ mt: 1, mb: 3 }}>
                 {link.to === "/kategoriler"
                   ? "Ürünleri ortak kategorilerle düzenleyin."
+                  : link.to === "/modeller"
+                  ? "Modellerinizi inceleyin ve yönetin."
                   : "Model, satın alma ve fatura bilgilerini inceleyin."}
               </Typography>
               <Divider />
@@ -303,6 +320,7 @@ export function HomePage() {
     </Stack>
   );
 }
+
 export function MessagePage({
   title,
   description,
