@@ -383,8 +383,8 @@ function Detail({id}: { id: string }) {
                             </Box>
                         </Paper>
                         <WarrantyList passportId={id} />
-                        <Paper variant="outlined" sx={{ p: { xs: 3, md: 4 } }}>
-                            <ServiceSection passportId={id} />                        </Paper>
+                        <WarrantyList passportId={id} canManage={canManage} />
+                        <ServiceSection passportId={id} canManage={canManage} />
                         <Dialog
                             open={confirming}
                             onClose={() => {
