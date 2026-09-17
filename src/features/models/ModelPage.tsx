@@ -388,9 +388,9 @@ export function ModelPage() {
           </Stack>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => setDeleteModalOpen(false)}>İptal</Button>
+          <Button onClick={() => setDeleteModalOpen(false)}>Vazgeç</Button>
           <Button onClick={handleConfirmDelete} variant="contained" color="error">
-            Evet, Sil
+            Silmeyi onayla
           </Button>
         </DialogActions>
       </Dialog>
