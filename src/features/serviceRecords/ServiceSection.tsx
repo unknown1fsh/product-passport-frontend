@@ -23,12 +23,13 @@ import {
 import { useResource } from "../../shared/hooks/useResource";
 import type { PageResponse } from "../../shared/types";
 import { ErrorNotice, Loading } from "../../shared/ui/Feedback";
-
+import {useAuth} from "../auth/AuthProvider";
 import { serviceRecordApi } from "./api";
 import { ServiceForm } from "./ServiceForm";
 import type { ServiceRecord } from "./types";
 
 export function ServiceSection({ passportId }: { passportId: string }) {
+  const canManage = ["ADMIN" , "MANUFACTURER"].includes(useAuth().user?.role ?? "")
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(20);
 
@@ -83,6 +84,7 @@ export function ServiceSection({ passportId }: { passportId: string }) {
           Ürüne ait bakım ve servis kayıtlarını inceleyin.
         </Typography>
 
+        {canManage && (
         <Button
           variant="contained"
           onClick={() => {
@@ -93,6 +95,7 @@ export function ServiceSection({ passportId }: { passportId: string }) {
         >
           Servis kaydı ekle
         </Button>
+        )}
       </Box>
 
       {loading ? (
@@ -121,26 +124,30 @@ export function ServiceSection({ passportId }: { passportId: string }) {
                     <TableCell>{record.description}</TableCell>
 
                     <TableCell sx={{ whiteSpace: "nowrap" }}>
-                      <Button
-                        size="small"
-                        onClick={() => {
-                          setEditingRecord(record);
-                          setFormOpen(true);
-                        }}
-                      >
-                        Düzenle
-                      </Button>
+                      {canManage && (
+                          <>
+                            <Button
+                                size="small"
+                                onClick={() => {
+                                  setEditingRecord(record);
+                                  setFormOpen(true);
+                                }}
+                            >
+                              Düzenle
+                            </Button>
 
-                      <Button
-                        size="small"
-                        color="error"
-                        onClick={() => {
-                          setRemovingRecord(record);
-                          setDeleteError(undefined);
-                        }}
-                      >
-                        Sil
-                      </Button>
+                            <Button
+                                size="small"
+                                color="error"
+                                onClick={() => {
+                                  setRemovingRecord(record);
+                                  setDeleteError(undefined);
+                                }}
+                            >
+                              Sil
+                            </Button>
+                          </>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

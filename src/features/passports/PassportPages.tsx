@@ -32,6 +32,7 @@ import {ErrorNotice, Loading} from "../../shared/ui/Feedback";
 import {MessagePage} from "../../app/Layout";
 import {useState} from "react";
 import {Link, useNavigate, useParams} from "react-router-dom";
+import { ServiceSection } from "../serviceRecords/ServiceSection";
 
 export function PassportList() {
     const paging = usePageQuery("serialNumber", [
@@ -114,10 +115,10 @@ export function PassportList() {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Seri numarası</TableCell>
-                                    <TableCell>Model</TableCell>
-                                    <TableCell>Kategori</TableCell>
-                                    <TableCell>Satın alma</TableCell>
-                                    <TableCell>Durum</TableCell>
+                                    <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Model</TableCell>
+                                    <TableCell sx={{ display: { xs: "none", lg: "table-cell" } }}>Kategori</TableCell>
+                                    <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Satın alma</TableCell>
+                                    <TableCell sx={{ display: { xs: "none", lg: "table-cell" } }}>Durum</TableCell>
                                     <TableCell></TableCell>
                                 </TableRow>
                             </TableHead>
@@ -129,12 +130,13 @@ export function PassportList() {
                                         >
                                             {p.serialNumber}
                                         </TableCell>
-                                        <TableCell>{p.productModelName}</TableCell>
-                                        <TableCell>{p.categoryName}</TableCell>
-                                        <TableCell sx={{whiteSpace: "nowrap"}}>
+                                        <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{p.productModelName}</TableCell>
+                                        <TableCell sx={{ display: { xs: "none", lg: "table-cell" } }}>{p.categoryName}</TableCell>
+                                        <TableCell sx={{ whiteSpace: "nowrap", display: { xs: "none", sm: "table-cell" } }}>
                                             {p.purchaseDate}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell
+                                            sx={{ display: { xs: "none", lg: "table-cell" } }}>
                                             <Chip
                                                 size="small"
                                                 variant="outlined"
@@ -318,7 +320,7 @@ function Detail({id}: { id: string }) {
                                 <Typography variant="overline" color="primary">
                                     ÜRÜN PASAPORTU
                                 </Typography>
-                                <Typography component="h1" variant="h4">
+                                <Typography component="h1" variant="h4" sx={{ overflowWrap: "anywhere" }}>
                                     {data.serialNumber}
                                 </Typography>
                                 <Typography color="text.secondary" sx={{ mt: 1 }}>
@@ -390,15 +392,8 @@ function Detail({id}: { id: string }) {
                             <Box sx={{ mt: 3, mb: 3 }}>
                                 <WarrantyList passportId={id} />
                             </Box>                        
-                        <Paper variant="outlined" sx={{ p: { xs: 3, md: 4 } }}>
-                            <Typography variant="h6" sx={{ mb: 2 }}>
-                                Servis kayıtları
-                            </Typography>
-                            {/* ESA-08: GET /service-records/product/{id} — HAZ 07 */}
-                            <Typography color="text.secondary">
-                                Bu ürüne ait servis kaydı bulunmuyor.
-                            </Typography>
-                        </Paper>
+                     
+                        <ServiceSection passportId={id} />
                         <Dialog
                             open={confirming}
                             onClose={() => {

@@ -1,38 +1,40 @@
-import { useState } from "react";
+import {useState} from "react";
 import {
-  Box,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Stack
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Paper,
+    Stack,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Typography
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { useResource } from "../../shared/hooks/useResource";
-import type { PageResponse } from "../../shared/types";
-import { api } from "../../shared/api/client";
+import {useResource} from "../../shared/hooks/useResource";
+import type {PageResponse} from "../../shared/types";
+import {api} from "../../shared/api/client";
+import {useAuth} from "../auth/AuthProvider";
 
 interface WarrantyListProps {
-  passportId: string;
+    passportId: string;
 }
 
 interface Warranty {
-  publicId: string; 
-  startDate: string;
-  endDate: string;
+    publicId: string;
+    startDate: string;
+    endDate: string;
 }
 
 export default function WarrantyList({ passportId }: WarrantyListProps) {
+  const canManage = ["ADMIN", "MANUFACTURER"].includes(useAuth().user?.role ?? "");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -129,16 +131,18 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
           <Typography variant="h6">
             Garanti Kayıtları
           </Typography>
-          <Button 
-            variant="contained" 
-            startIcon={<AddIcon />} 
-            onClick={handleOpenNew}
-            sx={{ textTransform: 'none' }}
-          >
-            Yeni Ekle
-          </Button>
+          {canManage && (
+            <Button 
+              variant="contained" 
+              startIcon={<AddIcon />} 
+              onClick={handleOpenNew}
+              sx={{ textTransform: 'none' }}
+            >
+              Yeni Ekle
+            </Button>
+          )}
         </Box>
-      
+        
         <TableContainer>
           <Table>
             <TableHead>
@@ -146,7 +150,8 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
                 <TableCell>Garanti ID</TableCell>
                 <TableCell>Başlangıç Tarihi</TableCell>
                 <TableCell>Bitiş Tarihi</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 600 }}>İşlemler</TableCell>              </TableRow>
+                <TableCell align="center" sx={{ fontWeight: 600 }}>İşlemler</TableCell>              
+              </TableRow>
             </TableHead>
             <TableBody>
               {data?.content.map((warranty) => (
@@ -158,12 +163,16 @@ export default function WarrantyList({ passportId }: WarrantyListProps) {
                   <TableCell>{warranty.endDate}</TableCell>
                   <TableCell align="center">
                     <Stack direction="row" spacing={1} sx={{ justifyContent: "center" }}>
-                      <Button size="small" onClick={() => handleOpenEdit(warranty)}>
-                        Düzenle
-                      </Button>
-                      <Button size="small" color="error" onClick={() => handleOpenDelete(warranty.publicId)}>
-                        Sil
-                      </Button>
+                      {canManage && (
+                        <>
+                          <Button size="small" onClick={() => handleOpenEdit(warranty)}>
+                            Düzenle
+                          </Button>
+                          <Button size="small" color="error" onClick={() => handleOpenDelete(warranty.publicId)}>
+                            Sil
+                          </Button>
+                        </>
+                      )}
                     </Stack>
                   </TableCell>
                 </TableRow>
