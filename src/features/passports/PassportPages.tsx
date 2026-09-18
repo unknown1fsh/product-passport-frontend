@@ -23,6 +23,7 @@ import ArrowBack from "@mui/icons-material/ArrowBack";
 import AddIcon from "@mui/icons-material/Add";
 import {useAuth} from "../auth/AuthProvider";
 import {PassportForm} from "./PassportForm";
+import WarrantyList from "../warranties/WarrantyList";
 import type {PageResponse, Passport} from "../../shared/types";
 import {usePageQuery} from "../../shared/hooks/usePageQuery";
 import {useResource} from "../../shared/hooks/useResource";
@@ -31,7 +32,6 @@ import {ErrorNotice, Loading} from "../../shared/ui/Feedback";
 import {MessagePage} from "../../app/Layout";
 import {useState} from "react";
 import {Link, useNavigate, useParams} from "react-router-dom";
-import WarrantyList from "../warranties/WarrantyList";
 import { ServiceSection } from "../serviceRecords/ServiceSection";
 
 export function PassportList() {
@@ -296,7 +296,14 @@ function Detail({id}: { id: string }) {
             {loading ? (
                 <Loading/>
             ) : error ? (
-                <ErrorNotice error={error} retry={reload}/>
+                (error as any)?.status === 404 ? (
+                    <MessagePage
+                        title="Pasaport bulunamadı"
+                        description="Aradığınız ürün pasaportu silinmiş veya hiç var olmamış olabilir."
+                    />
+                ) : (
+                    <ErrorNotice error={error} retry={reload}/>
+                )
             ) : (
                 data && (
                     <>
@@ -382,7 +389,10 @@ function Detail({id}: { id: string }) {
                                 ))}
                             </Box>
                         </Paper>
-                        <WarrantyList passportId={id} />
+                            <Box sx={{ mt: 3, mb: 3 }}>
+                                <WarrantyList passportId={id} />
+                            </Box>                        
+                        
                         <ServiceSection passportId={id} />
                         <Dialog
                             open={confirming}
