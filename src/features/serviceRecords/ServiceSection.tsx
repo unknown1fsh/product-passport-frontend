@@ -23,13 +23,14 @@ import {
 import { useResource } from "../../shared/hooks/useResource";
 import type { PageResponse } from "../../shared/types";
 import { ErrorNotice, Loading } from "../../shared/ui/Feedback";
-import {useAuth} from "../auth/AuthProvider";
+import { useAuth } from "../auth/AuthProvider";
 import { serviceRecordApi } from "./api";
 import { ServiceForm } from "./ServiceForm";
 import type { ServiceRecord } from "./types";
+import { ApiError } from "../../shared/api/http";
 
 export function ServiceSection({ passportId }: { passportId: string }) {
-  const canManage = ["ADMIN" , "MANUFACTURER"].includes(useAuth().user?.role ?? "")
+  const { user } = useAuth();
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(20);
 
@@ -50,6 +51,11 @@ export function ServiceSection({ passportId }: { passportId: string }) {
   const { data, error, loading, reload } = useResource<
     PageResponse<ServiceRecord>
   >("/service-records/product/" + passportId + "?" + query);
+  const accessDenied = error instanceof ApiError && error.status === 403;
+
+  const canManage =
+    user?.role === "ADMIN" ||
+    (user?.role === "MANUFACTURER" && data !== undefined && !accessDenied);
 
   async function remove() {
     if (!removingRecord) return;
@@ -85,16 +91,16 @@ export function ServiceSection({ passportId }: { passportId: string }) {
         </Typography>
 
         {canManage && (
-        <Button
-          variant="contained"
-          onClick={() => {
-            setEditingRecord(undefined);
-            setFormOpen(true);
-          }}
-          sx={{ mt: 2 }}
-        >
-          Servis kaydı ekle
-        </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setEditingRecord(undefined);
+              setFormOpen(true);
+            }}
+            sx={{ mt: 2 }}
+          >
+            Servis kaydı ekle
+          </Button>
         )}
       </Box>
 
@@ -110,7 +116,7 @@ export function ServiceSection({ passportId }: { passportId: string }) {
                 <TableRow>
                   <TableCell>Servis tarihi</TableCell>
                   <TableCell>Açıklama</TableCell>
-                  <TableCell>İşlem</TableCell>
+                  {canManage && <TableCell>İşlem</TableCell>}
                 </TableRow>
               </TableHead>
 
@@ -123,38 +129,39 @@ export function ServiceSection({ passportId }: { passportId: string }) {
 
                     <TableCell>{record.description}</TableCell>
 
-                    <TableCell sx={{ whiteSpace: "nowrap" }}>
-                      {canManage && (
-                          <>
-                            <Button
-                                size="small"
-                                onClick={() => {
-                                  setEditingRecord(record);
-                                  setFormOpen(true);
-                                }}
-                            >
-                              Düzenle
-                            </Button>
+                    {canManage && (
+                      <TableCell sx={{ whiteSpace: "nowrap" }}>
+                        <Button
+                          size="small"
+                          onClick={() => {
+                            setEditingRecord(record);
+                            setFormOpen(true);
+                          }}
+                        >
+                          Düzenle
+                        </Button>
 
-                            <Button
-                                size="small"
-                                color="error"
-                                onClick={() => {
-                                  setRemovingRecord(record);
-                                  setDeleteError(undefined);
-                                }}
-                            >
-                              Sil
-                            </Button>
-                          </>
-                      )}
-                    </TableCell>
+                        <Button
+                          size="small"
+                          color="error"
+                          onClick={() => {
+                            setRemovingRecord(record);
+                            setDeleteError(undefined);
+                          }}
+                        >
+                          Sil
+                        </Button>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
 
                 {!data?.content.length && (
                   <TableRow>
-                    <TableCell colSpan={3} sx={{ py: 6, textAlign: "center" }}>
+                    <TableCell
+                      colSpan={canManage ? 3 : 2}
+                      sx={{ py: 6, textAlign: "center" }}
+                    >
                       Bu ürüne ait servis kaydı bulunamadı.
                       {page > 0 && (
                         <Button onClick={() => setPage(0)}>
