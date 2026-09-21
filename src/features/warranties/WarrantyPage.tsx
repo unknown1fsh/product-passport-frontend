@@ -32,6 +32,7 @@ export function WarrantyPage() {
         {loading ? (
           <Loading />
         ) : (
+        <Box sx={{maxWidth: 400, mt: 2}}>
           <Autocomplete
             options={data?.content || []}
             getOptionLabel={(option) => `${option.serialNumber} - ${option.productModelName}`}
@@ -46,6 +47,7 @@ export function WarrantyPage() {
               />
             )}
           />
+        </Box>
         )}
       </Paper>
 
