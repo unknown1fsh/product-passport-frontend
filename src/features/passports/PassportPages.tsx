@@ -392,7 +392,7 @@ function Detail({id}: { id: string }) {
                             <Box sx={{ mt: 3, mb: 3 }}>
                                 <WarrantyList passportId={id} />
                             </Box>                        
-                        
+                     
                         <ServiceSection passportId={id} />
                         <Dialog
                             open={confirming}
