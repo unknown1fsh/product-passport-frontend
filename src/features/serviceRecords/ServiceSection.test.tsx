@@ -38,6 +38,7 @@ const reload = vi.fn();
 
 function renderSection(
   role: "USER" | "MANUFACTURER" | "ADMIN" = "MANUFACTURER",
+  resourceError?: ApiError,
 ) {
   vi.mocked(useAuth).mockReturnValue({
     status: "authenticated",
@@ -53,14 +54,16 @@ function renderSection(
   });
 
   vi.mocked(useResource).mockReturnValue({
-    data: {
-      content: [record],
-      page: 0,
-      size: 20,
-      totalElements: 1,
-      totalPages: 1,
-    },
-    error: undefined,
+    data: resourceError
+      ? undefined
+      : {
+          content: [record],
+          page: 0,
+          size: 20,
+          totalElements: 1,
+          totalPages: 1,
+        },
+    error: resourceError,
     loading: false,
     reload,
     path:
@@ -97,7 +100,7 @@ describe("ServiceSection", () => {
     expect(
       screen.queryByRole("button", { name: "Sil" }),
     ).not.toBeInTheDocument();
-
+    expect(screen.queryByText("İşlem")).not.toBeInTheDocument();
     expect(screen.getByText("Periyodik bakım")).toBeInTheDocument();
   });
 
@@ -143,6 +146,29 @@ describe("ServiceSection", () => {
         }),
       ).not.toBeInTheDocument();
     });
+  });
+  it("başka MANUFACTURER servis listesinde 403 aldığında kayıtları ve aksiyonları göstermez", () => {
+    renderSection("MANUFACTURER", new ApiError(403, "Access denied"));
+
+    expect(screen.getByText(/bu işlem için yetkiniz yok/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/access denied/i)).toBeInTheDocument();
+
+    expect(screen.queryByText("Periyodik bakım")).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", { name: "Servis kaydı ekle" }),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", { name: "Düzenle" }),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", { name: "Sil" }),
+    ).not.toBeInTheDocument();
+
+    expect(screen.queryByText("İşlem")).not.toBeInTheDocument();
   });
 
   it("403 sahiplik hatasını kullanıcıya gösterir", async () => {
