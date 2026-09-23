@@ -21,6 +21,8 @@ import HomeOutlined from "@mui/icons-material/HomeOutlined";
 import CategoryOutlined from "@mui/icons-material/CategoryOutlined";
 import Inventory2Outlined from "@mui/icons-material/Inventory2Outlined";
 import ViewListOutlined from "@mui/icons-material/ViewListOutlined";
+import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
+import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import Logout from "@mui/icons-material/Logout";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import VerifiedOutlined from "@mui/icons-material/VerifiedOutlined";
@@ -31,6 +33,8 @@ const links = [
   { to: "/", label: "Anasayfa", icon: <HomeOutlined /> },
   { to: "/kategoriler", label: "Kategoriler", icon: <CategoryOutlined /> },
   { to: "/modeller", label: "Modeller", icon: <ViewListOutlined /> },
+  { to: "/markalar", label: "Markalar", icon: <LocalOfferOutlinedIcon /> },
+  { to: "/tedarikciler", label: "Tedarikçiler", icon: <BusinessOutlinedIcon /> },
   {
     to: "/pasaportlar",
     label: "Ürün pasaportları",
@@ -51,13 +55,6 @@ export function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMini, setIsMini] = useState(false);
   const [busy, setBusy] = useState(false);
-
-  const title =
-    links.find((link) =>
-      link.to === "/"
-        ? location.pathname === "/"
-        : location.pathname.startsWith(link.to),
-    )?.label || "Çalışma alanı";
 
   const drawerWidth = isMini ? 104 : 280;
 
@@ -95,7 +92,6 @@ export function Layout() {
         ) : (
           <>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-              {/* Mavi-Gri Geçişli Logo Kutusu */}
               <Box sx={{ width: 36, height: 36, background: "linear-gradient(135deg, #1650C8 0%, #334155 100%)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <Typography sx={{ color: "white", fontWeight: 900, fontSize: "16px" }}>T</Typography>
               </Box>
@@ -128,7 +124,6 @@ export function Layout() {
               justifyContent: isMini ? "center" : "flex-start",
               color: "#64748B",
               transition: "all 0.2s ease",
-              // Aktif menü öğesi kurumsal mavi tonu
               "&.active": { 
                 bgcolor: "#EFF6FF", 
                 color: "#1650C8",
@@ -283,7 +278,6 @@ export function HomePage() {
   const { user } = useAuth();
   return (
     <Stack spacing={4}>
-      {/* ÜST KISIM (HERO BANNER): Solu Koyu Mavi (#0F172A), Sağa doğru Metalik Griye (#475569) Açılan Muhteşem Geçiş */}
       <Box
         sx={{
           p: { xs: 3, md: 4 },
@@ -320,7 +314,6 @@ export function HomePage() {
         </Box>
       </Box>
 
-      {/* ALT KARTLAR (Mavi Vurgulu) */}
       <Box
         sx={{
           display: "grid",
@@ -368,6 +361,10 @@ export function HomePage() {
                   ? "Sistem kategorilerini düzenleyin ve hiyerarşiyi yönetin."
                   : link.to === "/modeller"
                   ? "Tüm ürün modellerini detaylı şekilde inceleyin."
+                  : link.to === "/markalar"
+                  ? "Sistemdeki üretici markalarını görüntüleyin ve yönetin."
+                  : link.to === "/tedarikciler"
+                  ? "Sistem tedarikçilerini görüntüleyin ve yönetin."
                   : link.to === "/pasaportlar"
                   ? "Pasaport ve donanım bilgilerine anında erişin."
                   : "Garanti süreçlerini ve servis kayıtlarını takip edin."}

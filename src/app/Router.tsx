@@ -12,6 +12,8 @@ import { LoginPage } from "../features/auth/LoginPage";
 import { Layout, HomePage, MessagePage } from "./Layout";
 import { CategoryPage } from "../features/categories/CategoryPage";
 import { ModelPage } from "../features/models/ModelPage";
+import { BrandPage } from "../features/brands/BrandPage";
+import { SupplierPage } from "../features/suppliers/SupplierPage";
 import {
   PassportList,
   PassportDetail,
@@ -43,6 +45,8 @@ export function AppRouter() {
             <Route index element={<HomePage />} />
             <Route path="/kategoriler" element={<CategoryPage />} />
             <Route path="/modeller" element={<ModelPage />} />
+            <Route path="/markalar" element={<BrandPage />} />
+            <Route path="/tedarikciler" element={<SupplierPage />} />
             <Route path="/pasaportlar" element={<PassportList />} />
             <Route path="/pasaportlar/:id" element={<PassportDetail />} />
             <Route path="/garantiler" element={<WarrantyPage />} />
