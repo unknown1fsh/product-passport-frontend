@@ -1,13 +1,11 @@
 import { useState } from "react";
 import {
-  AppBar,
   Avatar,
   Box,
   Button,
   Card,
   CardActionArea,
   Chip,
-  Divider,
   Drawer,
   IconButton,
   List,
@@ -15,7 +13,6 @@ import {
   ListItemIcon,
   ListItemText,
   Stack,
-  Toolbar,
   Typography,
 } from "@mui/material";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
@@ -31,7 +28,7 @@ import { useAuth } from "../features/auth/AuthProvider";
 import { sessionStore } from "../features/auth/session";
 
 const links = [
-  { to: "/", label: "Genel bakış", icon: <HomeOutlined /> },
+  { to: "/", label: "Anasayfa", icon: <HomeOutlined /> },
   { to: "/kategoriler", label: "Kategoriler", icon: <CategoryOutlined /> },
   { to: "/modeller", label: "Modeller", icon: <ViewListOutlined /> },
   {
@@ -51,7 +48,8 @@ const roles = { ADMIN: "Yönetici", MANUFACTURER: "Üretici", USER: "Kullanıcı
 export function Layout() {
   const { user } = useAuth();
   const location = useLocation();
-  const [open, setOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isMini, setIsMini] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const title =
@@ -61,71 +59,119 @@ export function Layout() {
         : location.pathname.startsWith(link.to),
     )?.label || "Çalışma alanı";
 
+  const drawerWidth = isMini ? 104 : 280;
+
   const navigation = (
     <Box
       sx={{
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        p: 2.5,
-        bgcolor: "primary.dark",
-        color: "white",
+        p: isMini ? 2 : 2.5,
+        bgcolor: "#FFFFFF",
+        borderRadius: "16px",
+        boxShadow: "0 4px 24px rgba(0, 0, 0, 0.04)",
+        overflowX: "hidden",
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        border: "1px solid rgba(0,0,0,0.04)"
       }}
     >
-      <Box sx={{ px: 1, pt: 2, pb: 4 }}>
-        <Typography sx={{ fontWeight: 800, letterSpacing: 3 }}>
-          TEIN<span style={{ color: "#8dc7ac" }}> /</span>
-        </Typography>
-        <Typography variant="body2" sx={{ color: "#bed5c9", mt: 1 }}>
-          Ürün Pasaportu
-        </Typography>
+      <Box sx={{ 
+        px: isMini ? 0 : 1, 
+        pt: 2, 
+        pb: 3, 
+        display: "flex", 
+        alignItems: "center", 
+        justifyContent: isMini ? "center" : "space-between", 
+        gap: 1 
+      }}>
+        {isMini ? (
+          <IconButton 
+            onClick={() => setIsMini(false)} 
+            sx={{ bgcolor: "#F1F5F9", color: "#1650C8", borderRadius: "12px", width: 44, height: 44, "&:hover": { bgcolor: "#E2E8F0" } }}
+          >
+            <MenuIcon />
+          </IconButton>
+        ) : (
+          <>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+              {/* Mavi-Gri Geçişli Logo Kutusu */}
+              <Box sx={{ width: 36, height: 36, background: "linear-gradient(135deg, #1650C8 0%, #334155 100%)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Typography sx={{ color: "white", fontWeight: 900, fontSize: "16px" }}>T</Typography>
+              </Box>
+              <Typography sx={{ fontWeight: 800, fontSize: "1.3rem", color: "#0F172A", letterSpacing: "-0.5px" }}>
+                TEIN<span style={{ color: "#1650C8" }}>.</span>
+              </Typography>
+            </Box>
+            <IconButton 
+              onClick={() => { setIsMini(true); setMobileOpen(false); }} 
+              sx={{ color: "#64748B", "&:hover": { color: "#0F172A", bgcolor: "#F1F5F9" } }}
+            >
+              <MenuIcon />
+            </IconButton>
+          </>
+        )}
       </Box>
-      <Typography variant="overline" sx={{ color: "#8eafa0", px: 2, mb: 1 }}>
-        ÇALIŞMA ALANI
-      </Typography>
-      <List>
+      
+      <List sx={{ px: isMini ? 0 : 1, flex: 1, pt: 2 }}>
         {links.map((link) => (
           <ListItemButton
             key={link.to}
             component={NavLink}
             to={link.to}
             end={link.to === "/"}
-            onClick={() => setOpen(false)}
+            onClick={() => setMobileOpen(false)}
             sx={{
-              borderRadius: 2,
+              borderRadius: "12px",
               mb: 1,
-              color: "#ccded5",
-              "&.active": { bgcolor: "#ffffff14", color: "white" },
-              "&:hover": { bgcolor: "#ffffff0b" },
+              py: 1.2,
+              justifyContent: isMini ? "center" : "flex-start",
+              color: "#64748B",
+              transition: "all 0.2s ease",
+              // Aktif menü öğesi kurumsal mavi tonu
+              "&.active": { 
+                bgcolor: "#EFF6FF", 
+                color: "#1650C8",
+                "& .MuiListItemIcon-root": { color: "#1650C8" },
+              },
+              "&:hover": { bgcolor: "#F8FAFC", color: "#0F172A" },
             }}
           >
-            <ListItemIcon sx={{ color: "inherit", minWidth: 38 }}>
+            <ListItemIcon sx={{ color: "inherit", minWidth: isMini ? 0 : 40, justifyContent: "center" }}>
               {link.icon}
             </ListItemIcon>
-            <ListItemText primary={link.label} />
+            {!isMini && (
+              <ListItemText 
+                primary={<Typography sx={{ fontWeight: 600, fontSize: "0.95rem" }}>{link.label}</Typography>} 
+              />
+            )}
           </ListItemButton>
         ))}
       </List>
-      <Box
-        sx={{
-          mt: "auto",
-          p: 2,
-          border: "1px solid #ffffff20",
-          borderRadius: 2,
-        }}
-      >
-        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-          Bilgiler bir arada.
-        </Typography>
-        <Typography variant="caption" sx={{ color: "#bdd2c7" }}>
-          Ürününüzün kayıtlarına güvenle erişin.
-        </Typography>
-      </Box>
+
+      {!isMini && (
+        <Box
+          sx={{
+            mt: "auto",
+            p: 2,
+            bgcolor: "#F8FAFC",
+            borderRadius: "12px",
+            border: "1px solid rgba(0,0,0,0.04)"
+          }}
+        >
+          <Typography variant="body2" sx={{ fontWeight: 700, color: "#0F172A" }}>
+            TEIN Destek
+          </Typography>
+          <Typography variant="caption" sx={{ color: "#64748B", display: "block", mt: 0.5 }}>
+            Yardıma mı ihtiyacınız var?
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100dvh" }}>
+    <Box sx={{ display: "flex", minHeight: "100dvh", bgcolor: "#F4F6F9" }}>
       <Box
         component="a"
         href="#main"
@@ -146,85 +192,86 @@ export function Layout() {
       <Box
         component="nav"
         aria-label="Ana menü"
-        sx={{ width: { md: 250 }, flexShrink: 0 }}
+        sx={{ 
+          width: { md: drawerWidth }, 
+          flexShrink: 0, 
+          transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)" 
+        }}
       >
         <Drawer
           variant="permanent"
           sx={{
             display: { xs: "none", md: "block" },
-            "& .MuiDrawer-paper": { width: 250, border: 0 },
+            "& .MuiDrawer-paper": { 
+              width: drawerWidth, 
+              border: 0, 
+              bgcolor: "transparent", 
+              p: 2.5,
+              overflowX: "hidden",
+              transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+            },
           }}
         >
           {navigation}
         </Drawer>
         <Drawer
-          open={open}
-          onClose={() => setOpen(false)}
-          sx={{ display: { md: "none" }, "& .MuiDrawer-paper": { width: 250 } }}
+          open={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+          sx={{ display: { md: "none" }, "& .MuiDrawer-paper": { width: 280, p: 2, bgcolor: "#FFFFFF", border: "none" } }}
         >
           {navigation}
         </Drawer>
       </Box>
-      <Box sx={{ flex: 1, minWidth: 0 }}>
-        <AppBar
-          position="sticky"
-          color="inherit"
-          elevation={0}
-          sx={{ borderBottom: 1, borderColor: "divider" }}
-        >
-          <Toolbar sx={{ gap: 2 }}>
-            <IconButton
-              aria-label="Menüyü aç"
-              onClick={() => setOpen(true)}
-              sx={{ display: { md: "none" } }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
-              {title}
-            </Typography>
-            <Avatar
-              sx={{
-                width: 32,
-                height: 32,
-                bgcolor: "#e4eee7",
-                color: "primary.main",
-                fontSize: 14,
-              }}
-            >
-              {user?.firstName.charAt(0)}
-            </Avatar>
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              <Typography variant="body2" sx={{ fontWeight: 650 }}>
-                {user?.firstName} {user?.lastName}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {user && roles[user.role]}
-              </Typography>
-            </Box>
-            <Button
-              color="inherit"
-              size="small"
-              startIcon={<Logout />}
-              disabled={busy}
-              onClick={async () => {
-                setBusy(true);
-                try {
-                  await sessionStore.logout();
-                } finally {
-                  setBusy(false);
-                }
-              }}
-            >
-              Çıkış
-            </Button>
-          </Toolbar>
-        </AppBar>
+
+      <Box sx={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", p: { xs: 2, md: 3 }, pl: { md: 1 } }}>
         <Box
-          component="main"
-          id="main"
-          sx={{ p: { xs: 2.5, md: 5 }, maxWidth: 1440, mx: "auto" }}
+          sx={{ 
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: "space-between", 
+            mb: 4,
+            gap: 2
+          }}
         >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <IconButton 
+              onClick={() => setMobileOpen(true)} 
+              sx={{ display: { md: "none" }, bgcolor: "#FFFFFF", border: "1px solid rgba(0,0,0,0.06)" }}
+            >
+              <MenuIcon sx={{ color: "#0F172A" }} />
+            </IconButton>
+          </Box>
+          
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", bgcolor: "#FFFFFF", border: "1px solid rgba(0,0,0,0.06)", px: 1.5, py: 1, borderRadius: "50px", boxShadow: "0 2px 10px rgba(0,0,0,0.02)" }}>
+              <Avatar sx={{ width: 32, height: 32, background: "linear-gradient(135deg, #1650C8 0%, #334155 100%)", color: "#FFFFFF", fontSize: 14, fontWeight: 700, mr: 1.5 }}>
+                {user?.firstName.charAt(0)}
+              </Avatar>
+              <Box sx={{ display: { xs: "none", sm: "block" }, mr: 2 }}>
+                <Typography variant="body2" sx={{ fontWeight: 700, color: "#0F172A", lineHeight: 1.2 }}>
+                  {user?.firstName} {user?.lastName}
+                </Typography>
+                <Typography variant="caption" sx={{ color: "#64748B", fontWeight: 500 }}>
+                  {user && roles[user.role]}
+                </Typography>
+              </Box>
+              <Box sx={{ width: "1px", height: "24px", bgcolor: "rgba(0,0,0,0.08)", mx: 1 }} />
+              <IconButton 
+                size="small" 
+                onClick={async () => {
+                  setBusy(true);
+                  try { await sessionStore.logout(); } finally { setBusy(false); }
+                }}
+                disabled={busy}
+                sx={{ color: "#64748B", "&:hover": { bgcolor: "#FEECEB", color: "#D93025" } }}
+              >
+                <Logout fontSize="small" />
+              </IconButton>
+            </Box>
+          </Box>
+        </Box>
+
+        <Box component="main" id="main" sx={{ flex: 1 }}>
           <Outlet />
         </Box>
       </Box>
@@ -236,82 +283,111 @@ export function HomePage() {
   const { user } = useAuth();
   return (
     <Stack spacing={4}>
-      <Box>
-        <Typography variant="overline" color="primary">
-          ÜRÜN YÖNETİMİ
-        </Typography>
-        <Typography variant="h4" component="h1">
-          Merhaba, {user?.firstName}.
-        </Typography>
-        <Typography color="text.secondary" sx={{ mt: 1 }}>
-          Ürün kayıtlarınıza ve katalog bilgilerinize buradan ulaşabilirsiniz.
-        </Typography>
-      </Box>
+      {/* ÜST KISIM (HERO BANNER): Solu Koyu Mavi (#0F172A), Sağa doğru Metalik Griye (#475569) Açılan Muhteşem Geçiş */}
       <Box
         sx={{
           p: { xs: 3, md: 4 },
-          borderRadius: 3,
-          bgcolor: "#e5eee6",
-          border: "1px solid #d7e3d9",
+          borderRadius: "16px",
+          background: "linear-gradient(135deg, #0F172A 0%, #1D4ED8 50%, #475569 100%)", 
+          boxShadow: "0 14px 36px rgba(15, 23, 42, 0.25)", 
           display: "flex",
-          gap: 3,
+          justifyContent: "space-between",
           alignItems: "center",
+          flexWrap: "wrap",
+          gap: 3,
+          color: "#FFFFFF"
         }}
       >
-        <Inventory2Outlined
-          sx={{
-            fontSize: 48,
-            color: "primary.main",
-            display: { xs: "none", sm: "block" },
-          }}
-        />
         <Box>
-          <Chip
-            label="Çalışma alanınız hazır"
-            size="small"
-            sx={{ bgcolor: "white", mb: 2 }}
-          />
-          <Typography variant="h5">
-            Her kayıtta daha fazla görünürlük
+          <Chip label="Sistem Aktif" size="small" sx={{ bgcolor: "rgba(255,255,255,0.15)", color: "#93C5FD", fontWeight: 700, mb: 2, borderRadius: "6px" }} />
+          <Typography variant="h4" sx={{ fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.5px" }}>
+            Merhaba, {user?.firstName}
           </Typography>
-          <Typography color="text.secondary" sx={{ mt: 1 }}>
-            Kategorileri düzenleyin, ürün pasaportlarını inceleyin ve doğru
-            bilgiye ulaşın.
+          <Typography sx={{ color: "#CBD5E1", mt: 1, fontSize: "1.05rem", fontWeight: 400 }}>
+            Bugün ürün kayıtlarınızla ilgili işlemleri hızlıca halledebilirsiniz.
           </Typography>
         </Box>
+        
+        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
+          <Box sx={{ textAlign: "center", p: 2, px: 3, bgcolor: "rgba(255,255,255,0.1)", backdropFilter: "blur(10px)", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.15)" }}>
+            <Typography variant="h5" sx={{ fontWeight: 800, color: "#FFFFFF" }}>24</Typography>
+            <Typography variant="caption" sx={{ color: "#E2E8F0", fontWeight: 600 }}>Pasaport</Typography>
+          </Box>
+          <Box sx={{ textAlign: "center", p: 2, px: 3, bgcolor: "rgba(255,255,255,0.1)", backdropFilter: "blur(10px)", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.15)" }}>
+            <Typography variant="h5" sx={{ fontWeight: 800, color: "#FFFFFF" }}>12</Typography>
+            <Typography variant="caption" sx={{ color: "#E2E8F0", fontWeight: 600 }}>Model</Typography>
+          </Box>
+        </Box>
       </Box>
+
+      {/* ALT KARTLAR (Mavi Vurgulu) */}
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+          gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
           gap: 3,
         }}
       >
         {links.slice(1).map((link) => (
-          <Card key={link.to}>
-            <CardActionArea component={Link} to={link.to} sx={{ p: 3 }}>
-              <Box sx={{ color: "primary.main", mb: 3 }}>{link.icon}</Box>
-              <Typography variant="h6">{link.label}</Typography>
-              <Typography color="text.secondary" sx={{ mt: 1, mb: 3 }}>
+          <Card 
+            key={link.to} 
+            elevation={0}
+            sx={{ 
+              borderRadius: "16px", 
+              bgcolor: "#FFFFFF",
+              border: "1px solid rgba(0,0,0,0.06)", 
+              transition: "all 0.2s ease",
+              "&:hover": {
+                transform: "translateY(-4px)",
+                boxShadow: "0 12px 30px rgba(0,0,0,0.06)",
+                borderColor: "rgba(22, 80, 200, 0.4)", 
+              }
+            }}
+          >
+            <CardActionArea component={Link} to={link.to} sx={{ p: 4, height: "100%", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+              <Box 
+                sx={{ 
+                  color: "#1650C8", 
+                  mb: 3,
+                  width: 48,
+                  height: 48,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  bgcolor: "#EFF6FF", 
+                  borderRadius: "12px",
+                  transition: "all 0.2s ease",
+                  ".MuiCardActionArea-root:hover &": { background: "linear-gradient(135deg, #1650C8 0%, #334155 100%)", color: "#FFFFFF" }
+                }}
+              >
+                {link.icon}
+              </Box>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: "#0F172A" }}>{link.label}</Typography>
+              <Typography sx={{ color: "#64748B", mt: 1, mb: 3, flex: 1, fontSize: "0.95rem", lineHeight: 1.5 }}>
                 {link.to === "/kategoriler"
-                  ? "Ürünleri ortak kategorilerle düzenleyin."
+                  ? "Sistem kategorilerini düzenleyin ve hiyerarşiyi yönetin."
                   : link.to === "/modeller"
-                  ? "Modellerinizi inceleyin ve yönetin."
-                  : "Model, satın alma ve fatura bilgilerini inceleyin."}
+                  ? "Tüm ürün modellerini detaylı şekilde inceleyin."
+                  : link.to === "/pasaportlar"
+                  ? "Pasaport ve donanım bilgilerine anında erişin."
+                  : "Garanti süreçlerini ve servis kayıtlarını takip edin."}
               </Typography>
-              <Divider />
               <Stack
                 direction="row"
                 sx={{
+                  width: "100%",
                   justifyContent: "space-between",
-                  mt: 2,
-                  color: "primary.main",
+                  alignItems: "center",
+                  mt: "auto",
+                  pt: 2.5,
+                  borderTop: "1px solid rgba(0,0,0,0.06)", 
+                  color: "#1650C8",
                 }}
               >
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  Kayıtları görüntüle
+                  İncele
                 </Typography>
-                <ArrowForward fontSize="small" />
+                <ArrowForward fontSize="small" sx={{ transition: "transform 0.2s", ".MuiCardActionArea-root:hover &": { transform: "translateX(4px)" } }} />
               </Stack>
             </CardActionArea>
           </Card>
@@ -321,21 +397,18 @@ export function HomePage() {
   );
 }
 
-export function MessagePage({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
+export function MessagePage({ title, description }: { title: string; description: string; }) {
   return (
-    <Stack spacing={2} sx={{ alignItems: "flex-start", py: 6 }}>
-      <Typography component="h1" variant="h4">
+    <Stack spacing={2} sx={{ alignItems: "center", justifyContent: "center", py: 10, textAlign: "center", minHeight: "60vh" }}>
+      <Box sx={{ width: 80, height: 80, borderRadius: "20px", bgcolor: "#FFFFFF", border: "1px solid rgba(0,0,0,0.06)", display: "flex", alignItems: "center", justifyContent: "center", mb: 2 }}>
+        <Inventory2Outlined sx={{ fontSize: 32, color: "#1650C8" }} />
+      </Box>
+      <Typography component="h1" variant="h4" sx={{ color: "#0F172A", fontWeight: 800 }}>
         {title}
       </Typography>
-      <Typography color="text.secondary">{description}</Typography>
-      <Button component={Link} to="/" variant="contained">
-        Ana sayfaya dön
+      <Typography sx={{ color: "#64748B", fontWeight: 500 }}>{description}</Typography>
+      <Button component={Link} to="/" variant="contained" sx={{ mt: 3, background: "linear-gradient(135deg, #1650C8 0%, #334155 100%)", color: "#FFFFFF", borderRadius: "8px", px: 4, fontWeight: 600, textTransform: "none", boxShadow: "none", "&:hover": { background: "linear-gradient(135deg, #0f3a9e 0%, #1E293B 100%)" } }}>
+        Anasayfaya dön
       </Button>
     </Stack>
   );
