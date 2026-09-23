@@ -14,6 +14,7 @@ import {
 import type { Category } from "../../shared/types";
 import { categoryApi } from "./api";
 import { ErrorNotice } from "../../shared/ui/Feedback";
+
 export function CategoryForm({
   category,
   onClose,
@@ -29,6 +30,7 @@ export function CategoryForm({
   const [active, setActive] = useState(category?.active ?? true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<unknown>();
+
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!name.trim() || !code.trim()) {
@@ -38,7 +40,6 @@ export function CategoryForm({
     setBusy(true);
     setError(undefined);
     try {
-      // Güncelleme DTO'sunda code yoktur; değişmez alanı sunucuya göndermeyin.
       if (category)
         await categoryApi.update(category.publicId, {
           name: name.trim(),
@@ -58,6 +59,7 @@ export function CategoryForm({
       setBusy(false);
     }
   }
+
   return (
     <Dialog
       open
@@ -67,9 +69,10 @@ export function CategoryForm({
       fullWidth
       maxWidth="sm"
       aria-labelledby="category-form-title"
+      sx={{ "& .MuiDialog-paper": { borderRadius: "16px" } }}
     >
       <form onSubmit={submit}>
-        <DialogTitle id="category-form-title">
+        <DialogTitle id="category-form-title" sx={{ fontWeight: 700, color: "#0F172A" }}>
           {category ? "Kategoriyi düzenle" : "Yeni kategori"}
         </DialogTitle>
         <DialogContent>
@@ -81,17 +84,21 @@ export function CategoryForm({
               disabled={!!category}
               value={code}
               onChange={(e) => setCode(e.target.value)}
+              size="small"
               slotProps={{ htmlInput: { maxLength: 100 } }}
               helperText={
                 category ? "Kod sonradan değiştirilemez." : "Örnek: BEYAZ-ESYA"
               }
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "10px" } }}
             />
             <TextField
               label="Kategori adı"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
+              size="small"
               slotProps={{ htmlInput: { maxLength: 150 } }}
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "10px" } }}
             />
             <TextField
               label="Açıklama"
@@ -99,8 +106,10 @@ export function CategoryForm({
               minRows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              size="small"
               slotProps={{ htmlInput: { maxLength: 500 } }}
               helperText={description.length + "/500"}
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "10px" } }}
             />
             {category && (
               <FormControlLabel
@@ -115,11 +124,34 @@ export function CategoryForm({
             )}
           </Stack>
         </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button onClick={onClose} disabled={busy}>
+        <DialogActions sx={{ p: 3, pt: 1, gap: 1 }}>
+          <Button
+            onClick={onClose}
+            disabled={busy}
+            sx={{
+              color: "#0F172A",
+              fontWeight: 600,
+              textTransform: "none",
+              "&:hover": { bgcolor: "rgba(15, 23, 42, 0.04)" },
+            }}
+          >
             Vazgeç
           </Button>
-          <Button variant="contained" type="submit" disabled={busy}>
+          <Button
+            variant="contained"
+            type="submit"
+            disabled={busy}
+            sx={{
+              bgcolor: "#0F172A",
+              fontWeight: 600,
+              borderRadius: "10px",
+              px: 3,
+              py: 1,
+              textTransform: "none",
+              boxShadow: "none",
+              "&:hover": { bgcolor: "#1E293B" },
+            }}
+          >
             {busy ? "Kaydediliyor…" : "Kaydet"}
           </Button>
         </DialogActions>
