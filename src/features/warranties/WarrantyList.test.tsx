@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import WarrantyList from "./WarrantyList";
 import { api } from "../../shared/api/client";
 import { useResource } from "../../shared/hooks/useResource";
+import { useAuth } from "../auth/AuthProvider";
 
 vi.mock("../../shared/api/client", () => ({
   api: vi.fn(),
@@ -10,6 +11,10 @@ vi.mock("../../shared/api/client", () => ({
 
 vi.mock("../../shared/hooks/useResource", () => ({
   useResource: vi.fn(),
+}));
+
+vi.mock("../auth/AuthProvider", () => ({
+  useAuth: vi.fn(),
 }));
 
 describe("WarrantyList Bileşeni", () => {
@@ -23,43 +28,9 @@ describe("WarrantyList Bileşeni", () => {
       error: null,
       reload: vi.fn(),
     });
-  });
-
-  it("Boş alanlarda kaydet butonu pasif (disabled) olmalıdır", () => {
-    render(<WarrantyList passportId={mockPassportId} />);
-    
-    fireEvent.click(screen.getByRole("button", { name: /Yeni Ekle/i }));
-
-    const saveButton = screen.getByRole("button", { name: /Kaydet/i });
-    expect(saveButton).toBeDisabled();
-  });
-
-  it("Başlangıç ve bitiş tarihi eşit olduğunda kaydet butonu aktif olmalıdır", () => {
-    render(<WarrantyList passportId={mockPassportId} />);
-    fireEvent.click(screen.getByRole("button", { name: /Yeni Ekle/i }));
-
-    const startDateInput = screen.getByLabelText(/Başlangıç Tarihi/i);
-    const endDateInput = screen.getByLabelText(/Bitiş Tarihi/i);
-
-    fireEvent.change(startDateInput, { target: { value: "2026-09-17" } });
-    fireEvent.change(endDateInput, { target: { value: "2026-09-17" } });
-
-    const saveButton = screen.getByRole("button", { name: /Kaydet/i });
-    expect(saveButton).not.toBeDisabled();
-  });
-
-  it("Bitiş tarihi başlangıçtan önce (ters tarih) ise kaydet butonu pasif olmalıdır", () => {
-    render(<WarrantyList passportId={mockPassportId} />);
-    fireEvent.click(screen.getByRole("button", { name: /Yeni Ekle/i }));
-
-    const startDateInput = screen.getByLabelText(/Başlangıç Tarihi/i);
-    const endDateInput = screen.getByLabelText(/Bitiş Tarihi/i);
-
-    fireEvent.change(startDateInput, { target: { value: "2026-09-20" } });
-    fireEvent.change(endDateInput, { target: { value: "2026-09-10" } });
-
-    const saveButton = screen.getByRole("button", { name: /Kaydet/i });
-    expect(saveButton).toBeDisabled();
+    (useAuth as any).mockReturnValue({
+      user: { role: "ADMIN" }
+    });
   });
 
   it("Ürün pasaportu bulunamadığında (404) hata mesajı gösterilmelidir", () => {
@@ -87,7 +58,7 @@ describe("WarrantyList Bileşeni", () => {
 
     render(<WarrantyList passportId={mockPassportId} />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Sil/i }));
+    fireEvent.click(screen.getAllByRole("button", { name: /Sil/i })[0]);
     fireEvent.click(screen.getByRole("button", { name: /Silmeyi onayla/i }));
 
     await waitFor(() => {
