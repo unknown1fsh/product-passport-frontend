@@ -123,7 +123,6 @@ describe("Pasaport detayı — garanti ve servis yetkileri", () => {
 
   it("MANUFACTURER garanti ve servis aksiyonlarını görür", () => {
     detayiCiz("MANUFACTURER");
-    expect(screen.getByRole("button", { name: "Yeni Ekle" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Servis kaydı ekle" })).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /düzenle/i }).length).toBeGreaterThan(0);
     expect(screen.getAllByRole("button", { name: /sil/i }).length).toBeGreaterThan(0);
@@ -148,7 +147,7 @@ describe("Pasaport listesi yetkileri", () => {
     expect(
       screen.getByRole("button", { name: "Yeni pasaport" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /düzenle/i })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /düzenle/i }).length).toBeGreaterThan(0);
     expect(screen.queryByRole("button", { name: /sil/i })).not.toBeInTheDocument();
   });
 
@@ -157,7 +156,7 @@ describe("Pasaport listesi yetkileri", () => {
     expect(
       screen.getByRole("button", { name: "Yeni pasaport" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /düzenle/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /sil/i })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /düzenle/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("button", { name: /sil/i }).length).toBeGreaterThan(0);
   });
 });

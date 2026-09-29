@@ -40,7 +40,7 @@ describe("Pasaport formu", () => {
     it("satın alma tarihini 2000 ile bugün arasına sınırlar", () => {
         render(<PassportForm onClose={() => {}} onSaved={() => {}} />);
 
-        const tarih = screen.getByLabelText(/^Satın alma tarihi/);
+        const tarih = screen.getByLabelText(/Satın alma tarihi/i);
         expect(tarih).toHaveAttribute("min", "2000-01-01");
         expect(tarih).toHaveAttribute("max", new Date().toLocaleDateString("sv-SE"));
     });
@@ -51,10 +51,10 @@ describe("Pasaport formu", () => {
         render(<PassportForm onClose={() => {}} onSaved={saved} />);
 
 
-        await user.type(screen.getByLabelText(/^Seri numarası/), "SN-00001-TEST");
+        await user.type(screen.getByRole("textbox", { name: /Seri numarası/i }), "SN-00001-TEST");
         await user.click(screen.getByRole("button", { name: "kategori seç" }));
         await user.click(screen.getByRole("button", { name: "model seç" }));
-        fireEvent.change(screen.getByLabelText(/^Satın alma tarihi/), {
+        fireEvent.change(screen.getByLabelText(/Satın alma tarihi/i), {
             target: { value: "2026-09-01" },
         });
 

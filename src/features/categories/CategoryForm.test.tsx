@@ -4,16 +4,20 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { CategoryForm } from "./CategoryForm";
 import { categoryApi } from "./api";
 import { ApiError } from "../../shared/api/http";
+
 vi.mock("./api", () => ({ categoryApi: { create: vi.fn(), update: vi.fn() } }));
 beforeEach(() => vi.resetAllMocks());
+
 describe("Kategori formu", () => {
   it("boşlukları temizleyerek kayıt oluşturur", async () => {
     const saved = vi.fn();
     render(<CategoryForm onClose={() => {}} onSaved={saved} />);
     const user = userEvent.setup();
-    await user.type(screen.getByLabelText(/^Kod/), " EV ");
-    await user.type(screen.getByLabelText(/^Kategori adı/), " Ev Ürünleri ");
+    
+    await user.type(screen.getByRole("textbox", { name: /Kod/i }), " EV ");
+    await user.type(screen.getByRole("textbox", { name: /Kategori adı/i }), " Ev Ürünleri ");
     await user.click(screen.getByRole("button", { name: "Kaydet" }));
+    
     await waitFor(() => expect(saved).toHaveBeenCalled());
     expect(categoryApi.create).toHaveBeenCalledWith({
       code: "EV",
@@ -21,6 +25,7 @@ describe("Kategori formu", () => {
       description: "",
     });
   });
+
   it("düzenlemede kodu göndermez, aktifliği korur", async () => {
     render(
       <CategoryForm
@@ -35,8 +40,10 @@ describe("Kategori formu", () => {
         onSaved={() => {}}
       />,
     );
-    expect(screen.getByLabelText(/^Kod/)).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: /Kod/i })).toBeDisabled();
+    
     await userEvent.click(screen.getByRole("button", { name: "Kaydet" }));
+    
     await waitFor(() =>
       expect(categoryApi.update).toHaveBeenCalledWith("id", {
         name: "Ev",
@@ -45,15 +52,18 @@ describe("Kategori formu", () => {
       }),
     );
   });
+
   it("409 mesajını gösterir ve formu kapatmaz", async () => {
     vi.mocked(categoryApi.create).mockRejectedValue(
       new ApiError(409, "Kod zaten kullanılıyor"),
     );
     const saved = vi.fn();
     render(<CategoryForm onClose={() => {}} onSaved={saved} />);
-    await userEvent.type(screen.getByLabelText(/^Kod/), "EV");
-    await userEvent.type(screen.getByLabelText(/^Kategori adı/), "Ev");
+    
+    await userEvent.type(screen.getByRole("textbox", { name: /Kod/i }), "EV");
+    await userEvent.type(screen.getByRole("textbox", { name: /Kategori adı/i }), "Ev");
     await userEvent.click(screen.getByRole("button", { name: "Kaydet" }));
+    
     expect(
       await screen.findByText("Kod zaten kullanılıyor"),
     ).toBeInTheDocument();

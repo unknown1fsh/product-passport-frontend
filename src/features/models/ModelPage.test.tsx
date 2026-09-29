@@ -7,7 +7,7 @@ import { ModelSelect } from "./ModelSelect";
 import { api } from "../../shared/api/client";
 import { useResource } from "../../shared/hooks/useResource";
 import { useAuth } from "../auth/AuthProvider";
-
+import { ApiError } from "../../shared/api/http";
 
 vi.mock("../../shared/api/client", () => ({
   api: vi.fn(),
@@ -21,7 +21,6 @@ vi.mock("../auth/AuthProvider", () => ({
   useAuth: vi.fn(),
 }));
 
-
 const renderWithRouter = (ui: React.ReactElement) => {
   return render(<MemoryRouter>{ui}</MemoryRouter>);
 };
@@ -30,9 +29,8 @@ describe("ECR-07: Model Modülü Testleri", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
-    // Varsayılan olarak listeyi dolu ve yetkiyi ADMIN olarak ayarlıyoruz
-    vi.mocked(useAuth).mockReturnValue({ user: { role: "ADMIN" } } as ReturnType<typeof useAuth>);
-    vi.mocked(useResource).mockReturnValue({
+    (useAuth as any).mockReturnValue({ user: { role: "ADMIN" } });
+    (useResource as any).mockReturnValue({
       data: {
         content: [
           { publicId: "uuid-1", code: "M-01", name: "Test Model", active: true, brandName: "Test Marka" },
@@ -42,8 +40,7 @@ describe("ECR-07: Model Modülü Testleri", () => {
       loading: false,
       error: null,
       reload: vi.fn(),
-      path: "/product-models?page=0&size=20",
-    } as ReturnType<typeof useResource>);
+    });
   });
 
   it("ModelSelect bileşeni doğru UUID değerini onChange ile iletir (Sayfa dışı seçim testi)", async () => {
@@ -62,17 +59,17 @@ describe("ECR-07: Model Modülü Testleri", () => {
   });
 
   it("Model silinirken pasaport bağlıysa 409 Conflict hatasını yakalar ve gösterir", async () => {
-    vi.mocked(api).mockRejectedValueOnce({ status: 409, message: "409 Conflict" });
+    (api as any).mockRejectedValueOnce(new ApiError(409, "Bu modele bağlı pasaport bulunduğu için silinemez"));
     const user = userEvent.setup();
 
     renderWithRouter(<ModelPage />);
 
-    const deleteBtn = screen.getByRole("button", { name: /Sil/i });
+    const deleteBtn = screen.getAllByRole("button", { name: /Sil/i })[0];
     await user.click(deleteBtn);
 
- 
     const dialog = screen.getByRole("dialog");
-    const confirmBtn = within(dialog).getByRole("button", { name: /Evet, Sil/i });
+    // "Evet, Sil" yerine DOM'daki gerçek adı olan "Silmeyi onayla" kullanıyoruz
+    const confirmBtn = within(dialog).getByRole("button", { name: /Silmeyi onayla/i });
     await user.click(confirmBtn);
 
     await waitFor(() => {
@@ -81,27 +78,26 @@ describe("ECR-07: Model Modülü Testleri", () => {
   });
 
   it("Model oluşturulurken 403 Yetkisiz Erişim (Forbidden) hatasını yakalar ve gösterir", async () => {
-    vi.mocked(api).mockRejectedValueOnce({ status: 403, message: "Başka üretici markasında 403 görünür" });
+    (api as any).mockRejectedValueOnce(new ApiError(403, "Yetkisiz işlem gerçekleştirilemez"));
     const user = userEvent.setup();
 
     renderWithRouter(<ModelPage />);
 
-    const addBtn = screen.getByRole("button", { name: /Yeni Model/i });
+    const addBtn = screen.getByRole("button", { name: /Yeni/i });
     await user.click(addBtn);
 
-  
-    const dialog = screen.getByRole("dialog");
+    const dialog = await screen.findByRole("dialog");
 
-   
     await user.type(within(dialog).getByLabelText(/Model Kodu/i), "TEST-CODE");
     await user.type(within(dialog).getByLabelText(/Model Adı/i), "TEST-NAME");
     await user.type(within(dialog).getByLabelText(/Marka UUID/i), "test-brand-uuid");
 
-    const saveBtn = within(dialog).getByRole("button", { name: /Kaydet/i });
+    // "Kaydet" yerine DOM'daki gerçek adı olan "Oluştur" butonunu kullanıyoruz
+    const saveBtn = within(dialog).getByRole("button", { name: /Oluştur/i });
     await user.click(saveBtn);
 
     await waitFor(() => {
-      expect(within(dialog).getByText(/403/i)).toBeInTheDocument();
+      expect(within(dialog).getByText(/Yetkisiz işlem gerçekleştirilemez/i)).toBeInTheDocument();
     });
   });
 });

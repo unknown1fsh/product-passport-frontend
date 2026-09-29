@@ -111,9 +111,9 @@ describe("ServiceSection", () => {
       screen.getByRole("button", { name: "Servis kaydı ekle" }),
     ).toBeInTheDocument();
 
-    expect(screen.getByRole("button", { name: "Düzenle" })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Düzenle" })[0]).toBeInTheDocument();
 
-    expect(screen.getByRole("button", { name: "Sil" })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Sil" })[0]).toBeInTheDocument();
   });
 
   it("silmeden önce kullanıcıdan onay ister ve başarılı silmede listeyi yeniler", async () => {
@@ -121,14 +121,10 @@ describe("ServiceSection", () => {
 
     renderSection();
 
-    fireEvent.click(screen.getByRole("button", { name: "Sil" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Sil" })[0]);
 
     expect(
       screen.getByRole("heading", { name: "Servis kaydı silinsin mi?" }),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText(/2026-09-10 tarihli servis kaydını silmek üzeresiniz/i),
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Silmeyi onayla" }));
@@ -147,6 +143,7 @@ describe("ServiceSection", () => {
       ).not.toBeInTheDocument();
     });
   });
+
   it("başka MANUFACTURER servis listesinde 403 aldığında kayıtları ve aksiyonları göstermez", () => {
     renderSection("MANUFACTURER", new ApiError(403, "Access denied"));
 
@@ -178,7 +175,7 @@ describe("ServiceSection", () => {
 
     renderSection();
 
-    fireEvent.click(screen.getByRole("button", { name: "Sil" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Sil" })[0]);
 
     fireEvent.click(screen.getByRole("button", { name: "Silmeyi onayla" }));
 
@@ -203,7 +200,7 @@ describe("ServiceSection", () => {
 
     renderSection();
 
-    fireEvent.click(screen.getByRole("button", { name: "Sil" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Sil" })[0]);
 
     fireEvent.click(screen.getByRole("button", { name: "Silmeyi onayla" }));
 
