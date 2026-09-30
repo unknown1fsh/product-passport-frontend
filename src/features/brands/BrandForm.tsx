@@ -80,7 +80,7 @@ export function BrandForm({ brand, onClose, onSaved }: BrandFormProps) {
             {error !== undefined && <ErrorNotice error={error} />}
 
             <TextField
-              label="Marka Adı *"
+              label="Marka Adı"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
