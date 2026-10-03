@@ -188,6 +188,7 @@ export function BrandPage() {
                     <TableRow sx={{ bgcolor: "#F8FAFC" }}>
                       <TableCell sx={{ fontWeight: 600, color: "#475569", py: 2 }}>Kod (ID)</TableCell>
                       <TableCell sx={{ fontWeight: 600, color: "#475569", py: 2 }}>Marka adı</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: "#475569", py: 2 }}>Açıklama</TableCell>
                       <TableCell sx={{ fontWeight: 600, color: "#475569", py: 2 }}>Durum</TableCell>
                       {canManage && <TableCell align="right" sx={{ fontWeight: 600, color: "#475569", py: 2 }}>İşlemler</TableCell>}
                     </TableRow>
@@ -203,6 +204,11 @@ export function BrandPage() {
                         <TableCell>
                           <Typography sx={{ fontWeight: 600, color: "#0F172A" }}>
                             {brand.name}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2" sx={{ color: "#64748B" }}>
+                            {brand.description || "-"}
                           </Typography>
                         </TableCell>
                         <TableCell>
@@ -249,7 +255,7 @@ export function BrandPage() {
                     ))}
                     {!data?.content.length && (
                       <TableRow>
-                        <TableCell colSpan={canManage ? 4 : 3} sx={{ py: 6, textAlign: "center", color: "#64748B" }}>
+                        <TableCell colSpan={canManage ? 5 : 4} sx={{ py: 6, textAlign: "center", color: "#64748B" }}>
                           Kayıtlı marka bulunamadı.
                         </TableCell>
                       </TableRow>
@@ -292,6 +298,9 @@ export function BrandPage() {
                       </Box>
                       <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#0F172A" }}>
                         {brand.name}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: "#64748B", mt: 1 }}>
+                        {brand.description || "Açıklama bulunmuyor."}
                       </Typography>
                     </Box>
                     <Box sx={{ px: 2.5, py: 1.5, borderTop: "1px solid rgba(0,0,0,0.04)", display: "flex", justifyContent: "flex-end", gap: 1, bgcolor: "#F8FAFC" }}>

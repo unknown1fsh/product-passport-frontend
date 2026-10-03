@@ -8,7 +8,7 @@ import {
   DialogTitle,
   Stack,
   TextField,
-  FormControlLabel,
+  Typography,
   Switch,
 } from "@mui/material";
 import { ErrorNotice } from "../../shared/ui/Feedback";
@@ -80,7 +80,7 @@ export function BrandForm({ brand, onClose, onSaved }: BrandFormProps) {
             {error !== undefined && <ErrorNotice error={error} />}
 
             <TextField
-              label="Marka Adı *"
+              label="Marka Adı"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -102,16 +102,23 @@ export function BrandForm({ brand, onClose, onSaved }: BrandFormProps) {
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "10px" } }}
             />
 
-            <FormControlLabel
-              control={
+            <Box
+               sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
+                }}
+              >
+                <Typography sx={{ color: "#0F172A" }}>
+                  Aktif
+                </Typography>
+
                 <Switch
-                  checked={active}
-                  onChange={(e) => setActive(e.target.checked)}
-                  color="primary"
-                />
-              }
-              label="Aktif"
-            />
+                checked={active}
+                onChange={(e) => setActive(e.target.checked)}
+                color="primary"
+                  />
+                  </Box>
           </Stack>
         </DialogContent>
 
