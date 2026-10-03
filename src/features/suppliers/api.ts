@@ -8,21 +8,41 @@ export interface Supplier {
   description?: string;
   email: string;
   phone?: string;
+  contactName?: string;
   active: boolean;
   createdAt?: string;
 }
+
+export type SupplierCreateRequest = {
+  code: string;
+  name: string;
+  email: string;
+  description?: string;
+  phone?: string;
+  contactName?: string;
+};
+
+export type SupplierUpdateRequest = Omit<
+  SupplierCreateRequest,
+  "code" | "description" | "phone" | "contactName"
+> & {
+  active: boolean;
+  description?: string | null;
+  phone?: string | null;
+  contactName?: string | null;
+};
 
 export const supplierApi = {
   list: async (query: string): Promise<PageResponse<Supplier>> => {
     return api<PageResponse<Supplier>>("/product-suppliers?" + query);
   },
-  create: async (data: Partial<Supplier>) => {
+  create: async (data: SupplierCreateRequest) => {
     return api("/product-suppliers", {
       method: "POST",
       body: JSON.stringify(data),
     });
   },
-  update: async (publicId: string, data: Partial<Supplier>) => {
+  update: async (publicId: string, data: SupplierUpdateRequest) => {
     return api("/product-suppliers/" + publicId, {
       method: "PUT",
       body: JSON.stringify(data),

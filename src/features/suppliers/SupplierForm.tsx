@@ -25,6 +25,7 @@ export function SupplierForm({ supplier, onClose, onSaved }: SupplierFormProps) 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [contactName, setContactName] = useState("");
   const [description, setDescription] = useState("");
   const [active, setActive] = useState(true);
   
@@ -37,6 +38,7 @@ export function SupplierForm({ supplier, onClose, onSaved }: SupplierFormProps) 
       setName(supplier.name || "");
       setEmail(supplier.email || "");
       setPhone(supplier.phone || "");
+      setContactName(supplier.contactName || "");
       setDescription(supplier.description || "");
       setActive(supplier.active ?? true);
     }
@@ -48,20 +50,26 @@ export function SupplierForm({ supplier, onClose, onSaved }: SupplierFormProps) 
     setError(undefined);
 
     try {
-      const payload = {
-        code: code.trim(),
-        name: name.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
-        description: description.trim(),
-        active,
-      };
-
       if (supplier) {
-        // Güncelleme işleminde kod gönderilmez veya backend kısıtına göre güncellenir
-        await supplierApi.update(supplier.publicId, payload);
+        const updatePayload = {
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim() || null,
+          contactName: contactName.trim() || null,
+          description: description.trim() || null,
+          active,
+        };
+        await supplierApi.update(supplier.publicId, updatePayload);
       } else {
-        await supplierApi.create(payload);
+        const createPayload = {
+          code: code.trim(),
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim() || undefined,
+          contactName: contactName.trim() || undefined,
+          description: description.trim() || undefined,
+        };
+        await supplierApi.create(createPayload);
       }
 
       onSaved();
@@ -95,7 +103,7 @@ export function SupplierForm({ supplier, onClose, onSaved }: SupplierFormProps) 
               value={code}
               onChange={(e) => setCode(e.target.value)}
               required
-              disabled={Boolean(supplier)} // Düzenleme modunda kod değiştirilemez
+              disabled={Boolean(supplier)}
               fullWidth
               size="small"
               placeholder="Örn: SUP-001"
@@ -122,6 +130,16 @@ export function SupplierForm({ supplier, onClose, onSaved }: SupplierFormProps) 
               fullWidth
               size="small"
               placeholder="ornek@tedarikci.com"
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "10px" } }}
+            />
+
+            <TextField
+              label="İletişim Kişisi"
+              value={contactName}
+              onChange={(e) => setContactName(e.target.value)}
+              fullWidth
+              size="small"
+              placeholder="Örn: Ahmet Yılmaz"
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "10px" } }}
             />
 
