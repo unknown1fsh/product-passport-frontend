@@ -15,7 +15,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeOutlined from "@mui/icons-material/HomeOutlined";
 import CategoryOutlined from "@mui/icons-material/CategoryOutlined";
@@ -51,7 +51,7 @@ const roles = { ADMIN: "Yönetici", MANUFACTURER: "Üretici", USER: "Kullanıcı
 
 export function Layout() {
   const { user } = useAuth();
-  const location = useLocation();
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMini, setIsMini] = useState(false);
   const [busy, setBusy] = useState(false);
