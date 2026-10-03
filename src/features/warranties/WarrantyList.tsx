@@ -20,7 +20,8 @@ import {
     Tooltip,
     ToggleButton,
     ToggleButtonGroup,
-    Card
+    Card,
+    TablePagination
 } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
@@ -56,8 +57,11 @@ export default function WarrantyList({ passportId, externalOpenNew, onNewModalCo
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(20);
+
   const { data, loading, error, reload } = useResource<PageResponse<Warranty>>(
-    "/warranties/product/" + passportId
+    "/warranties/product/" + passportId + `?page=${page}&size=${rowsPerPage}`
   );
 
   // Üstteki mavi banner'dan gelen Yeni Ekle tetikleyicisini güvenli şekilde dinliyoruz
@@ -73,12 +77,7 @@ export default function WarrantyList({ passportId, externalOpenNew, onNewModalCo
     }
   }, [externalOpenNew, onNewModalConsumed]);
 
-  const handleOpenNew = () => {
-    setEditingId(null);
-    setStartDate("");
-    setEndDate("");
-    setIsDialogOpen(true);
-  };
+
 
   const handleOpenEdit = (warranty: Warranty) => {
     setEditingId(warranty.publicId);
@@ -278,6 +277,19 @@ export default function WarrantyList({ passportId, externalOpenNew, onNewModalCo
             </Box>
           )}
         </Box>
+        <TablePagination
+          component="div"
+          count={data?.totalElements || 0}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+          rowsPerPageOptions={[5, 10, 20, 50]}
+          labelRowsPerPage="Sayfa başına kayıt:"
+        />
       </Paper>
 
       {/* Düzenleme / Ekleme Modalı */}
