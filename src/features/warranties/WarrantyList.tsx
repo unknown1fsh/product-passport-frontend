@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
+    Alert,
     Box,
     Button,
     Dialog,
@@ -31,11 +32,12 @@ import { useResource } from "../../shared/hooks/useResource";
 import type { PageResponse } from "../../shared/types";
 import { api } from "../../shared/api/client";
 import { useAuth } from "../auth/AuthProvider";
+import AddIcon from "@mui/icons-material/Add";
 
 interface WarrantyListProps {
-    passportId: string;
-    externalOpenNew?: boolean;
-    onNewModalConsumed?: () => void;
+  passportId: string;
+  externalOpenNew?: boolean;
+  onNewModalConsumed?: () => void;
 }
 
 interface Warranty {
@@ -44,11 +46,29 @@ interface Warranty {
     endDate: string;
 }
 
-export default function WarrantyList({ passportId, externalOpenNew, onNewModalConsumed }: WarrantyListProps) {
+export default function WarrantyList({
+  passportId,
+  externalOpenNew,
+  onNewModalConsumed,
+}: WarrantyListProps) {
   const canManage = ["ADMIN", "MANUFACTURER"].includes(useAuth().user?.role ?? "");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const savingRef = useRef(false);
+  useEffect(() => {
+  if (externalOpenNew) {
+    setEditingId(null);
+    setStartDate("");
+    setEndDate("");
+    setFormError(null);
+    setIsDialogOpen(true);
+    onNewModalConsumed?.();
+  }
+}, [externalOpenNew, onNewModalConsumed]);
   
   const [editingId, setEditingId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
@@ -64,35 +84,37 @@ export default function WarrantyList({ passportId, externalOpenNew, onNewModalCo
     "/warranties/product/" + passportId + `?page=${page}&size=${rowsPerPage}`
   );
 
-  // Üstteki mavi banner'dan gelen Yeni Ekle tetikleyicisini güvenli şekilde dinliyoruz
-  useEffect(() => {
-    if (externalOpenNew) {
-      setEditingId(null);
-      setStartDate("");
-      setEndDate("");
-      setIsDialogOpen(true);
-      if (onNewModalConsumed) {
-        onNewModalConsumed();
-      }
-    }
-  }, [externalOpenNew, onNewModalConsumed]);
-
-
-
   const handleOpenEdit = (warranty: Warranty) => {
     setEditingId(warranty.publicId);
     setStartDate(warranty.startDate);
     setEndDate(warranty.endDate);
+    setFormError(null);
     setIsDialogOpen(true);
   };
 
-  const handleSave = async () => {
-    try {
-      const payload = {
-        productPassportPublicId: passportId,
-        startDate,
-        endDate
-      };
+ const handleSave = async () => {
+  if (savingRef.current) return;
+  setFormError(null);
+
+  if (!startDate || !endDate) {
+    setFormError("Başlangıç ve bitiş tarihleri zorunludur.");
+    return;
+  }
+
+  if (endDate < startDate) {
+    setFormError("Bitiş tarihi başlangıç tarihinden önce olamaz.");
+    return;
+  }
+
+  savingRef.current = true;
+  setSaving(true);
+
+  try {
+    const payload = {
+      productPassportPublicId: passportId,
+      startDate,
+      endDate
+    };
 
       if (editingId) {
         await api("/warranties/edit/" + editingId, {
@@ -106,13 +128,29 @@ export default function WarrantyList({ passportId, externalOpenNew, onNewModalCo
         });
       }
 
+      setSuccessMessage(
+        editingId
+          ? "Garanti kaydı başarıyla güncellendi."
+          : "Garanti kaydı başarıyla eklendi."
+      );
+
       setIsDialogOpen(false);
       reload();
 
-    } catch (err) {
-      console.error("Garanti kaydedilirken hata oluştu:", err);
-    }
-  };
+} catch (err) {
+  console.error("Garanti kaydedilirken hata oluştu:", err);
+
+  const message =
+    err instanceof Error && err.message
+      ? err.message
+      : "Garanti kaydedilirken bir hata oluştu.";
+
+  setFormError(message);
+} finally {
+  savingRef.current = false;
+  setSaving(false);
+}
+};
 
   const handleOpenDelete = (id: string) => {
     setDeletingId(id);
@@ -148,33 +186,96 @@ export default function WarrantyList({ passportId, externalOpenNew, onNewModalCo
 
   return (
     <Box sx={{ mt: 2 }}>
+      {successMessage && (
+          <Alert
+            severity="success"
+            onClose={() => setSuccessMessage(null)}
+            sx={{ mb: 2 }}
+          >
+            {successMessage}
+          </Alert>
+      )}
       <Paper elevation={0} sx={{ overflow: "hidden", borderRadius: "16px", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 12px rgba(0,0,0,0.02)", display: "flex", flexDirection: "column" }}>
         
-        {/* Üst Başlık ve Liste/Grid Görünüm Togglesı */}
-        <Box sx={{ px: 3, py: 2.5, bgcolor: "#FFFFFF", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+        {/* Üst Başlık, Toggle ve Ekle Butonu */}
+        <Box
+          sx={{
+            px: 3,
+            py: 2.5,
+            bgcolor: "#FFFFFF",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 2,
+            borderBottom: "1px solid rgba(0,0,0,0.06)",
+          }}
+        >
           <Typography variant="h6" sx={{ fontWeight: 700, color: "#0F172A" }}>
             Garanti Kayıtları
           </Typography>
 
-          <ToggleButtonGroup
-            value={viewMode}
-            exclusive
-            onChange={(_, newMode) => { if (newMode) setViewMode(newMode); }}
-            size="small"
-            sx={{
-              bgcolor: "#F8FAFC",
-              p: 0.5,
-              borderRadius: "10px",
-              border: "1px solid rgba(0,0,0,0.08)",
-              "& .MuiToggleButton-root": { border: "none", borderRadius: "8px !important", color: "#64748B", p: 0.8 },
-              "& .Mui-selected": { bgcolor: "#0F172A !important", color: "#FFFFFF !important" }
-            }}
-          >
-            <ToggleButton value="list"><TableRowsOutlinedIcon fontSize="small" /></ToggleButton>
-            <ToggleButton value="grid"><GridViewOutlinedIcon fontSize="small" /></ToggleButton>
-          </ToggleButtonGroup>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
+            <ToggleButtonGroup
+              value={viewMode}
+              exclusive
+              onChange={(_, newMode) => {
+                if (newMode) setViewMode(newMode);
+              }}
+              size="small"
+              sx={{
+                bgcolor: "#F8FAFC",
+                p: 0.5,
+                borderRadius: "10px",
+                border: "1px solid rgba(0,0,0,0.08)",
+                "& .MuiToggleButton-root": {
+                  border: "none",
+                  borderRadius: "8px !important",
+                  color: "#64748B",
+                  p: 0.8,
+                },
+                "& .Mui-selected": {
+                  bgcolor: "#0F172A !important",
+                  color: "#FFFFFF !important",
+                },
+              }}
+            >
+              <ToggleButton value="list">
+                <TableRowsOutlinedIcon fontSize="small" />
+              </ToggleButton>
+              <ToggleButton value="grid">
+                <GridViewOutlinedIcon fontSize="small" />
+              </ToggleButton>
+            </ToggleButtonGroup>
+
+            {canManage && (
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => {
+                  setEditingId(null);
+                  setStartDate("");
+                  setEndDate("");
+                  setFormError(null);
+                  setIsDialogOpen(true);
+                }}
+                sx={{
+                  bgcolor: "#0F172A",
+                  color: "#FFFFFF",
+                  borderRadius: "10px",
+                  px: 3,
+                  py: 1,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  boxShadow: "none",
+                  "&:hover": { bgcolor: "#1E293B" },
+                }}
+              >
+                Garanti kaydı ekle
+              </Button>
+            )}
+          </Box>
         </Box>
-        
         <Box sx={{ flex: 1, bgcolor: viewMode === "grid" ? "#F8FAFC" : "#FFFFFF" }}>
           {viewMode === "list" ? (
             <TableContainer>
@@ -293,13 +394,24 @@ export default function WarrantyList({ passportId, externalOpenNew, onNewModalCo
       </Paper>
 
       {/* Düzenleme / Ekleme Modalı */}
-      <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} maxWidth="sm" fullWidth sx={{ "& .MuiDialog-paper": { borderRadius: "16px" } }}>
+      <Dialog
+        open={isDialogOpen}
+        onClose={() => {
+          if (!saving) {
+            setIsDialogOpen(false);
+          }
+        }}
+        maxWidth="sm"
+        fullWidth
+        sx={{ "& .MuiDialog-paper": { borderRadius: "16px" } }}
+      >
         <DialogTitle sx={{ fontWeight: 700, color: "#0F172A" }}>
           {editingId ? "Garantiyi düzenle" : "Yeni garanti ekle"}
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
             <TextField
+              required
               label="Başlangıç Tarihi"
               type="date"
               value={startDate}
@@ -310,6 +422,7 @@ export default function WarrantyList({ passportId, externalOpenNew, onNewModalCo
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "10px" } }}
             />
             <TextField
+              required
               label="Bitiş Tarihi"
               type="date"
               value={endDate}
@@ -319,14 +432,37 @@ export default function WarrantyList({ passportId, externalOpenNew, onNewModalCo
               size="small"
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "10px" } }}
             />
+
+            {formError && (
+              <Alert severity="error">
+                {formError}
+              </Alert>
+            )}
           </Box>
         </DialogContent>
         <DialogActions sx={{ p: 3, pt: 1 }}>
-          <Button onClick={() => setIsDialogOpen(false)} sx={{ color: "#64748B", fontWeight: 600, textTransform: "none" }}>
+          <Button
+            onClick={() => setIsDialogOpen(false)}
+            disabled={saving}
+            sx={{ color: "#64748B", fontWeight: 600, textTransform: "none" }}
+          >
             Vazgeç
           </Button>
-          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: "#0F172A", fontWeight: 600, borderRadius: "10px", px: 3, textTransform: "none", boxShadow: "none", "&:hover": { bgcolor: "#1E293B" } }}>
-            Kaydet
+          <Button
+            onClick={handleSave}
+            variant="contained"
+            disabled={saving}
+            sx={{
+              bgcolor: "#0F172A",
+              fontWeight: 600,
+              borderRadius: "10px",
+              px: 3,
+              textTransform: "none",
+              boxShadow: "none",
+              "&:hover": { bgcolor: "#1E293B" }
+            }}
+          >
+            {saving ? "Kaydediliyor..." : "Kaydet"}
           </Button>
         </DialogActions>
       </Dialog>
