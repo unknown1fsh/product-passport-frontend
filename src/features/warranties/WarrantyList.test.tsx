@@ -41,7 +41,7 @@ describe("WarrantyList Bileşeni", () => {
       reload: vi.fn(),
     });
 
-    render(<WarrantyList passportId={mockPassportId} />);
+    render(<WarrantyList passportId={mockPassportId} canManage={true} />);
     
     expect(screen.getByText(/Garanti verisi çekilirken hata oluştu/i)).toBeInTheDocument();
   });
@@ -56,7 +56,7 @@ describe("WarrantyList Bileşeni", () => {
 
     (api as any).mockRejectedValue({ status: 403 });
 
-    render(<WarrantyList passportId={mockPassportId} />);
+    render(<WarrantyList passportId={mockPassportId} canManage={true} />);
 
     fireEvent.click(screen.getAllByRole("button", { name: /Sil/i })[0]);
     fireEvent.click(screen.getByRole("button", { name: /Silmeyi onayla/i }));

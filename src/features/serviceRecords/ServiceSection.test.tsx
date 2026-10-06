@@ -71,7 +71,7 @@ function renderSection(
       "?page=0&size=20&sortBy=serviceDate&sortDir=desc",
   });
 
-  render(<ServiceSection passportId="passport-1" />);
+  render(<ServiceSection passportId="passport-1" canManage={role !== "USER" && !resourceError} />);
 }
 
 beforeEach(() => {

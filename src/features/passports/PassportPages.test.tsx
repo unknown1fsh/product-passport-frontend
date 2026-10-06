@@ -20,6 +20,7 @@ const pasaport = {
   purchaseDate: "2026-09-01",
   invoiceNumber: null,
   description: null,
+  brandPublicId: "u1",
   active: true,
 };
 const ID = "5e0e0a05-4049-4a62-b3b1-3d0a1fdabf87";

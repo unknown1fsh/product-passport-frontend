@@ -30,12 +30,12 @@ import TableRowsOutlinedIcon from "@mui/icons-material/TableRowsOutlined";
 import { useResource } from "../../shared/hooks/useResource";
 import type { PageResponse } from "../../shared/types";
 import { api } from "../../shared/api/client";
-import { useAuth } from "../auth/AuthProvider";
 
 interface WarrantyListProps {
     passportId: string;
     externalOpenNew?: boolean;
     onNewModalConsumed?: () => void;
+    canManage?: boolean;
 }
 
 interface Warranty {
@@ -44,8 +44,7 @@ interface Warranty {
     endDate: string;
 }
 
-export default function WarrantyList({ passportId, externalOpenNew, onNewModalConsumed }: WarrantyListProps) {
-  const canManage = ["ADMIN", "MANUFACTURER"].includes(useAuth().user?.role ?? "");
+export default function WarrantyList({ passportId, externalOpenNew, onNewModalConsumed, canManage = false }: WarrantyListProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");

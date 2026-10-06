@@ -52,10 +52,12 @@ export function PassportList() {
     const { data, error, loading, reload } = useResource<PageResponse<Passport>>(
         "/product-passports?" + paging.query,
     );
-    const canManage = ["ADMIN", "MANUFACTURER"].includes(useAuth().user?.role ?? "");
+    const user = useAuth().user;
+    const isAdmin = user?.role === "ADMIN";
+    const isManufacturer = user?.role === "MANUFACTURER";
+    const canCreate = isAdmin || isManufacturer;
     const [editor, setEditor] = useState<Passport | null | undefined>();
     const [notice, setNotice] = useState("");
-    const admin = useAuth().user?.role === "ADMIN";
     const [removing, setRemoving] = useState<Passport>();
     const [busy, setBusy] = useState(false);
     const [deleteError, setDeleteError] = useState<unknown>();
@@ -117,7 +119,7 @@ export function PassportList() {
                         Ürün bilgilerini ve satın alma kayıtlarını inceleyin.
                     </Typography>
                 </Box>
-                {canManage && (
+                {canCreate && (
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
@@ -248,14 +250,14 @@ export function PassportList() {
                                                     >
                                                         İncele
                                                     </Button>
-                                                    {canManage && (
+                                                    {(isAdmin || (isManufacturer && p.brandPublicId === user?.publicId)) && (
                                                         <Tooltip title="Düzenle">
                                                             <IconButton size="small" onClick={() => setEditor(p)} sx={{ color: "#1D4ED8", bgcolor: "#F1F5F9", "&:hover": { bgcolor: "#E2E8F0" } }}>
                                                                 <EditOutlinedIcon fontSize="small" />
                                                             </IconButton>
                                                         </Tooltip>
                                                     )}
-                                                    {admin && (
+                                                    {isAdmin && (
                                                         <Tooltip title="Sil">
                                                             <IconButton size="small" onClick={() => setRemoving(p)} sx={{ color: "#DC2626", bgcolor: "#FEECEB", "&:hover": { bgcolor: "#FCD3D3" } }}>
                                                                 <DeleteOutlineOutlinedIcon fontSize="small" />
@@ -333,12 +335,12 @@ export function PassportList() {
                                             İncele
                                         </Button>
                                         <Stack direction="row" spacing={1}>
-                                            {canManage && (
+                                            {(isAdmin || (isManufacturer && p.brandPublicId === user?.publicId)) && (
                                                 <Button size="small" onClick={() => setEditor(p)} sx={{ color: "#334155", fontWeight: 600, textTransform: "none" }}>
                                                     Düzenle
                                                 </Button>
                                             )}
-                                            {admin && (
+                                            {isAdmin && (
                                                 <Button size="small" onClick={() => setRemoving(p)} sx={{ color: "#DC2626", fontWeight: 600, textTransform: "none" }}>
                                                     Sil
                                                 </Button>
@@ -419,8 +421,9 @@ function Detail({ id }: { id: string }) {
     const { data, error, loading, reload } = useResource<Passport>(
         "/product-passports/" + id,
     );
-    const admin = useAuth().user?.role === "ADMIN";
-    const canManage = ["ADMIN", "MANUFACTURER"].includes(useAuth().user?.role ?? "");
+    const user = useAuth().user;
+    const admin = user?.role === "ADMIN";
+    const manufacturer = user?.role === "MANUFACTURER";
     const [editor, setEditor] = useState<Passport | null | undefined>();
     const [confirming, setConfirming] = useState(false);
     const [busy, setBusy] = useState(false);
@@ -499,7 +502,7 @@ function Detail({ id }: { id: string }) {
                                 </Typography>
                             </Box>
                             <Stack direction="row" spacing={1.5}>
-                                {canManage && (
+                                {(admin || (manufacturer && data.brandPublicId === user?.publicId)) && (
                                     <Button
                                         variant="contained"
                                         onClick={() => setEditor(data)}
@@ -594,10 +597,10 @@ function Detail({ id }: { id: string }) {
                         </Paper>
 
                         <Box sx={{ mt: 3, mb: 3 }}>
-                            <WarrantyList passportId={id} />
+                            <WarrantyList passportId={id} canManage={admin || (manufacturer && data.brandPublicId === user?.publicId)} />
                         </Box>
 
-                        <ServiceSection passportId={id} />
+                        <ServiceSection passportId={id} canManage={admin || (manufacturer && data.brandPublicId === user?.publicId)} />
 
                         <Dialog
                             open={confirming}

@@ -41,7 +41,9 @@ import { BrandForm } from "./BrandForm";
 
 export function BrandPage() {
   const user = useAuth().user;
-  const canManage = user?.role === "ADMIN" || user?.role === "MANUFACTURER";
+  const isAdmin = user?.role === "ADMIN";
+  const isManufacturer = user?.role === "MANUFACTURER";
+  const canCreate = isAdmin;
   
   const paging = usePageQuery("name", ["name", "createdAt"]);
   const { data, error, loading, reload } = useResource<PageResponse<Brand>>(
@@ -109,7 +111,7 @@ export function BrandPage() {
           </Typography>
         </Box>
 
-        {canManage && (
+        {canCreate && (
           <Button
             variant="contained"
             startIcon={<AddIcon />}
@@ -190,7 +192,7 @@ export function BrandPage() {
                       <TableCell sx={{ fontWeight: 600, color: "#475569", py: 2 }}>Marka adı</TableCell>
                       <TableCell sx={{ fontWeight: 600, color: "#475569", py: 2 }}>Açıklama</TableCell>
                       <TableCell sx={{ fontWeight: 600, color: "#475569", py: 2 }}>Durum</TableCell>
-                      {canManage && <TableCell align="right" sx={{ fontWeight: 600, color: "#475569", py: 2 }}>İşlemler</TableCell>}
+                      {isAdmin && <TableCell align="right" sx={{ fontWeight: 600, color: "#475569", py: 2 }}>İşlemler</TableCell>}
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -223,7 +225,7 @@ export function BrandPage() {
                             }}
                           />
                         </TableCell>
-                        {canManage && (
+                        {(isAdmin || (isManufacturer && brand.publicId === user?.publicId)) && (
                           <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
                             <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
                               <Tooltip title="Düzenle">
@@ -236,18 +238,20 @@ export function BrandPage() {
                                 </IconButton>
                               </Tooltip>
 
-                              <Tooltip title="Sil">
-                                <IconButton
-                                  size="small"
-                                  onClick={() => {
-                                    setRemoving(brand);
-                                    setDeleteError(undefined);
-                                  }}
-                                  sx={{ color: "#DC2626", bgcolor: "#FEECEB", "&:hover": { bgcolor: "#FCD3D3" } }}
-                                >
-                                  <DeleteOutlineOutlinedIcon fontSize="small" />
-                                </IconButton>
-                              </Tooltip>
+                              {isAdmin && (
+                                <Tooltip title="Sil">
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => {
+                                      setRemoving(brand);
+                                      setDeleteError(undefined);
+                                    }}
+                                    sx={{ color: "#DC2626", bgcolor: "#FEECEB", "&:hover": { bgcolor: "#FCD3D3" } }}
+                                  >
+                                    <DeleteOutlineOutlinedIcon fontSize="small" />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
                             </Stack>
                           </TableCell>
                         )}
@@ -255,7 +259,7 @@ export function BrandPage() {
                     ))}
                     {!data?.content.length && (
                       <TableRow>
-                        <TableCell colSpan={canManage ? 5 : 4} sx={{ py: 6, textAlign: "center", color: "#64748B" }}>
+                        <TableCell colSpan={isAdmin ? 5 : 4} sx={{ py: 6, textAlign: "center", color: "#64748B" }}>
                           Kayıtlı marka bulunamadı.
                         </TableCell>
                       </TableRow>
@@ -304,14 +308,16 @@ export function BrandPage() {
                       </Typography>
                     </Box>
                     <Box sx={{ px: 2.5, py: 1.5, borderTop: "1px solid rgba(0,0,0,0.04)", display: "flex", justifyContent: "flex-end", gap: 1, bgcolor: "#F8FAFC" }}>
-                      {canManage && (
+                      {(isAdmin || (isManufacturer && brand.publicId === user?.publicId)) && (
                         <>
                           <Button size="small" onClick={() => setEditor(brand)} sx={{ color: "#1D4ED8", fontWeight: 600, textTransform: "none" }}>
                             Düzenle
                           </Button>
-                          <Button size="small" onClick={() => { setRemoving(brand); setDeleteError(undefined); }} sx={{ color: "#DC2626", fontWeight: 600, textTransform: "none" }}>
-                            Sil
-                          </Button>
+                          {isAdmin && (
+                            <Button size="small" onClick={() => { setRemoving(brand); setDeleteError(undefined); }} sx={{ color: "#DC2626", fontWeight: 600, textTransform: "none" }}>
+                              Sil
+                            </Button>
+                          )}
                         </>
                       )}
                     </Box>
@@ -328,7 +334,7 @@ export function BrandPage() {
         </Paper>
       )}
 
-      {canManage && editor !== undefined && (
+      {(isAdmin || isManufacturer) && editor !== undefined && (
         <BrandForm
           brand={editor || undefined}
           onClose={() => setEditor(undefined)}
