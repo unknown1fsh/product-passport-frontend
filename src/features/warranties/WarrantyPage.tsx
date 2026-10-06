@@ -5,12 +5,19 @@ import { useResource } from "../../shared/hooks/useResource";
 import type { PageResponse, Passport } from "../../shared/types";
 import { Loading } from "../../shared/ui/Feedback";
 import WarrantyList from "./WarrantyList";
+import { useAuth } from "../auth/AuthProvider";
 
 export function WarrantyPage() {
   const [selectedPassport, setSelectedPassport] = useState<Passport | null>(null);
   const [triggerNewModal, setTriggerNewModal] = useState(false);
 
+  const { user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
+  const isManufacturer = user?.role === "MANUFACTURER";
+
   const { data, loading } = useResource<PageResponse<Passport>>("/product-passports?size=100");
+
+  const canManageSelected = selectedPassport ? (isAdmin || (isManufacturer && selectedPassport.brandPublicId === user?.publicId)) : false;
 
   return (
     <Stack spacing={3}>
@@ -49,7 +56,7 @@ export function WarrantyPage() {
           </Typography>
         </Box>
 
-        {selectedPassport && (
+        {canManageSelected && (
           <Button
             variant="contained"
             startIcon={<AddIcon />}
@@ -153,6 +160,7 @@ export function WarrantyPage() {
             passportId={selectedPassport.publicId} 
             externalOpenNew={triggerNewModal} 
             onNewModalConsumed={() => setTriggerNewModal(false)} 
+            canManage={canManageSelected}
           />
         </Box>
       )}

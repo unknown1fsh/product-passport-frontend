@@ -141,8 +141,10 @@ export function ModelSelect({
 export function ModelPage() {
   const { user } = useAuth();
   
-  const canWrite = user?.role === "ADMIN" || user?.role === "MANUFACTURER";
-  const canDelete = user?.role === "ADMIN";
+  const isAdmin = user?.role === "ADMIN";
+  const isManufacturer = user?.role === "MANUFACTURER";
+  const canWrite = isAdmin || isManufacturer;
+  const canDeleteGlobally = isAdmin;
 
   const paging = usePageQuery("name", ["name", "code", "createdAt"]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -300,7 +302,7 @@ export function ModelPage() {
                     <TableCell sx={{ fontWeight: 600, color: "#475569", borderBottom: "1px solid rgba(0,0,0,0.06)", py: 2 }}>Model Adı</TableCell>
                     <TableCell sx={{ fontWeight: 600, color: "#475569", borderBottom: "1px solid rgba(0,0,0,0.06)", py: 2 }}>Marka</TableCell>
                     <TableCell sx={{ fontWeight: 600, color: "#475569", borderBottom: "1px solid rgba(0,0,0,0.06)", py: 2 }}>Durum</TableCell>
-                    {(canWrite || canDelete) && <TableCell align="right" sx={{ fontWeight: 600, color: "#475569", borderBottom: "1px solid rgba(0,0,0,0.06)", py: 2 }}>İşlemler</TableCell>}
+                    {(canWrite || canDeleteGlobally) && <TableCell align="right" sx={{ fontWeight: 600, color: "#475569", borderBottom: "1px solid rgba(0,0,0,0.06)", py: 2 }}>İşlemler</TableCell>}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -310,11 +312,19 @@ export function ModelPage() {
                       <TableCell sx={{ fontWeight: 700, color: "#0F172A" }}>{model.name}</TableCell>
                       <TableCell sx={{ color: "#64748B", fontWeight: 500 }}>{model.brandName || "Bilinmiyor"}</TableCell>
                       <TableCell><Chip size="small" label={model.active ? "Aktif" : "Pasif"} sx={{ bgcolor: model.active ? "#E6F4EA" : "#FEECEB", color: model.active ? "#1E8E3E" : "#D93025", fontWeight: 700, borderRadius: "6px" }} /></TableCell>
-                      {(canWrite || canDelete) && (
+                      {(canWrite || canDeleteGlobally) && (
                         <TableCell align="right">
                           <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
-                            {canWrite && <Tooltip title="Düzenle"><IconButton size="small" onClick={() => handleOpenEdit(model)} sx={{ color: "#1D4ED8", bgcolor: "#F1F5F9", "&:hover": { bgcolor: "#E2E8F0" } }}><EditOutlinedIcon fontSize="small" /></IconButton></Tooltip>}
-                            {canDelete && <Tooltip title="Sil"><IconButton size="small" onClick={() => handleOpenDelete(model)} sx={{ color: "#DC2626", bgcolor: "#FEECEB", "&:hover": { bgcolor: "#FCD3D3" } }}><DeleteOutlineOutlinedIcon fontSize="small" /></IconButton></Tooltip>}
+                            {(isAdmin || (isManufacturer && model.brandPublicId === user?.publicId)) && (
+                              <Tooltip title="Düzenle">
+                                <IconButton size="small" onClick={() => handleOpenEdit(model)} sx={{ color: "#1D4ED8", bgcolor: "#F1F5F9", "&:hover": { bgcolor: "#E2E8F0" } }}><EditOutlinedIcon fontSize="small" /></IconButton>
+                              </Tooltip>
+                            )}
+                            {isAdmin && (
+                              <Tooltip title="Sil">
+                                <IconButton size="small" onClick={() => handleOpenDelete(model)} sx={{ color: "#DC2626", bgcolor: "#FEECEB", "&:hover": { bgcolor: "#FCD3D3" } }}><DeleteOutlineOutlinedIcon fontSize="small" /></IconButton>
+                              </Tooltip>
+                            )}
                           </Stack>
                         </TableCell>
                       )}
@@ -340,8 +350,12 @@ export function ModelPage() {
                     <Typography variant="body2" sx={{ color: "#64748B", fontWeight: 500 }}>{model.brandName || "Bilinmeyen Marka"}</Typography>
                   </Box>
                   <Box sx={{ px: 2, py: 1.5, borderTop: "1px solid rgba(0,0,0,0.04)", display: "flex", justifyContent: "flex-end", gap: 1, bgcolor: "#F8FAFC" }}>
-                    {canWrite && <Button size="small" onClick={() => handleOpenEdit(model)} sx={{ color: "#1D4ED8", fontWeight: 600, textTransform: "none" }}>Düzenle</Button>}
-                    {canDelete && <Button size="small" onClick={() => handleOpenDelete(model)} sx={{ color: "#DC2626", fontWeight: 600, textTransform: "none" }}>Sil</Button>}
+                    {(isAdmin || (isManufacturer && model.brandPublicId === user?.publicId)) && (
+                      <Button size="small" onClick={() => handleOpenEdit(model)} sx={{ color: "#1D4ED8", fontWeight: 600, textTransform: "none" }}>Düzenle</Button>
+                    )}
+                    {isAdmin && (
+                      <Button size="small" onClick={() => handleOpenDelete(model)} sx={{ color: "#DC2626", fontWeight: 600, textTransform: "none" }}>Sil</Button>
+                    )}
                   </Box>
                 </Card>
               ))}

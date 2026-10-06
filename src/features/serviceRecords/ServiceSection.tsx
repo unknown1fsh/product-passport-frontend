@@ -34,14 +34,12 @@ import TableRowsOutlinedIcon from "@mui/icons-material/TableRowsOutlined";
 import { useResource } from "../../shared/hooks/useResource";
 import type { PageResponse } from "../../shared/types";
 import { ErrorNotice, Loading } from "../../shared/ui/Feedback";
-import { useAuth } from "../auth/AuthProvider";
 import { serviceRecordApi } from "./api";
 import { ServiceForm } from "./ServiceForm";
 import type { ServiceRecord } from "./types";
 import { ApiError } from "../../shared/api/http";
 
-export function ServiceSection({ passportId }: { passportId: string }) {
-  const { user } = useAuth();
+export function ServiceSection({ passportId, canManage = false }: { passportId: string; canManage?: boolean }) {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(20);
 
@@ -63,11 +61,6 @@ export function ServiceSection({ passportId }: { passportId: string }) {
   const { data, error, loading, reload } = useResource<
     PageResponse<ServiceRecord>
   >("/service-records/product/" + passportId + "?" + query);
-  const accessDenied = error instanceof ApiError && error.status === 403;
-
-  const canManage =
-    user?.role === "ADMIN" ||
-    (user?.role === "MANUFACTURER" && data !== undefined && !accessDenied);
 
   async function remove() {
     if (!removingRecord) return;

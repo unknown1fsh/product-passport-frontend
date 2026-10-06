@@ -37,6 +37,7 @@ export type Passport = {
     productModelName: string;
     categoryId: string;
     categoryName: string;
+    brandPublicId?: string;
     purchaseDate: string;
     invoiceNumber: string | null;
     description: string | null;
