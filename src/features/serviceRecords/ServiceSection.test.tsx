@@ -71,7 +71,12 @@ function renderSection(
       "?page=0&size=20&sortBy=serviceDate&sortDir=desc",
   });
 
-  render(<ServiceSection passportId="passport-1" canManage={role !== "USER" && !resourceError} />);
+  render(
+    <ServiceSection
+      passportId="passport-1"
+      canManage={role !== "USER" && !resourceError}
+    />,
+  );
 }
 
 beforeEach(() => {
@@ -111,9 +116,13 @@ describe("ServiceSection", () => {
       screen.getByRole("button", { name: "Servis kaydı ekle" }),
     ).toBeInTheDocument();
 
-    expect(screen.getAllByRole("button", { name: "Düzenle" })[0]).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("button", { name: "Düzenle" })[0],
+    ).toBeInTheDocument();
 
-    expect(screen.getAllByRole("button", { name: "Sil" })[0]).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("button", { name: "Sil" })[0],
+    ).toBeInTheDocument();
   });
 
   it("silmeden önce kullanıcıdan onay ister ve başarılı silmede listeyi yeniler", async () => {

@@ -20,7 +20,11 @@ interface SupplierFormProps {
   onSaved: () => void;
 }
 
-export function SupplierForm({ supplier, onClose, onSaved }: SupplierFormProps) {
+export function SupplierForm({
+  supplier,
+  onClose,
+  onSaved,
+}: SupplierFormProps) {
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -28,7 +32,7 @@ export function SupplierForm({ supplier, onClose, onSaved }: SupplierFormProps) 
   const [contactName, setContactName] = useState("");
   const [description, setDescription] = useState("");
   const [active, setActive] = useState(true);
-  
+
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<unknown>();
 
@@ -83,13 +87,18 @@ export function SupplierForm({ supplier, onClose, onSaved }: SupplierFormProps) 
   return (
     <Dialog
       open
-      onClose={() => { if (!busy) onClose(); }}
+      onClose={() => {
+        if (!busy) onClose();
+      }}
       maxWidth="sm"
       fullWidth
       aria-labelledby="supplier-form-title"
       sx={{ "& .MuiDialog-paper": { borderRadius: "16px" } }}
     >
-      <DialogTitle id="supplier-form-title" sx={{ fontWeight: 700, color: "#0F172A" }}>
+      <DialogTitle
+        id="supplier-form-title"
+        sx={{ fontWeight: 700, color: "#0F172A" }}
+      >
         {supplier ? "Tedarikçiyi Düzenle" : "Yeni Tedarikçi Ekle"}
       </DialogTitle>
 

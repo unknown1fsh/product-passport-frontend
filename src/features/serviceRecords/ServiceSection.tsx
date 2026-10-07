@@ -37,9 +37,14 @@ import { ErrorNotice, Loading } from "../../shared/ui/Feedback";
 import { serviceRecordApi } from "./api";
 import { ServiceForm } from "./ServiceForm";
 import type { ServiceRecord } from "./types";
-import { ApiError } from "../../shared/api/http";
 
-export function ServiceSection({ passportId, canManage = false }: { passportId: string; canManage?: boolean }) {
+export function ServiceSection({
+  passportId,
+  canManage = false,
+}: {
+  passportId: string;
+  canManage?: boolean;
+}) {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(20);
 
@@ -82,37 +87,78 @@ export function ServiceSection({ passportId, canManage = false }: { passportId: 
 
   return (
     <Stack spacing={2}>
-     
       {loading ? (
         <Loading />
       ) : error ? (
         <ErrorNotice error={error} retry={reload} />
       ) : (
-        <Paper elevation={0} sx={{ overflow: "hidden", borderRadius: "16px", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 12px rgba(0,0,0,0.02)", display: "flex", flexDirection: "column" }}>
-          
+        <Paper
+          elevation={0}
+          sx={{
+            overflow: "hidden",
+            borderRadius: "16px",
+            border: "1px solid rgba(0,0,0,0.06)",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.02)",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           {/* Üst Başlık, Toggle ve Ekle Butonu */}
-          <Box sx={{ px: 3, py: 2.5, bgcolor: "#FFFFFF", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+          <Box
+            sx={{
+              px: 3,
+              py: 2.5,
+              bgcolor: "#FFFFFF",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 2,
+              borderBottom: "1px solid rgba(0,0,0,0.06)",
+            }}
+          >
             <Typography variant="h6" sx={{ fontWeight: 700, color: "#0F172A" }}>
               Servis Kayıtları
             </Typography>
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                flexWrap: "wrap",
+              }}
+            >
               <ToggleButtonGroup
                 value={viewMode}
                 exclusive
-                onChange={(_, newMode) => { if (newMode) setViewMode(newMode); }}
+                onChange={(_, newMode) => {
+                  if (newMode) setViewMode(newMode);
+                }}
                 size="small"
                 sx={{
                   bgcolor: "#F8FAFC",
                   p: 0.5,
                   borderRadius: "10px",
                   border: "1px solid rgba(0,0,0,0.08)",
-                  "& .MuiToggleButton-root": { border: "none", borderRadius: "8px !important", color: "#64748B", p: 0.8 },
-                  "& .Mui-selected": { bgcolor: "#0F172A !important", color: "#FFFFFF !important" }
+                  "& .MuiToggleButton-root": {
+                    border: "none",
+                    borderRadius: "8px !important",
+                    color: "#64748B",
+                    p: 0.8,
+                  },
+                  "& .Mui-selected": {
+                    bgcolor: "#0F172A !important",
+                    color: "#FFFFFF !important",
+                  },
                 }}
               >
-                <ToggleButton value="list"><TableRowsOutlinedIcon fontSize="small" /></ToggleButton>
-                <ToggleButton value="grid"><GridViewOutlinedIcon fontSize="small" /></ToggleButton>
+                <ToggleButton value="list">
+                  <TableRowsOutlinedIcon fontSize="small" />
+                </ToggleButton>
+                <ToggleButton value="grid">
+                  <GridViewOutlinedIcon fontSize="small" />
+                </ToggleButton>
               </ToggleButtonGroup>
 
               {canManage && (
@@ -132,7 +178,7 @@ export function ServiceSection({ passportId, canManage = false }: { passportId: 
                     textTransform: "none",
                     fontWeight: 600,
                     boxShadow: "none",
-                    "&:hover": { bgcolor: "#1E293B" }
+                    "&:hover": { bgcolor: "#1E293B" },
                   }}
                 >
                   Servis kaydı ekle
@@ -142,30 +188,84 @@ export function ServiceSection({ passportId, canManage = false }: { passportId: 
           </Box>
 
           {/* İçerik: Liste veya Kutu (Grid) Görünümü */}
-          <Box sx={{ flex: 1, bgcolor: viewMode === "grid" ? "#F8FAFC" : "#FFFFFF" }}>
+          <Box
+            sx={{
+              flex: 1,
+              bgcolor: viewMode === "grid" ? "#F8FAFC" : "#FFFFFF",
+            }}
+          >
             {viewMode === "list" ? (
               <TableContainer>
                 <Table aria-label="Servis geçmişi">
                   <TableHead>
                     <TableRow sx={{ bgcolor: "#F8FAFC" }}>
-                      <TableCell sx={{ fontWeight: 600, color: "#475569", borderBottom: "1px solid rgba(0,0,0,0.06)", py: 2 }}>Servis tarihi</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: "#475569", borderBottom: "1px solid rgba(0,0,0,0.06)", py: 2 }}>Açıklama</TableCell>
-                      {canManage && <TableCell align="right" sx={{ fontWeight: 600, color: "#475569", borderBottom: "1px solid rgba(0,0,0,0.06)", py: 2 }}>İşlem</TableCell>}
+                      <TableCell
+                        sx={{
+                          fontWeight: 600,
+                          color: "#475569",
+                          borderBottom: "1px solid rgba(0,0,0,0.06)",
+                          py: 2,
+                        }}
+                      >
+                        Servis tarihi
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: 600,
+                          color: "#475569",
+                          borderBottom: "1px solid rgba(0,0,0,0.06)",
+                          py: 2,
+                        }}
+                      >
+                        Açıklama
+                      </TableCell>
+                      {canManage && (
+                        <TableCell
+                          align="right"
+                          sx={{
+                            fontWeight: 600,
+                            color: "#475569",
+                            borderBottom: "1px solid rgba(0,0,0,0.06)",
+                            py: 2,
+                          }}
+                        >
+                          İşlem
+                        </TableCell>
+                      )}
                     </TableRow>
                   </TableHead>
 
                   <TableBody>
                     {data?.content.map((record) => (
-                      <TableRow key={record.publicId} hover sx={{ "&:last-child td": { borderBottom: 0 } }}>
-                        <TableCell sx={{ whiteSpace: "nowrap", color: "#0F172A", fontWeight: 600 }}>
+                      <TableRow
+                        key={record.publicId}
+                        hover
+                        sx={{ "&:last-child td": { borderBottom: 0 } }}
+                      >
+                        <TableCell
+                          sx={{
+                            whiteSpace: "nowrap",
+                            color: "#0F172A",
+                            fontWeight: 600,
+                          }}
+                        >
                           {record.serviceDate}
                         </TableCell>
 
-                        <TableCell sx={{ color: "#334155" }}>{record.description}</TableCell>
+                        <TableCell sx={{ color: "#334155" }}>
+                          {record.description}
+                        </TableCell>
 
                         {canManage && (
-                          <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
-                            <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
+                          <TableCell
+                            align="right"
+                            sx={{ whiteSpace: "nowrap" }}
+                          >
+                            <Stack
+                              direction="row"
+                              spacing={1}
+                              sx={{ justifyContent: "flex-end" }}
+                            >
                               <Tooltip title="Düzenle">
                                 <IconButton
                                   size="small"
@@ -173,7 +273,11 @@ export function ServiceSection({ passportId, canManage = false }: { passportId: 
                                     setEditingRecord(record);
                                     setFormOpen(true);
                                   }}
-                                  sx={{ color: "#1D4ED8", bgcolor: "#F1F5F9", "&:hover": { bgcolor: "#E2E8F0" } }}
+                                  sx={{
+                                    color: "#1D4ED8",
+                                    bgcolor: "#F1F5F9",
+                                    "&:hover": { bgcolor: "#E2E8F0" },
+                                  }}
                                 >
                                   <EditOutlinedIcon fontSize="small" />
                                 </IconButton>
@@ -186,7 +290,11 @@ export function ServiceSection({ passportId, canManage = false }: { passportId: 
                                     setRemovingRecord(record);
                                     setDeleteError(undefined);
                                   }}
-                                  sx={{ color: "#DC2626", bgcolor: "#FEECEB", "&:hover": { bgcolor: "#FCD3D3" } }}
+                                  sx={{
+                                    color: "#DC2626",
+                                    bgcolor: "#FEECEB",
+                                    "&:hover": { bgcolor: "#FCD3D3" },
+                                  }}
                                 >
                                   <DeleteOutlineOutlinedIcon fontSize="small" />
                                 </IconButton>
@@ -205,7 +313,14 @@ export function ServiceSection({ passportId, canManage = false }: { passportId: 
                         >
                           Bu ürüne ait servis kaydı bulunamadı.
                           {page > 0 && (
-                            <Button onClick={() => setPage(0)} sx={{ ml: 2, textTransform: "none", fontWeight: 600 }}>
+                            <Button
+                              onClick={() => setPage(0)}
+                              sx={{
+                                ml: 2,
+                                textTransform: "none",
+                                fontWeight: 600,
+                              }}
+                            >
                               İlk sayfaya dön
                             </Button>
                           )}
@@ -217,7 +332,18 @@ export function ServiceSection({ passportId, canManage = false }: { passportId: 
               </TableContainer>
             ) : (
               /* KUTU (GRID) GÖRÜNÜMÜ */
-              <Box sx={{ p: 3, display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr" }, gap: 3 }}>
+              <Box
+                sx={{
+                  p: 3,
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    sm: "1fr 1fr",
+                    md: "1fr 1fr 1fr",
+                  },
+                  gap: 3,
+                }}
+              >
                 {data?.content.map((record) => (
                   <Card
                     key={record.publicId}
@@ -230,24 +356,80 @@ export function ServiceSection({ passportId, canManage = false }: { passportId: 
                       bgcolor: "#FFFFFF",
                       boxShadow: "0 2px 8px rgba(0,0,0,0.02)",
                       transition: "all 0.2s ease",
-                      "&:hover": { transform: "translateY(-3px)", boxShadow: "0 8px 24px rgba(15,23,42,0.06)", borderColor: "#0F172A" },
+                      "&:hover": {
+                        transform: "translateY(-3px)",
+                        boxShadow: "0 8px 24px rgba(15,23,42,0.06)",
+                        borderColor: "#0F172A",
+                      },
                     }}
                   >
-                    <Box sx={{ p: 3, flex: 1, display: "flex", flexDirection: "column" }}>
-                      <Typography sx={{ color: "#1D4ED8", bgcolor: "#F8FAFC", px: 1.5, py: 0.5, borderRadius: "6px", fontSize: "0.75rem", fontWeight: 700, border: "1px solid rgba(0,0,0,0.04)", width: "fit-content", mb: 2 }}>
+                    <Box
+                      sx={{
+                        p: 3,
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          color: "#1D4ED8",
+                          bgcolor: "#F8FAFC",
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: "6px",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          border: "1px solid rgba(0,0,0,0.04)",
+                          width: "fit-content",
+                          mb: 2,
+                        }}
+                      >
                         {record.serviceDate}
                       </Typography>
                       <Typography variant="body2" sx={{ color: "#334155" }}>
                         {record.description}
                       </Typography>
                     </Box>
-                    <Box sx={{ px: 2.5, py: 1.5, borderTop: "1px solid rgba(0,0,0,0.04)", display: "flex", justifyContent: "flex-end", gap: 1, bgcolor: "#F8FAFC" }}>
+                    <Box
+                      sx={{
+                        px: 2.5,
+                        py: 1.5,
+                        borderTop: "1px solid rgba(0,0,0,0.04)",
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: 1,
+                        bgcolor: "#F8FAFC",
+                      }}
+                    >
                       {canManage && (
                         <>
-                          <Button size="small" onClick={() => { setEditingRecord(record); setFormOpen(true); }} sx={{ color: "#1D4ED8", fontWeight: 600, textTransform: "none" }}>
+                          <Button
+                            size="small"
+                            onClick={() => {
+                              setEditingRecord(record);
+                              setFormOpen(true);
+                            }}
+                            sx={{
+                              color: "#1D4ED8",
+                              fontWeight: 600,
+                              textTransform: "none",
+                            }}
+                          >
                             Düzenle
                           </Button>
-                          <Button size="small" onClick={() => { setRemovingRecord(record); setDeleteError(undefined); }} sx={{ color: "#DC2626", fontWeight: 600, textTransform: "none" }}>
+                          <Button
+                            size="small"
+                            onClick={() => {
+                              setRemovingRecord(record);
+                              setDeleteError(undefined);
+                            }}
+                            sx={{
+                              color: "#DC2626",
+                              fontWeight: 600,
+                              textTransform: "none",
+                            }}
+                          >
                             Sil
                           </Button>
                         </>
@@ -256,8 +438,17 @@ export function ServiceSection({ passportId, canManage = false }: { passportId: 
                   </Card>
                 ))}
                 {!data?.content.length && (
-                  <Box sx={{ gridColumn: "1 / -1", py: 6, textAlign: "center", color: "#64748B" }}>
-                    <Typography variant="body1">Bu ürüne ait servis kaydı bulunamadı.</Typography>
+                  <Box
+                    sx={{
+                      gridColumn: "1 / -1",
+                      py: 6,
+                      textAlign: "center",
+                      color: "#64748B",
+                    }}
+                  >
+                    <Typography variant="body1">
+                      Bu ürüne ait servis kaydı bulunamadı.
+                    </Typography>
                   </Box>
                 )}
               </Box>
@@ -279,7 +470,11 @@ export function ServiceSection({ passportId, canManage = false }: { passportId: 
             labelDisplayedRows={({ from, to, count }) =>
               from + "–" + to + " / " + count
             }
-            sx={{ borderTop: "1px solid rgba(0,0,0,0.06)", color: "#475569", bgcolor: "#FFFFFF" }}
+            sx={{
+              borderTop: "1px solid rgba(0,0,0,0.06)",
+              color: "#475569",
+              bgcolor: "#FFFFFF",
+            }}
           />
         </Paper>
       )}
@@ -314,15 +509,18 @@ export function ServiceSection({ passportId, canManage = false }: { passportId: 
           fullWidth
           sx={{ "& .MuiDialog-paper": { borderRadius: "16px" } }}
         >
-          <DialogTitle id="service-delete-title" sx={{ fontWeight: 700, color: "#0F172A", pb: 1 }}>
+          <DialogTitle
+            id="service-delete-title"
+            sx={{ fontWeight: 700, color: "#0F172A", pb: 1 }}
+          >
             Servis kaydı silinsin mi?
           </DialogTitle>
 
           <DialogContent>
             <Stack spacing={2}>
               <DialogContentText sx={{ color: "#475569", fontSize: "0.95rem" }}>
-                <strong>{removingRecord.serviceDate}</strong> tarihli servis kaydını silmek
-                üzeresiniz. Bu işlem geri alınamaz.
+                <strong>{removingRecord.serviceDate}</strong> tarihli servis
+                kaydını silmek üzeresiniz. Bu işlem geri alınamaz.
               </DialogContentText>
 
               {deleteError !== undefined && <ErrorNotice error={deleteError} />}
@@ -336,7 +534,12 @@ export function ServiceSection({ passportId, canManage = false }: { passportId: 
                 setRemovingRecord(undefined);
                 setDeleteError(undefined);
               }}
-              sx={{ color: "#0F172A", fontWeight: 600, textTransform: "none", "&:hover": { bgcolor: "rgba(15, 23, 42, 0.04)" } }}
+              sx={{
+                color: "#0F172A",
+                fontWeight: 600,
+                textTransform: "none",
+                "&:hover": { bgcolor: "rgba(15, 23, 42, 0.04)" },
+              }}
             >
               Vazgeç
             </Button>
