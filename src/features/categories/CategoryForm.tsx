@@ -72,7 +72,10 @@ export function CategoryForm({
       sx={{ "& .MuiDialog-paper": { borderRadius: "16px" } }}
     >
       <form onSubmit={submit}>
-        <DialogTitle id="category-form-title" sx={{ fontWeight: 700, color: "#0F172A" }}>
+        <DialogTitle
+          id="category-form-title"
+          sx={{ fontWeight: 700, color: "#0F172A" }}
+        >
           {category ? "Kategoriyi düzenle" : "Yeni kategori"}
         </DialogTitle>
         <DialogContent>
