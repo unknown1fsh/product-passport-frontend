@@ -28,28 +28,37 @@ export function ModelSelect({
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-      const handler = setTimeout(() => {
-          setSearch(inputValue);
-      }, 500);
-      return () => clearTimeout(handler);
+    const handler = setTimeout(() => {
+      setSearch(inputValue);
+    }, 500);
+    return () => clearTimeout(handler);
   }, [inputValue]);
 
-  const { data, loading, error: apiError } = useResource<PageResponse<Model>>(
-    `/product-models?page=0&size=100${search ? `&search=${encodeURIComponent(search)}` : ''}`
+  const {
+    data,
+    loading,
+    error: apiError,
+  } = useResource<PageResponse<Model>>(
+    `/product-models?page=0&size=100${search ? `&search=${encodeURIComponent(search)}` : ""}`,
   );
 
   const models = data?.content || [];
-  
+
   const hasError = error || !!apiError;
   const errorMessage = apiError instanceof ApiError ? apiError.message : "";
-  const displayHelperText = errorMessage || helperText || (loading ? "Modeller yükleniyor..." : "");
+  const displayHelperText =
+    errorMessage || helperText || (loading ? "Modeller yükleniyor..." : "");
 
-  const isSelectedMissing = value && initialName && !models.some(m => m.publicId === value);
+  const isSelectedMissing =
+    value && initialName && !models.some((m) => m.publicId === value);
   const displayModels = isSelectedMissing
-    ? [{ publicId: value, name: initialName, code: "Kayıtlı" } as Model, ...models]
+    ? [
+        { publicId: value, name: initialName, code: "Kayıtlı" } as Model,
+        ...models,
+      ]
     : models;
 
-  const selected = displayModels.find(m => m.publicId === value) ?? null;
+  const selected = displayModels.find((m) => m.publicId === value) ?? null;
 
   return (
     <Autocomplete
@@ -62,7 +71,9 @@ export function ModelSelect({
       disabled={disabled}
       loading={loading}
       filterOptions={(x) => x}
-      noOptionsText={loading ? "Aranıyor..." : "Sistemde kayıtlı model bulunamadı."}
+      noOptionsText={
+        loading ? "Aranıyor..." : "Sistemde kayıtlı model bulunamadı."
+      }
       renderInput={(params) => (
         <TextField
           {...params}

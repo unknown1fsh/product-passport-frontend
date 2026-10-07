@@ -4,20 +4,44 @@ export const API_BASE = (
 export class ApiError extends Error {
   status: number;
   details: string[];
-  constructor(status: number, message: string, details: string[] = []) {
+  retryAfter?: number;
+  constructor(
+    status: number,
+    message: string,
+    details: string[] = [],
+    retryAfter?: number,
+  ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.details = details;
+    this.retryAfter = retryAfter;
   }
 }
 export async function readResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     const error = await response.json().catch(() => null);
+    let retryAfter: number | undefined;
+    const retryHeader = response.headers.get("Retry-After");
+    if (retryHeader) {
+      retryAfter = parseInt(retryHeader, 10);
+      if (isNaN(retryAfter)) {
+        const date = new Date(retryHeader);
+        if (!isNaN(date.getTime())) {
+          retryAfter = Math.max(
+            0,
+            Math.ceil((date.getTime() - Date.now()) / 1000),
+          );
+        } else {
+          retryAfter = undefined;
+        }
+      }
+    }
     throw new ApiError(
       response.status,
       error?.message || "İstek tamamlanamadı.",
       error?.details || [],
+      retryAfter,
     );
   }
   // DELETE ve kayıt gibi boş yanıtlar JSON olarak ayrıştırılamaz.
