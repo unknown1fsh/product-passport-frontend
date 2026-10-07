@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   Box,
@@ -189,6 +189,11 @@ export function ModelPage() {
   const [brandInput, setBrandInput] = useState(
     searchParams.get("brandPublicId") || "",
   );
+
+  useEffect(() => {
+    setSearchInput(searchParams.get("search") || "");
+    setBrandInput(searchParams.get("brandPublicId") || "");
+  }, [searchParams]);
 
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
