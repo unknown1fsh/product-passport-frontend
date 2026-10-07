@@ -23,14 +23,14 @@ async function getCsrfToken(): Promise<{ headerName: string; token: string }> {
 async function ensureToken(): Promise<string> {
   let token = sessionStore.getToken();
   if (token) return token;
-  
+
   try {
     await sessionStore.initialize();
     token = sessionStore.getToken();
   } catch {
     // yoksay
   }
-  
+
   if (!token) {
     throw new ApiError(401, "Giriş yapın.");
   }
@@ -42,7 +42,9 @@ export async function api<T>(
   options: RequestInit = {},
 ): Promise<T> {
   const send = async (token: string) => {
-    const isMutation = options.method && ["POST", "PUT", "DELETE", "PATCH"].includes(options.method.toUpperCase());
+    const isMutation =
+      options.method &&
+      ["POST", "PUT", "DELETE", "PATCH"].includes(options.method.toUpperCase());
     const csrf = isMutation ? await getCsrfToken() : null;
 
     return fetch(API_BASE + path, {

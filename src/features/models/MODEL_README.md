@@ -25,6 +25,7 @@ Sistemdeki hiyerarşik veri akışı ve sayfa içi URL bazlı filtreleme mekaniz
 Diğer geliştiricilerin formlarında Model seçtirme ihtiyacı olduğunda, her seferinde baştan API isteği yazmalarına gerek yoktur. Özel olarak hazırlanan `<ModelSelect />` bileşeni projeye entegre edilmiştir.
 
 ### 📌 Özellikler
+
 - **Otomatik Veri Çekme:** Yüklendiğinde `/product-models` endpointine giderek mevcut modelleri çeker ve önbellekler.
 - **Yüklenme (Loading) Durumu:** API isteği devam ederken kullanıcıya `CircularProgress` döndürgeci gösterilir.
 - **Veri Kaybını Önleme (ECR-08):** Pasaport düzenleme (Edit) ekranlarında, eğer seçili UUID sayfalamada görünmüyorsa `initialName` prop'u sayesinde modelin adı ekranda doğru şekilde gösterilir.
@@ -54,3 +55,4 @@ export function OzetFormu({ existingModelId, existingModelName }) {
 
 
 ⚙️ Alabileceği Prop'lar (API)Prop AdıTürZorunlu mu?AçıklamavaluestringEvetSeçili modelin UUID değeri (Boşsa "" gönderin).onChange(uuid: string) => voidEvetKullanıcı yeni bir model seçtiğinde tetiklenir.initialNamestringHayırDüzenleme (Edit) modunda, eski modelin adını ekranda tutmak için kullanılır.disabledbooleanHayırBileşeni tıklanamaz hale getirir.errorbooleanHayırForm doğrulama (validation) hatalarında kutuyu kırmızı yapar.helperTextstringHayırKutunun altındaki açıklama / hata metni.
+```
