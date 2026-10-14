@@ -44,7 +44,7 @@ export function BrandPage() {
   const isAdmin = user?.role === "ADMIN";
   const isManufacturer = user?.role === "MANUFACTURER";
   const canCreate = isAdmin;
-  
+
   const paging = usePageQuery("name", ["name", "createdAt"]);
   const { data, error, loading, reload } = useResource<PageResponse<Brand>>(
     "/product-brands?" + paging.query,
@@ -81,7 +81,8 @@ export function BrandPage() {
         sx={{
           p: { xs: 3, md: 4 },
           borderRadius: "16px",
-          background: "linear-gradient(135deg, #0F172A 0%, #1D4ED8 50%, #475569 100%)",
+          background:
+            "linear-gradient(135deg, #0F172A 0%, #1D4ED8 50%, #475569 100%)",
           boxShadow: "0 14px 36px rgba(15, 23, 42, 0.25)",
           display: "flex",
           justifyContent: "space-between",
@@ -103,10 +104,20 @@ export function BrandPage() {
               borderRadius: "6px",
             }}
           />
-          <Typography variant="h4" sx={{ fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.5px" }}>
+          <Typography
+            variant="h4"
+            sx={{ fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.5px" }}
+          >
             Markalar
           </Typography>
-          <Typography sx={{ color: "#CBD5E1", mt: 0.5, fontSize: "1rem", fontWeight: 400 }}>
+          <Typography
+            sx={{
+              color: "#CBD5E1",
+              mt: 0.5,
+              fontSize: "1rem",
+              fontWeight: 400,
+            }}
+          >
             Sistemdeki üretici markalarını görüntüleyin ve yönetin.
           </Typography>
         </Box>
@@ -135,7 +146,11 @@ export function BrandPage() {
       </Box>
 
       {notice && (
-        <Alert onClose={() => setNotice("")} severity="success" sx={{ borderRadius: "12px" }}>
+        <Alert
+          onClose={() => setNotice("")}
+          severity="success"
+          sx={{ borderRadius: "12px" }}
+        >
           {notice}
         </Alert>
       )}
@@ -145,14 +160,42 @@ export function BrandPage() {
       ) : error ? (
         <ErrorNotice error={error} retry={reload} />
       ) : (
-        <Paper elevation={0} sx={{ overflow: "hidden", borderRadius: "16px", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 12px rgba(0,0,0,0.02)", display: "flex", flexDirection: "column" }}>
-          
-          <Box sx={{ px: 3, py: 2.5, bgcolor: "#FFFFFF", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+        <Paper
+          elevation={0}
+          sx={{
+            overflow: "hidden",
+            borderRadius: "16px",
+            border: "1px solid rgba(0,0,0,0.06)",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.02)",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Box
+            sx={{
+              px: 3,
+              py: 2.5,
+              bgcolor: "#FFFFFF",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 2,
+              borderBottom: "1px solid rgba(0,0,0,0.06)",
+            }}
+          >
             <Typography variant="h6" sx={{ fontWeight: 700, color: "#0F172A" }}>
               Kayıtlı Markalar
             </Typography>
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                flexWrap: "wrap",
+              }}
+            >
               <PageControls
                 paging={paging}
                 total={data?.totalElements || 0}
@@ -165,46 +208,101 @@ export function BrandPage() {
               <ToggleButtonGroup
                 value={viewMode}
                 exclusive
-                onChange={(_, newMode) => { if (newMode) setViewMode(newMode); }}
+                onChange={(_, newMode) => {
+                  if (newMode) setViewMode(newMode);
+                }}
                 size="small"
                 sx={{
                   bgcolor: "#F8FAFC",
                   p: 0.5,
                   borderRadius: "10px",
                   border: "1px solid rgba(0,0,0,0.08)",
-                  "& .MuiToggleButton-root": { border: "none", borderRadius: "8px !important", color: "#64748B", p: 0.8 },
-                  "& .Mui-selected": { bgcolor: "#0F172A !important", color: "#FFFFFF !important" }
+                  "& .MuiToggleButton-root": {
+                    border: "none",
+                    borderRadius: "8px !important",
+                    color: "#64748B",
+                    p: 0.8,
+                  },
+                  "& .Mui-selected": {
+                    bgcolor: "#0F172A !important",
+                    color: "#FFFFFF !important",
+                  },
                 }}
               >
-                <ToggleButton value="list"><TableRowsOutlinedIcon fontSize="small" /></ToggleButton>
-                <ToggleButton value="grid"><GridViewOutlinedIcon fontSize="small" /></ToggleButton>
+                <ToggleButton value="list">
+                  <TableRowsOutlinedIcon fontSize="small" />
+                </ToggleButton>
+                <ToggleButton value="grid">
+                  <GridViewOutlinedIcon fontSize="small" />
+                </ToggleButton>
               </ToggleButtonGroup>
             </Box>
           </Box>
 
-          <Box sx={{ flex: 1, bgcolor: viewMode === "grid" ? "#F8FAFC" : "#FFFFFF" }}>
+          <Box
+            sx={{
+              flex: 1,
+              bgcolor: viewMode === "grid" ? "#F8FAFC" : "#FFFFFF",
+            }}
+          >
             {viewMode === "list" ? (
               <TableContainer>
                 <Table aria-label="Markalar">
                   <TableHead>
                     <TableRow sx={{ bgcolor: "#F8FAFC" }}>
-                      <TableCell sx={{ fontWeight: 600, color: "#475569", py: 2 }}>Kod (ID)</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: "#475569", py: 2 }}>Marka adı</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: "#475569", py: 2 }}>Açıklama</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: "#475569", py: 2 }}>Durum</TableCell>
-                      {isAdmin && <TableCell align="right" sx={{ fontWeight: 600, color: "#475569", py: 2 }}>İşlemler</TableCell>}
+                      <TableCell
+                        sx={{ fontWeight: 600, color: "#475569", py: 2 }}
+                      >
+                        Kod (ID)
+                      </TableCell>
+                      <TableCell
+                        sx={{ fontWeight: 600, color: "#475569", py: 2 }}
+                      >
+                        Marka adı
+                      </TableCell>
+                      <TableCell
+                        sx={{ fontWeight: 600, color: "#475569", py: 2 }}
+                      >
+                        Açıklama
+                      </TableCell>
+                      <TableCell
+                        sx={{ fontWeight: 600, color: "#475569", py: 2 }}
+                      >
+                        Durum
+                      </TableCell>
+                      {isAdmin && (
+                        <TableCell
+                          align="right"
+                          sx={{ fontWeight: 600, color: "#475569", py: 2 }}
+                        >
+                          İşlemler
+                        </TableCell>
+                      )}
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {data?.content.map((brand) => (
-                      <TableRow key={brand.publicId} hover sx={{ "&:last-child td": { borderBottom: 0 } }}>
+                      <TableRow
+                        key={brand.publicId}
+                        hover
+                        sx={{ "&:last-child td": { borderBottom: 0 } }}
+                      >
                         <TableCell>
-                          <Typography variant="body2" sx={{ fontFamily: "monospace", color: "#64748B", fontWeight: 600 }}>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontFamily: "monospace",
+                              color: "#64748B",
+                              fontWeight: 600,
+                            }}
+                          >
                             {brand.publicId.substring(0, 8)}...
                           </Typography>
                         </TableCell>
                         <TableCell>
-                          <Typography sx={{ fontWeight: 600, color: "#0F172A" }}>
+                          <Typography
+                            sx={{ fontWeight: 600, color: "#0F172A" }}
+                          >
                             {brand.name}
                           </Typography>
                         </TableCell>
@@ -225,14 +323,27 @@ export function BrandPage() {
                             }}
                           />
                         </TableCell>
-                        {(isAdmin || (isManufacturer && brand.publicId === user?.publicId)) && (
-                          <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
-                            <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
+                        {(isAdmin ||
+                          (isManufacturer &&
+                            brand.publicId === user?.publicId)) && (
+                          <TableCell
+                            align="right"
+                            sx={{ whiteSpace: "nowrap" }}
+                          >
+                            <Stack
+                              direction="row"
+                              spacing={1}
+                              sx={{ justifyContent: "flex-end" }}
+                            >
                               <Tooltip title="Düzenle">
                                 <IconButton
                                   size="small"
                                   onClick={() => setEditor(brand)}
-                                  sx={{ color: "#1D4ED8", bgcolor: "#F1F5F9", "&:hover": { bgcolor: "#E2E8F0" } }}
+                                  sx={{
+                                    color: "#1D4ED8",
+                                    bgcolor: "#F1F5F9",
+                                    "&:hover": { bgcolor: "#E2E8F0" },
+                                  }}
                                 >
                                   <EditOutlinedIcon fontSize="small" />
                                 </IconButton>
@@ -246,7 +357,11 @@ export function BrandPage() {
                                       setRemoving(brand);
                                       setDeleteError(undefined);
                                     }}
-                                    sx={{ color: "#DC2626", bgcolor: "#FEECEB", "&:hover": { bgcolor: "#FCD3D3" } }}
+                                    sx={{
+                                      color: "#DC2626",
+                                      bgcolor: "#FEECEB",
+                                      "&:hover": { bgcolor: "#FCD3D3" },
+                                    }}
                                   >
                                     <DeleteOutlineOutlinedIcon fontSize="small" />
                                   </IconButton>
@@ -259,7 +374,10 @@ export function BrandPage() {
                     ))}
                     {!data?.content.length && (
                       <TableRow>
-                        <TableCell colSpan={isAdmin ? 5 : 4} sx={{ py: 6, textAlign: "center", color: "#64748B" }}>
+                        <TableCell
+                          colSpan={isAdmin ? 5 : 4}
+                          sx={{ py: 6, textAlign: "center", color: "#64748B" }}
+                        >
                           Kayıtlı marka bulunamadı.
                         </TableCell>
                       </TableRow>
@@ -268,7 +386,18 @@ export function BrandPage() {
                 </Table>
               </TableContainer>
             ) : (
-              <Box sx={{ p: 3, display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr" }, gap: 3 }}>
+              <Box
+                sx={{
+                  p: 3,
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    sm: "1fr 1fr",
+                    md: "1fr 1fr 1fr",
+                  },
+                  gap: 3,
+                }}
+              >
                 {data?.content.map((brand) => (
                   <Card
                     key={brand.publicId}
@@ -281,12 +410,42 @@ export function BrandPage() {
                       bgcolor: "#FFFFFF",
                       boxShadow: "0 2px 8px rgba(0,0,0,0.02)",
                       transition: "all 0.2s ease",
-                      "&:hover": { transform: "translateY(-3px)", boxShadow: "0 8px 24px rgba(15,23,42,0.06)", borderColor: "#0F172A" },
+                      "&:hover": {
+                        transform: "translateY(-3px)",
+                        boxShadow: "0 8px 24px rgba(15,23,42,0.06)",
+                        borderColor: "#0F172A",
+                      },
                     }}
                   >
-                    <Box sx={{ p: 3, flex: 1, display: "flex", flexDirection: "column" }}>
-                      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                        <Typography sx={{ fontFamily: "monospace", color: "#0F172A", bgcolor: "#F8FAFC", px: 1.5, py: 0.5, borderRadius: "6px", fontSize: "0.75rem", fontWeight: 700, border: "1px solid rgba(0,0,0,0.04)" }}>
+                    <Box
+                      sx={{
+                        p: 3,
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          mb: 2,
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontFamily: "monospace",
+                            color: "#0F172A",
+                            bgcolor: "#F8FAFC",
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: "6px",
+                            fontSize: "0.75rem",
+                            fontWeight: 700,
+                            border: "1px solid rgba(0,0,0,0.04)",
+                          }}
+                        >
                           {brand.publicId.substring(0, 8)}...
                         </Typography>
                         <Chip
@@ -300,21 +459,58 @@ export function BrandPage() {
                           }}
                         />
                       </Box>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#0F172A" }}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ fontWeight: 700, color: "#0F172A" }}
+                      >
                         {brand.name}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: "#64748B", mt: 1 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "#64748B", mt: 1 }}
+                      >
                         {brand.description || "Açıklama bulunmuyor."}
                       </Typography>
                     </Box>
-                    <Box sx={{ px: 2.5, py: 1.5, borderTop: "1px solid rgba(0,0,0,0.04)", display: "flex", justifyContent: "flex-end", gap: 1, bgcolor: "#F8FAFC" }}>
-                      {(isAdmin || (isManufacturer && brand.publicId === user?.publicId)) && (
+                    <Box
+                      sx={{
+                        px: 2.5,
+                        py: 1.5,
+                        borderTop: "1px solid rgba(0,0,0,0.04)",
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: 1,
+                        bgcolor: "#F8FAFC",
+                      }}
+                    >
+                      {(isAdmin ||
+                        (isManufacturer &&
+                          brand.publicId === user?.publicId)) && (
                         <>
-                          <Button size="small" onClick={() => setEditor(brand)} sx={{ color: "#1D4ED8", fontWeight: 600, textTransform: "none" }}>
+                          <Button
+                            size="small"
+                            onClick={() => setEditor(brand)}
+                            sx={{
+                              color: "#1D4ED8",
+                              fontWeight: 600,
+                              textTransform: "none",
+                            }}
+                          >
                             Düzenle
                           </Button>
                           {isAdmin && (
-                            <Button size="small" onClick={() => { setRemoving(brand); setDeleteError(undefined); }} sx={{ color: "#DC2626", fontWeight: 600, textTransform: "none" }}>
+                            <Button
+                              size="small"
+                              onClick={() => {
+                                setRemoving(brand);
+                                setDeleteError(undefined);
+                              }}
+                              sx={{
+                                color: "#DC2626",
+                                fontWeight: 600,
+                                textTransform: "none",
+                              }}
+                            >
                               Sil
                             </Button>
                           )}
@@ -324,8 +520,17 @@ export function BrandPage() {
                   </Card>
                 ))}
                 {!data?.content.length && (
-                  <Box sx={{ gridColumn: "1 / -1", py: 6, textAlign: "center", color: "#64748B" }}>
-                    <Typography variant="body1">Kayıtlı marka bulunamadı.</Typography>
+                  <Box
+                    sx={{
+                      gridColumn: "1 / -1",
+                      py: 6,
+                      textAlign: "center",
+                      color: "#64748B",
+                    }}
+                  >
+                    <Typography variant="body1">
+                      Kayıtlı marka bulunamadı.
+                    </Typography>
                   </Box>
                 )}
               </Box>
@@ -349,7 +554,9 @@ export function BrandPage() {
       {removing && (
         <Dialog
           open
-          onClose={() => { if (!busy) setRemoving(undefined); }}
+          onClose={() => {
+            if (!busy) setRemoving(undefined);
+          }}
           maxWidth="xs"
           fullWidth
           sx={{ "& .MuiDialog-paper": { borderRadius: "16px" } }}
@@ -360,7 +567,8 @@ export function BrandPage() {
           <DialogContent>
             <Stack spacing={2}>
               <DialogContentText sx={{ color: "#475569", fontSize: "0.95rem" }}>
-                <strong>{removing.name}</strong> markasını silmek üzeresiniz. Bu işlem geri alınamaz.
+                <strong>{removing.name}</strong> markasını silmek üzeresiniz. Bu
+                işlem geri alınamaz.
               </DialogContentText>
               {deleteError !== undefined && <ErrorNotice error={deleteError} />}
             </Stack>
@@ -369,7 +577,12 @@ export function BrandPage() {
             <Button
               disabled={busy}
               onClick={() => setRemoving(undefined)}
-              sx={{ color: "#0F172A", fontWeight: 600, textTransform: "none", "&:hover": { bgcolor: "rgba(15, 23, 42, 0.04)" } }}
+              sx={{
+                color: "#0F172A",
+                fontWeight: 600,
+                textTransform: "none",
+                "&:hover": { bgcolor: "rgba(15, 23, 42, 0.04)" },
+              }}
             >
               Vazgeç
             </Button>

@@ -49,8 +49,10 @@ describe("WarrantyList Bileşeni", () => {
     });
 
     render(<WarrantyList passportId={mockPassportId} canManage={true} />);
-    
-    expect(screen.getByText(/Garanti verisi çekilirken hata oluştu/i)).toBeInTheDocument();
+
+    expect(
+      screen.getByText(/Garanti verisi çekilirken hata oluştu/i),
+    ).toBeInTheDocument();
   });
 
   it("Silme işleminde yetkisizlik (403) hatası alındığında uygun uyarı gösterilmelidir", async () => {
@@ -69,7 +71,9 @@ describe("WarrantyList Bileşeni", () => {
     fireEvent.click(screen.getByRole("button", { name: /Silmeyi onayla/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/Bu kaydı silmek için yetkiniz yok/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Bu kaydı silmek için yetkiniz yok/i),
+      ).toBeInTheDocument();
     });
   });
 

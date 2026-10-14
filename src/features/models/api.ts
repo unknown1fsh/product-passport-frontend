@@ -20,18 +20,18 @@ export type ModelInput = {
 };
 
 export const modelApi = {
-    create: (input: ModelInput) =>
-        api<Model>("/product-models", {
-            method: "POST",
-            body: JSON.stringify(input),
-        }),
-    update: (id: string, input: ModelInput) =>
-        api<Model>("/product-models/" + id, {
-            method: "PUT",
-            body: JSON.stringify(input),
-        }),
-    remove: (id: string) =>
-        api<void>("/product-models/" + id, {
-            method: "DELETE"
-        })
+  create: (input: ModelInput) =>
+    api<Model>("/product-models", {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+  update: (id: string, input: ModelInput) =>
+    api<Model>("/product-models/" + id, {
+      method: "PUT",
+      body: JSON.stringify(input),
+    }),
+  remove: (id: string) =>
+    api<void>("/product-models/" + id, {
+      method: "DELETE",
+    }),
 };

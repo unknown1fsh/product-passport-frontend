@@ -53,9 +53,9 @@ export function LoginPage() {
       <Navigate
         to={
           typeof from === "string" &&
-          from.startsWith("/") &&
-          !from.startsWith("//") &&
-          !from.startsWith("/giris")
+            from.startsWith("/") &&
+            !from.startsWith("//") &&
+            !from.startsWith("/giris")
             ? from
             : "/"
         }
@@ -521,6 +521,25 @@ export function LoginPage() {
                     },
                   }}
                 />
+
+                {import.meta.env.DEV && (
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setEmail("admin@tein.local");
+                      setPassword("admin123");
+                    }}
+                    sx={{
+                      borderRadius: "50px",
+                      textTransform: "none",
+                      fontWeight: 600,
+                      color: "#1650C8",
+                      borderColor: "#1650C8",
+                    }}
+                  >
+                    Admin Girişi (Geliştirme)
+                  </Button>
+                )}
 
                 <Button
                   type="submit"
