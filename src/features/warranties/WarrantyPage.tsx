@@ -35,6 +35,8 @@ export function WarrantyPage() {
       (isManufacturer && selectedPassport.brandPublicId === user?.publicId)
     : false;
 
+  const canManageSelected = selectedPassport ? (isAdmin || (isManufacturer && selectedPassport.brandPublicId === user?.publicId)) : false;
+
   return (
     <Stack spacing={3}>
       {/* 1. HERO BANNER: Mavi geçiş ve tam işlevli "Yeni Ekle" butonu */}
