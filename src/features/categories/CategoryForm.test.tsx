@@ -13,11 +13,14 @@ describe("Kategori formu", () => {
     const saved = vi.fn();
     render(<CategoryForm onClose={() => {}} onSaved={saved} />);
     const user = userEvent.setup();
-    
+
     await user.type(screen.getByRole("textbox", { name: /Kod/i }), " EV ");
-    await user.type(screen.getByRole("textbox", { name: /Kategori adı/i }), " Ev Ürünleri ");
+    await user.type(
+      screen.getByRole("textbox", { name: /Kategori adı/i }),
+      " Ev Ürünleri ",
+    );
     await user.click(screen.getByRole("button", { name: "Kaydet" }));
-    
+
     await waitFor(() => expect(saved).toHaveBeenCalled());
     expect(categoryApi.create).toHaveBeenCalledWith({
       code: "EV",
@@ -41,9 +44,9 @@ describe("Kategori formu", () => {
       />,
     );
     expect(screen.getByRole("textbox", { name: /Kod/i })).toBeDisabled();
-    
+
     await userEvent.click(screen.getByRole("button", { name: "Kaydet" }));
-    
+
     await waitFor(() =>
       expect(categoryApi.update).toHaveBeenCalledWith("id", {
         name: "Ev",
@@ -59,11 +62,14 @@ describe("Kategori formu", () => {
     );
     const saved = vi.fn();
     render(<CategoryForm onClose={() => {}} onSaved={saved} />);
-    
+
     await userEvent.type(screen.getByRole("textbox", { name: /Kod/i }), "EV");
-    await userEvent.type(screen.getByRole("textbox", { name: /Kategori adı/i }), "Ev");
+    await userEvent.type(
+      screen.getByRole("textbox", { name: /Kategori adı/i }),
+      "Ev",
+    );
     await userEvent.click(screen.getByRole("button", { name: "Kaydet" }));
-    
+
     expect(
       await screen.findByText("Kod zaten kullanılıyor"),
     ).toBeInTheDocument();

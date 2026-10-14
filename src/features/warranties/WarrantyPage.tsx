@@ -1,16 +1,39 @@
 import { useState } from "react";
-import { Box, Typography, Paper, Autocomplete, TextField, Stack, Chip, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Paper,
+  Autocomplete,
+  TextField,
+  Stack,
+  Chip,
+  Button,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useResource } from "../../shared/hooks/useResource";
 import type { PageResponse, Passport } from "../../shared/types";
 import { Loading } from "../../shared/ui/Feedback";
 import WarrantyList from "./WarrantyList";
+import { useAuth } from "../auth/AuthProvider";
 
 export function WarrantyPage() {
-  const [selectedPassport, setSelectedPassport] = useState<Passport | null>(null);
+  const [selectedPassport, setSelectedPassport] = useState<Passport | null>(
+    null,
+  );
   const [triggerNewModal, setTriggerNewModal] = useState(false);
 
-  const { data, loading } = useResource<PageResponse<Passport>>("/product-passports?size=100");
+  const { user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
+  const isManufacturer = user?.role === "MANUFACTURER";
+
+  const { data, loading } = useResource<PageResponse<Passport>>(
+    "/product-passports?size=100",
+  );
+
+  const canManageSelected = selectedPassport
+    ? isAdmin ||
+      (isManufacturer && selectedPassport.brandPublicId === user?.publicId)
+    : false;
 
   return (
     <Stack spacing={3}>
@@ -19,7 +42,8 @@ export function WarrantyPage() {
         sx={{
           p: { xs: 3, md: 4 },
           borderRadius: "16px",
-          background: "linear-gradient(135deg, #0F172A 0%, #1D4ED8 50%, #475569 100%)",
+          background:
+            "linear-gradient(135deg, #0F172A 0%, #1D4ED8 50%, #475569 100%)",
           boxShadow: "0 14px 36px rgba(15, 23, 42, 0.25)",
           display: "flex",
           justifyContent: "space-between",
@@ -41,15 +65,26 @@ export function WarrantyPage() {
               borderRadius: "6px",
             }}
           />
-          <Typography variant="h4" sx={{ fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.5px" }}>
+          <Typography
+            variant="h4"
+            sx={{ fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.5px" }}
+          >
             Garanti Kayıtları
           </Typography>
-          <Typography sx={{ color: "#CBD5E1", mt: 0.5, fontSize: "1rem", fontWeight: 400 }}>
-            Garanti kayıtlarını görüntülemek ve yönetmek için listeden bir ürün seçin.
+          <Typography
+            sx={{
+              color: "#CBD5E1",
+              mt: 0.5,
+              fontSize: "1rem",
+              fontWeight: 400,
+            }}
+          >
+            Garanti kayıtlarını görüntülemek ve yönetmek için listeden bir ürün
+            seçin.
           </Typography>
         </Box>
 
-        {selectedPassport && (
+        {canManageSelected && (
           <Button
             variant="contained"
             startIcon={<AddIcon />}
@@ -83,17 +118,22 @@ export function WarrantyPage() {
           boxShadow: "0 2px 12px rgba(0,0,0,0.02)",
         }}
       >
-        <Typography variant="h6" sx={{ mb: 2.5, fontWeight: 700, color: "#0F172A" }}>
+        <Typography
+          variant="h6"
+          sx={{ mb: 2.5, fontWeight: 700, color: "#0F172A" }}
+        >
           Ürün Seçimi
         </Typography>
-        
+
         {loading ? (
           <Loading />
         ) : (
           <Box sx={{ maxWidth: 450 }}>
             <Autocomplete
               options={data?.content || []}
-              getOptionLabel={(option) => `${option.serialNumber} - ${option.productModelName}`}
+              getOptionLabel={(option) =>
+                `${option.serialNumber} - ${option.productModelName}`
+              }
               value={selectedPassport}
               onChange={(_, newValue) => setSelectedPassport(newValue)}
               noOptionsText="Ürün bulunamadı"
@@ -110,16 +150,16 @@ export function WarrantyPage() {
                       mx: 1,
                       borderRadius: "8px",
                       transition: "background-color 0.2s",
-                      "&[aria-selected=\"true\"]": {
+                      '&[aria-selected="true"]': {
                         bgcolor: "rgba(15, 23, 42, 0.08) !important",
                         color: "#0F172A !important",
                         fontWeight: 700,
                       },
-                      "&.Mui-focused, &[data-focus=\"true\"], &:hover": {
+                      '&.Mui-focused, &[data-focus="true"], &:hover': {
                         bgcolor: "#F1F5F9 !important",
                         color: "#0F172A !important",
                       },
-                      "&.Mui-focused[aria-selected=\"true\"]": {
+                      '&.Mui-focused[aria-selected="true"]': {
                         bgcolor: "rgba(15, 23, 42, 0.12) !important",
                       },
                     },
@@ -137,7 +177,10 @@ export function WarrantyPage() {
                       borderRadius: "10px",
                       bgcolor: "#F8FAFC",
                       "&:hover fieldset": { borderColor: "#1D4ED8" },
-                      "&.Mui-focused fieldset": { borderColor: "#0F172A", borderWidth: "2px" },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F172A",
+                        borderWidth: "2px",
+                      },
                     },
                   }}
                 />
@@ -149,10 +192,11 @@ export function WarrantyPage() {
 
       {selectedPassport && (
         <Box sx={{ mt: 1 }}>
-          <WarrantyList 
-            passportId={selectedPassport.publicId} 
-            externalOpenNew={triggerNewModal} 
-            onNewModalConsumed={() => setTriggerNewModal(false)} 
+          <WarrantyList
+            passportId={selectedPassport.publicId}
+            externalOpenNew={triggerNewModal}
+            onNewModalConsumed={() => setTriggerNewModal(false)}
+            canManage={canManageSelected}
           />
         </Box>
       )}

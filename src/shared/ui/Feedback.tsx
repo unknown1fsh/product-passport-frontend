@@ -25,13 +25,13 @@ export function ErrorNotice({
   const title =
     error instanceof ApiError
       ? {
-          400: "Bilgileri kontrol edin",
-          401: "Giriş gerekli",
-          403: "Bu işlem için yetkiniz yok",
-          404: "Kayıt bulunamadı",
-          409: "İşlem tamamlanamadı",
-          429: "Çok fazla istek",
-        }[error.status] || "Bir sorun oluştu"
+        400: "Bilgileri kontrol edin",
+        401: "Giriş gerekli",
+        403: "Bu işlem için yetkiniz yok",
+        404: "Kayıt bulunamadı",
+        409: "İşlem tamamlanamadı",
+        429: "Çok fazla istek",
+      }[error.status] || "Bir sorun oluştu"
       : "Bağlantı kurulamadı";
   return (
     <Alert
@@ -47,6 +47,11 @@ export function ErrorNotice({
     >
       <AlertTitle>{title}</AlertTitle>
       {error instanceof Error ? error.message : "Lütfen tekrar deneyin."}
+      {error instanceof ApiError && error.retryAfter ? (
+        <Box sx={{ mt: 1, fontWeight: "medium" }}>
+          Lütfen {error.retryAfter} saniye sonra tekrar deneyin.
+        </Box>
+      ) : null}
       {error instanceof ApiError && error.details.length > 0 && (
         <ul>
           {error.details.map((detail, i) => (

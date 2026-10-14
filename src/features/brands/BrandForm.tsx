@@ -24,7 +24,7 @@ export function BrandForm({ brand, onClose, onSaved }: BrandFormProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [active, setActive] = useState(true);
-  
+
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<unknown>();
 
@@ -65,7 +65,9 @@ export function BrandForm({ brand, onClose, onSaved }: BrandFormProps) {
   return (
     <Dialog
       open
-      onClose={() => { if (!busy) onClose(); }}
+      onClose={() => {
+        if (!busy) onClose();
+      }}
       maxWidth="sm"
       fullWidth
       sx={{ "& .MuiDialog-paper": { borderRadius: "16px" } }}
@@ -103,22 +105,20 @@ export function BrandForm({ brand, onClose, onSaved }: BrandFormProps) {
             />
 
             <Box
-               sx={{
+              sx={{
                 display: "flex",
                 alignItems: "center",
                 gap: 1.5,
-                }}
-              >
-                <Typography sx={{ color: "#0F172A" }}>
-                  Aktif
-                </Typography>
+              }}
+            >
+              <Typography sx={{ color: "#0F172A" }}>Aktif</Typography>
 
-                <Switch
+              <Switch
                 checked={active}
                 onChange={(e) => setActive(e.target.checked)}
                 color="primary"
-                  />
-                  </Box>
+              />
+            </Box>
           </Stack>
         </DialogContent>
 

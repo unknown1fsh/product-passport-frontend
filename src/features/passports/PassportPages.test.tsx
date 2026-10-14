@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter , Route , Routes} from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { PassportList , PassportDetail } from "./PassportPages";
+import { PassportList, PassportDetail } from "./PassportPages";
 import { useAuth } from "../auth/AuthProvider";
 import { useResource } from "../../shared/hooks/useResource";
 import type { Role } from "../../shared/types";
@@ -20,6 +20,7 @@ const pasaport = {
   purchaseDate: "2026-09-01",
   invoiceNumber: null,
   description: null,
+  brandPublicId: "u1",
   active: true,
 };
 const ID = "5e0e0a05-4049-4a62-b3b1-3d0a1fdabf87";
@@ -38,7 +39,13 @@ const servis = {
 };
 
 function sayfa(kayit: unknown) {
-  return { content: [kayit], page: 0, size: 20, totalElements: 1, totalPages: 1 };
+  return {
+    content: [kayit],
+    page: 0,
+    size: 20,
+    totalElements: 1,
+    totalPages: 1,
+  };
 }
 
 function detayiCiz(role: Role) {
@@ -56,21 +63,21 @@ function detayiCiz(role: Role) {
   });
   vi.mocked(useResource).mockImplementation(((path: string) => ({
     data: path.startsWith("/warranties/product/")
-        ? sayfa(garanti)
-        : path.startsWith("/service-records/product/")
-            ? sayfa(servis)
-            : { ...pasaport, publicId: ID },
+      ? sayfa(garanti)
+      : path.startsWith("/service-records/product/")
+        ? sayfa(servis)
+        : { ...pasaport, publicId: ID },
     error: undefined,
     loading: false,
     reload: vi.fn(),
     path,
   })) as typeof useResource);
   render(
-      <MemoryRouter initialEntries={["/pasaportlar/" + ID]}>
-        <Routes>
-          <Route path="/pasaportlar/:id" element={<PassportDetail />} />
-        </Routes>
-      </MemoryRouter>,
+    <MemoryRouter initialEntries={["/pasaportlar/" + ID]}>
+      <Routes>
+        <Route path="/pasaportlar/:id" element={<PassportDetail />} />
+      </Routes>
+    </MemoryRouter>,
   );
 }
 function ekraniCiz(role: Role) {
@@ -113,24 +120,35 @@ describe("Pasaport detayı — garanti ve servis yetkileri", () => {
     detayiCiz("USER");
     expect(screen.getAllByText("SN-00001-TEST").length).toBeGreaterThan(0);
     expect(screen.getByText("Kapı contası değiştirildi")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Yeni Ekle" })).not.toBeInTheDocument();
     expect(
-        screen.queryByRole("button", { name: "Servis kaydı ekle" }),
+      screen.queryByRole("button", { name: "Yeni Ekle" }),
     ).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /düzenle/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /sil/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Servis kaydı ekle" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /düzenle/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /sil/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("MANUFACTURER garanti ve servis aksiyonlarını görür", () => {
     detayiCiz("MANUFACTURER");
-    expect(screen.getByRole("button", { name: "Servis kaydı ekle" })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /düzenle/i }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole("button", { name: /sil/i }).length).toBeGreaterThan(0);
+    expect(
+      screen.getByRole("button", { name: "Servis kaydı ekle" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("button", { name: /düzenle/i }).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByRole("button", { name: /sil/i }).length,
+    ).toBeGreaterThan(0);
   });
 });
 
 describe("Pasaport listesi yetkileri", () => {
-
   it("USER hiçbir işlem düğmesi görmez", () => {
     ekraniCiz("USER");
     expect(
@@ -139,7 +157,9 @@ describe("Pasaport listesi yetkileri", () => {
     expect(
       screen.queryByRole("button", { name: /düzenle/i }),
     ).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /sil/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /sil/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("MANUFACTURER düzenler ama silemez", () => {
@@ -147,8 +167,12 @@ describe("Pasaport listesi yetkileri", () => {
     expect(
       screen.getByRole("button", { name: "Yeni pasaport" }),
     ).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /düzenle/i }).length).toBeGreaterThan(0);
-    expect(screen.queryByRole("button", { name: /sil/i })).not.toBeInTheDocument();
+    expect(
+      screen.getAllByRole("button", { name: /düzenle/i }).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.queryByRole("button", { name: /sil/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("ADMIN üç işlemi de görür", () => {
@@ -156,7 +180,11 @@ describe("Pasaport listesi yetkileri", () => {
     expect(
       screen.getByRole("button", { name: "Yeni pasaport" }),
     ).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /düzenle/i }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole("button", { name: /sil/i }).length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByRole("button", { name: /düzenle/i }).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByRole("button", { name: /sil/i }).length,
+    ).toBeGreaterThan(0);
   });
 });

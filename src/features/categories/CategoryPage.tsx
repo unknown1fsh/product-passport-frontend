@@ -77,7 +77,8 @@ export function CategoryPage() {
         sx={{
           p: { xs: 3, md: 4 },
           borderRadius: "16px",
-          background: "linear-gradient(135deg, #0F172A 0%, #1D4ED8 50%, #475569 100%)",
+          background:
+            "linear-gradient(135deg, #0F172A 0%, #1D4ED8 50%, #475569 100%)",
           boxShadow: "0 14px 36px rgba(15, 23, 42, 0.25)",
           display: "flex",
           justifyContent: "space-between",
@@ -99,10 +100,20 @@ export function CategoryPage() {
               borderRadius: "6px",
             }}
           />
-          <Typography variant="h4" sx={{ fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.5px" }}>
+          <Typography
+            variant="h4"
+            sx={{ fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.5px" }}
+          >
             Kategoriler
           </Typography>
-          <Typography sx={{ color: "#CBD5E1", mt: 0.5, fontSize: "1rem", fontWeight: 400 }}>
+          <Typography
+            sx={{
+              color: "#CBD5E1",
+              mt: 0.5,
+              fontSize: "1rem",
+              fontWeight: 400,
+            }}
+          >
             Ürünlerinizi anlamlı gruplar altında düzenleyin.
           </Typography>
         </Box>
@@ -131,7 +142,11 @@ export function CategoryPage() {
       </Box>
 
       {notice && (
-        <Alert onClose={() => setNotice("")} severity="success" sx={{ borderRadius: "12px" }}>
+        <Alert
+          onClose={() => setNotice("")}
+          severity="success"
+          sx={{ borderRadius: "12px" }}
+        >
           {notice}
         </Alert>
       )}
@@ -141,15 +156,43 @@ export function CategoryPage() {
       ) : error ? (
         <ErrorNotice error={error} retry={reload} />
       ) : (
-        <Paper elevation={0} sx={{ overflow: "hidden", borderRadius: "16px", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 12px rgba(0,0,0,0.02)", display: "flex", flexDirection: "column" }}>
-          
+        <Paper
+          elevation={0}
+          sx={{
+            overflow: "hidden",
+            borderRadius: "16px",
+            border: "1px solid rgba(0,0,0,0.06)",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.02)",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           {/* ÜST KISIM: Başlık, Sıralama Filtreleri (PageControls) ve Liste/Grid Toggle */}
-          <Box sx={{ px: 3, py: 2.5, bgcolor: "#FFFFFF", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+          <Box
+            sx={{
+              px: 3,
+              py: 2.5,
+              bgcolor: "#FFFFFF",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 2,
+              borderBottom: "1px solid rgba(0,0,0,0.06)",
+            }}
+          >
             <Typography variant="h6" sx={{ fontWeight: 700, color: "#0F172A" }}>
               Kayıtlı Kategoriler
             </Typography>
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                flexWrap: "wrap",
+              }}
+            >
               {/* Sıralama ve Yön Filtreleri Üste Taşındı */}
               <PageControls
                 paging={paging}
@@ -164,48 +207,116 @@ export function CategoryPage() {
               <ToggleButtonGroup
                 value={viewMode}
                 exclusive
-                onChange={(_, newMode) => { if (newMode) setViewMode(newMode); }}
+                onChange={(_, newMode) => {
+                  if (newMode) setViewMode(newMode);
+                }}
                 size="small"
                 sx={{
                   bgcolor: "#F8FAFC",
                   p: 0.5,
                   borderRadius: "10px",
                   border: "1px solid rgba(0,0,0,0.08)",
-                  "& .MuiToggleButton-root": { border: "none", borderRadius: "8px !important", color: "#64748B", p: 0.8 },
-                  "& .Mui-selected": { bgcolor: "#0F172A !important", color: "#FFFFFF !important" }
+                  "& .MuiToggleButton-root": {
+                    border: "none",
+                    borderRadius: "8px !important",
+                    color: "#64748B",
+                    p: 0.8,
+                  },
+                  "& .Mui-selected": {
+                    bgcolor: "#0F172A !important",
+                    color: "#FFFFFF !important",
+                  },
                 }}
               >
-                <ToggleButton value="list"><TableRowsOutlinedIcon fontSize="small" /></ToggleButton>
-                <ToggleButton value="grid"><GridViewOutlinedIcon fontSize="small" /></ToggleButton>
+                <ToggleButton value="list">
+                  <TableRowsOutlinedIcon fontSize="small" />
+                </ToggleButton>
+                <ToggleButton value="grid">
+                  <GridViewOutlinedIcon fontSize="small" />
+                </ToggleButton>
               </ToggleButtonGroup>
             </Box>
           </Box>
 
-          <Box sx={{ flex: 1, bgcolor: viewMode === "grid" ? "#F8FAFC" : "#FFFFFF" }}>
+          <Box
+            sx={{
+              flex: 1,
+              bgcolor: viewMode === "grid" ? "#F8FAFC" : "#FFFFFF",
+            }}
+          >
             {viewMode === "list" ? (
               <TableContainer>
                 <Table aria-label="Kategoriler">
                   <TableHead>
                     <TableRow sx={{ bgcolor: "#F8FAFC" }}>
-                      <TableCell sx={{ fontWeight: 600, color: "#475569", borderBottom: "1px solid rgba(0,0,0,0.06)", py: 2 }}>Kod</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: "#475569", borderBottom: "1px solid rgba(0,0,0,0.06)", py: 2 }}>Kategori adı</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: "#475569", borderBottom: "1px solid rgba(0,0,0,0.06)", py: 2 }}>Durum</TableCell>
-                      {admin && <TableCell align="right" sx={{ fontWeight: 600, color: "#475569", borderBottom: "1px solid rgba(0,0,0,0.06)", py: 2 }}>İşlemler</TableCell>}
+                      <TableCell
+                        sx={{
+                          fontWeight: 600,
+                          color: "#475569",
+                          borderBottom: "1px solid rgba(0,0,0,0.06)",
+                          py: 2,
+                        }}
+                      >
+                        Kod
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: 600,
+                          color: "#475569",
+                          borderBottom: "1px solid rgba(0,0,0,0.06)",
+                          py: 2,
+                        }}
+                      >
+                        Kategori adı
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: 600,
+                          color: "#475569",
+                          borderBottom: "1px solid rgba(0,0,0,0.06)",
+                          py: 2,
+                        }}
+                      >
+                        Durum
+                      </TableCell>
+                      {admin && (
+                        <TableCell
+                          align="right"
+                          sx={{
+                            fontWeight: 600,
+                            color: "#475569",
+                            borderBottom: "1px solid rgba(0,0,0,0.06)",
+                            py: 2,
+                          }}
+                        >
+                          İşlemler
+                        </TableCell>
+                      )}
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {data?.content.map((category) => (
-                      <TableRow key={category.publicId} hover sx={{ "&:last-child td": { borderBottom: 0 } }}>
+                      <TableRow
+                        key={category.publicId}
+                        hover
+                        sx={{ "&:last-child td": { borderBottom: 0 } }}
+                      >
                         <TableCell>
                           <Typography
                             variant="body2"
-                            sx={{ fontFamily: "monospace", color: "#64748B", fontWeight: 600 }}
+                            sx={{
+                              fontFamily: "monospace",
+                              color: "#64748B",
+                              fontWeight: 600,
+                            }}
                           >
                             {category.code}
                           </Typography>
                         </TableCell>
                         <TableCell>
-                          <Typography sx={{ fontWeight: 600, color: "#0F172A" }}>
+                          <Typography
+                            sx={{ fontWeight: 600, color: "#0F172A" }}
+                          >
                             {category.name}
                           </Typography>
                           {category.description && (
@@ -227,14 +338,25 @@ export function CategoryPage() {
                           />
                         </TableCell>
                         {admin && (
-                          <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
-                            <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
+                          <TableCell
+                            align="right"
+                            sx={{ whiteSpace: "nowrap" }}
+                          >
+                            <Stack
+                              direction="row"
+                              spacing={1}
+                              sx={{ justifyContent: "flex-end" }}
+                            >
                               <Tooltip title="Düzenle">
                                 <IconButton
                                   size="small"
                                   onClick={() => setEditor(category)}
                                   aria-label={category.name + " düzenle"}
-                                  sx={{ color: "#1D4ED8", bgcolor: "#F1F5F9", "&:hover": { bgcolor: "#E2E8F0" } }}
+                                  sx={{
+                                    color: "#1D4ED8",
+                                    bgcolor: "#F1F5F9",
+                                    "&:hover": { bgcolor: "#E2E8F0" },
+                                  }}
                                 >
                                   <EditOutlinedIcon fontSize="small" />
                                 </IconButton>
@@ -248,7 +370,11 @@ export function CategoryPage() {
                                     setDeleteError(undefined);
                                   }}
                                   aria-label={category.name + " sil"}
-                                  sx={{ color: "#DC2626", bgcolor: "#FEECEB", "&:hover": { bgcolor: "#FCD3D3" } }}
+                                  sx={{
+                                    color: "#DC2626",
+                                    bgcolor: "#FEECEB",
+                                    "&:hover": { bgcolor: "#FCD3D3" },
+                                  }}
                                 >
                                   <DeleteOutlineOutlinedIcon fontSize="small" />
                                 </IconButton>
@@ -266,7 +392,14 @@ export function CategoryPage() {
                         >
                           Bu sayfada kategori bulunamadı.
                           {paging.page > 0 && (
-                            <Button onClick={() => paging.update({ page: 0 })} sx={{ ml: 2, textTransform: "none", fontWeight: 600 }}>
+                            <Button
+                              onClick={() => paging.update({ page: 0 })}
+                              sx={{
+                                ml: 2,
+                                textTransform: "none",
+                                fontWeight: 600,
+                              }}
+                            >
                               İlk sayfaya dön
                             </Button>
                           )}
@@ -278,7 +411,18 @@ export function CategoryPage() {
               </TableContainer>
             ) : (
               /* KUTU (GRID) GÖRÜNÜMÜ */
-              <Box sx={{ p: 3, display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr" }, gap: 3 }}>
+              <Box
+                sx={{
+                  p: 3,
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    sm: "1fr 1fr",
+                    md: "1fr 1fr 1fr",
+                  },
+                  gap: 3,
+                }}
+              >
                 {data?.content.map((category) => (
                   <Card
                     key={category.publicId}
@@ -291,12 +435,42 @@ export function CategoryPage() {
                       bgcolor: "#FFFFFF",
                       boxShadow: "0 2px 8px rgba(0,0,0,0.02)",
                       transition: "all 0.2s ease",
-                      "&:hover": { transform: "translateY(-3px)", boxShadow: "0 8px 24px rgba(15,23,42,0.06)", borderColor: "#0F172A" },
+                      "&:hover": {
+                        transform: "translateY(-3px)",
+                        boxShadow: "0 8px 24px rgba(15,23,42,0.06)",
+                        borderColor: "#0F172A",
+                      },
                     }}
                   >
-                    <Box sx={{ p: 3, flex: 1, display: "flex", flexDirection: "column" }}>
-                      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                        <Typography sx={{ fontFamily: "monospace", color: "#0F172A", bgcolor: "#F8FAFC", px: 1.5, py: 0.5, borderRadius: "6px", fontSize: "0.75rem", fontWeight: 700, border: "1px solid rgba(0,0,0,0.04)" }}>
+                    <Box
+                      sx={{
+                        p: 3,
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          mb: 2,
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontFamily: "monospace",
+                            color: "#0F172A",
+                            bgcolor: "#F8FAFC",
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: "6px",
+                            fontSize: "0.75rem",
+                            fontWeight: 700,
+                            border: "1px solid rgba(0,0,0,0.04)",
+                          }}
+                        >
                           {category.code}
                         </Typography>
                         <Chip
@@ -310,20 +484,52 @@ export function CategoryPage() {
                           }}
                         />
                       </Box>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#0F172A", mb: 0.5 }}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ fontWeight: 700, color: "#0F172A", mb: 0.5 }}
+                      >
                         {category.name}
                       </Typography>
                       <Typography variant="body2" sx={{ color: "#64748B" }}>
                         {category.description || "Açıklama yok"}
                       </Typography>
                     </Box>
-                    <Box sx={{ px: 2.5, py: 1.5, borderTop: "1px solid rgba(0,0,0,0.04)", display: "flex", justifyContent: "flex-end", gap: 1, bgcolor: "#F8FAFC" }}>
+                    <Box
+                      sx={{
+                        px: 2.5,
+                        py: 1.5,
+                        borderTop: "1px solid rgba(0,0,0,0.04)",
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: 1,
+                        bgcolor: "#F8FAFC",
+                      }}
+                    >
                       {admin && (
                         <>
-                          <Button size="small" onClick={() => setEditor(category)} sx={{ color: "#1D4ED8", fontWeight: 600, textTransform: "none" }}>
+                          <Button
+                            size="small"
+                            onClick={() => setEditor(category)}
+                            sx={{
+                              color: "#1D4ED8",
+                              fontWeight: 600,
+                              textTransform: "none",
+                            }}
+                          >
                             Düzenle
                           </Button>
-                          <Button size="small" onClick={() => { setRemoving(category); setDeleteError(undefined); }} sx={{ color: "#DC2626", fontWeight: 600, textTransform: "none" }}>
+                          <Button
+                            size="small"
+                            onClick={() => {
+                              setRemoving(category);
+                              setDeleteError(undefined);
+                            }}
+                            sx={{
+                              color: "#DC2626",
+                              fontWeight: 600,
+                              textTransform: "none",
+                            }}
+                          >
                             Sil
                           </Button>
                         </>
@@ -332,8 +538,17 @@ export function CategoryPage() {
                   </Card>
                 ))}
                 {!data?.content.length && (
-                  <Box sx={{ gridColumn: "1 / -1", py: 6, textAlign: "center", color: "#64748B" }}>
-                    <Typography variant="body1">Bu sayfada kategori bulunamadı.</Typography>
+                  <Box
+                    sx={{
+                      gridColumn: "1 / -1",
+                      py: 6,
+                      textAlign: "center",
+                      color: "#64748B",
+                    }}
+                  >
+                    <Typography variant="body1">
+                      Bu sayfada kategori bulunamadı.
+                    </Typography>
                   </Box>
                 )}
               </Box>
@@ -365,14 +580,18 @@ export function CategoryPage() {
           fullWidth
           sx={{ "& .MuiDialog-paper": { borderRadius: "16px" } }}
         >
-          <DialogTitle id="delete-title" sx={{ fontWeight: 700, color: "#0F172A", pb: 1 }}>
+          <DialogTitle
+            id="delete-title"
+            sx={{ fontWeight: 700, color: "#0F172A", pb: 1 }}
+          >
             Kategori silinsin mi?
           </DialogTitle>
           <DialogContent>
             <Stack spacing={2}>
               <DialogContentText sx={{ color: "#475569", fontSize: "0.95rem" }}>
-                <strong>{removing.name}</strong> kategorisini silmek üzeresiniz. Bağlı pasaport
-                varsa silme işlemi reddedilir. Bu işlem geri alınamaz.
+                <strong>{removing.name}</strong> kategorisini silmek üzeresiniz.
+                Bağlı pasaport varsa silme işlemi reddedilir. Bu işlem geri
+                alınamaz.
               </DialogContentText>
               {deleteError !== undefined && <ErrorNotice error={deleteError} />}
             </Stack>
@@ -381,7 +600,12 @@ export function CategoryPage() {
             <Button
               disabled={busy}
               onClick={() => setRemoving(undefined)}
-              sx={{ color: "#0F172A", fontWeight: 600, textTransform: "none", "&:hover": { bgcolor: "rgba(15, 23, 42, 0.04)" } }}
+              sx={{
+                color: "#0F172A",
+                fontWeight: 600,
+                textTransform: "none",
+                "&:hover": { bgcolor: "rgba(15, 23, 42, 0.04)" },
+              }}
             >
               Vazgeç
             </Button>

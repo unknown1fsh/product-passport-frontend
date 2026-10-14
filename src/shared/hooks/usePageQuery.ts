@@ -9,15 +9,15 @@ export function usePageQuery(defaultSort: string, allowed: string[]) {
   const sortBy = allowed.includes(requestedSort) ? requestedSort : defaultSort;
   const sortDir = params.get("sortDir") === "desc" ? "desc" : "asc";
   function update(changes: Record<string, string | number>) {
-    setParams({
-      page: String(page),
-      size: String(size),
-      sortBy,
-      sortDir,
-      ...Object.fromEntries(
-        Object.entries(changes).map(([key, value]) => [key, String(value)]),
-      ),
+    const next = new URLSearchParams(params);
+    next.set("page", String(page));
+    next.set("size", String(size));
+    next.set("sortBy", sortBy);
+    next.set("sortDir", sortDir);
+    Object.entries(changes).forEach(([key, value]) => {
+      next.set(key, String(value));
     });
+    setParams(next);
   }
   return {
     page,
